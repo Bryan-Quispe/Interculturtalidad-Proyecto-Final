@@ -2,6 +2,23 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
 
+/**
+ * Origen del backend sin el sufijo `/api`. Los archivos estáticos (modelos 3D
+ * en `/modelos/...` y subidas en `/uploads/...`) cuelgan de la raíz del
+ * servidor, no del prefijo de la API, así que no se pueden pedir con API_URL.
+ */
+export const API_ORIGIN = API_URL.replace(/\/api\/?$/, '');
+
+/** Convierte una ruta servida por el backend (`/uploads/x.glb`) en URL absoluta. */
+export function urlDelBackend(ruta: string): string {
+  if (/^https?:\/\//i.test(ruta)) return ruta;
+  // Varios modelos tienen espacios en el nombre ("Perro Husky.glb"). encodeURI
+  // los escapa y deja intactos los `%` de una ruta ya codificada, así que es
+  // seguro aplicarlo en ambos casos.
+  const rutaSegura = encodeURI(ruta.startsWith('/') ? ruta : `/${ruta}`);
+  return `${API_ORIGIN}${rutaSegura}`;
+}
+
 class ApiClient {
   private client: AxiosInstance;
   private authToken: string | null = null;

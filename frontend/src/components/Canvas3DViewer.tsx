@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import * as THREE from 'three';
 import { Modelo3D, PaintStroke } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageProvider';
+import { urlDelBackend } from '@/lib/api';
 
 const EMPTY_STROKES: PaintStroke[] = [];
 /**
@@ -490,7 +491,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
         addFallbackCube();
         return;
       }
-      const fileUrl = `http://localhost:3333${modelo.archivo.path}`;
+      const fileUrl = urlDelBackend(modelo.archivo.path);
       const extension = modelo.archivo.path.split('.').pop()?.toLowerCase();
       try {
         if (extension === 'glb' || extension === 'gltf') {

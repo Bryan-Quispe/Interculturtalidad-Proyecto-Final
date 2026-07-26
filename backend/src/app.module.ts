@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AnimalesModule } from './modules/animales/animales.module';
 import { Modelos3DModule } from './modules/modelos3d/modelos3d.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { HealthController } from './common/health/health.controller';
 
 @Module({
   imports: [
@@ -25,5 +26,6 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     Modelos3DModule,
     UploadsModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}

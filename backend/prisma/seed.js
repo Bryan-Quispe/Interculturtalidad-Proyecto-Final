@@ -48,7 +48,7 @@ async function main() {
   // Buscar si ya existe un modelo con ese nombre para este admin
   let modelo = await prisma.modelo3D.findFirst({
     where: {
-      nombre: 'Australian Cattle Dog',
+      nombre: 'Perro Husky',
       usuarioId: admin.id,
     },
   });
@@ -56,19 +56,23 @@ async function main() {
   if (!modelo) {
     modelo = await prisma.modelo3D.create({
       data: {
-        nombre: 'Australian Cattle Dog',
+        nombre: 'Perro Husky',
         categoria: CategoriaAnimal.PERRO,
-        raza: 'Australian Cattle Dog',
-        descripcion: 'Modelo 3D realista de un Australian Cattle Dog',
+        raza: 'Husky Siberiano',
+        descripcion: 'Modelo 3D realista de un perro husky',
         color: '#8B4513',
         isPublico: true,
         usuarioId: admin.id,
+        // Antes apuntaba al .obj del Australian Cattle Dog, que está excluido
+        // del repositorio en backend/Modelos/.gitignore (rutas demasiado
+        // largas para Windows). Al no viajar en el clon, el modelo daba 404 en
+        // el servidor. Se usa un .glb que sí está versionado.
         archivo: {
           create: {
-            filename: '13463_Australian_Cattle_Dog_v3.obj',
-            path: '/modelos/Perro/Australian_Cattle_Dog_v1_L3.123c9c6a5764-399b-4e86-9897-6bcb08b5e8ed/Australian_Cattle_Dog_v1_L3.123c9c6a5764-399b-4e86-9897-6bcb08b5e8ed/13463_Australian_Cattle_Dog_v3.obj',
-            mimetype: 'application/octet-stream',
-            tamano: 5478421,
+            filename: 'Perro Husky.glb',
+            path: '/modelos/Perro/Perro Husky.glb',
+            mimetype: 'model/gltf-binary',
+            tamano: 16117544,
           },
         },
         transformaciones: {

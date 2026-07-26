@@ -9,9 +9,27 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
-  // CORS
+  /**
+   * CORS. En producción el frontend vive en Vercel, que genera un dominio por
+   * despliegue de preview además del de producción. Por eso CORS_ORIGIN acepta
+   * una lista separada por comas y, si se define VERCEL_PREVIEW_PATTERN, se
+   * permiten también los subdominios *.vercel.app del proyecto.
+   */
+  const origenesPermitidos = (configService.get<string>('CORS_ORIGIN') || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN'),
+    origin: (origin, callback) => {
+      // Peticiones sin Origin (curl, health checks, apps nativas) pasan.
+      if (!origin) return callback(null, true);
+      if (origenesPermitidos.includes(origin)) return callback(null, true);
+      if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origen no permitido por CORS: ${origin}`), false);
+    },
     credentials: true,
   });
 
@@ -51,11 +69,11 @@ async function bootstrap() {
   // Prefix global
   app.setGlobalPrefix('api');
 
+  // Render inyecta PORT y exige escuchar en 0.0.0.0, no en localhost.
   const port = configService.get('PORT') || 3333;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   console.log(`✓ API ejecutándose en puerto ${port}`);
-  console.log(`✓ Documentación en http://localhost:${port}/api`);
 }
 
 bootstrap().catch((err) => {

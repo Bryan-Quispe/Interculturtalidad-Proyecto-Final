@@ -1,0 +1,52 @@
+# Blueprint de Render: base de datos PostgreSQL + API NestJS.
+# El frontend Next.js NO va aquí, se despliega en Vercel (ver README).
+#
+# Uso: en Render -> New -> Blueprint -> apuntar a este repositorio.
+
+databases:
+  - name: mascotas3d-db
+    databaseName: animales_3d
+    user: animales_3d
+    plan: free
+
+services:
+  - type: web
+    name: mascotas3d-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    # `prisma migrate deploy` aplica las migraciones ya versionadas en
+    # prisma/migrations sin generar ninguna nueva: es el comando correcto para
+    # producción (`migrate dev` es interactivo y puede borrar datos).
+    buildCommand: npm ci && npx prisma migrate deploy && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mascotas3d-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 24h
+      - key: MAX_FILE_SIZE
+        value: '52428800'
+      - key: UPLOAD_DIR
+        value: ./uploads
+      # Dominio del frontend en Vercel. Acepta varios separados por comas.
+      # Se rellena a mano tras el primer despliegue de Vercel.
+      - key: CORS_ORIGIN
+        sync: false
+      # Credenciales de Cloudinary: se cargan a mano en el panel de Render
+      # para que no queden escritas en el repositorio.
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: mascotas3d/animales

@@ -5,6 +5,9 @@
   "author": "Tu Nombre",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "postinstall": "prisma generate",
     "prebuild": "rimraf dist tsconfig.build.tsbuildinfo tsconfig.tsbuildinfo",
