@@ -1,0 +1,22 @@
+@startuml CU01_Registrarse
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+actor "Usuario\n(no autenticado)" as Guest
+
+rectangle "Sistema Web de Mascotas 3D" {
+	usecase "Registrarse" as UC_Register
+	usecase "Validar datos" as UC_ValidateData
+	usecase "Verificar correo\núnico" as UC_CheckEmail
+	usecase "Crear cuenta" as UC_CreateAccount
+	usecase "Generar confirmación" as UC_Confirm
+}
+
+Guest -- UC_Register
+UC_Register ..> UC_ValidateData : <<include>>
+UC_Register ..> UC_CheckEmail : <<include>>
+UC_Register ..> UC_CreateAccount : <<include>>
+UC_Register ..> UC_Confirm : <<include>>
+
+@enduml

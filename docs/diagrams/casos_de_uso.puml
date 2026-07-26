@@ -1,0 +1,55 @@
+@startuml CasosDeUso
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Usuario\n(no autenticado)" as Guest
+actor "Usuario\n(autenticado)" as User
+actor "Administrador\n(admin)" as Admin
+
+rectangle "Sistema Web de Mascotas 3D" {
+  usecase "Registrarse" as UC_Register
+  usecase "Iniciar sesión" as UC_Login
+  usecase "Registrar mascota" as UC_CreatePet
+  usecase "Cargar foto" as UC_UploadPhoto
+  usecase "Ver lista de mascotas" as UC_ListPets
+  usecase "Ver detalle de mascota" as UC_ViewPet
+  usecase "Visualizar modelo 3D" as UC_View3D
+  usecase "Expirar sesión" as UC_ExpireSession
+  usecase "Subir modelo 3D" as UC_UploadModel
+  usecase "Editar / personalizar modelo 3D" as UC_EditModel
+}
+
+' Relaciones actor -> caso de uso
+Guest -- UC_Register
+Guest -- UC_Login
+User -- UC_CreatePet
+User -- UC_ListPets
+User -- UC_ViewPet
+User -- UC_ExpireSession
+User -- UC_EditModel
+Admin -- UC_UploadModel
+
+' Dependencias entre casos de uso
+UC_UploadPhoto ..> UC_CreatePet : <<extend>>
+UC_ViewPet ..> UC_View3D : <<include>>
+
+' Agrupar visual (opcional) - paquetes por actor/área
+package "Autenticación & Usuarios" {
+  UC_Register
+  UC_Login
+  UC_ExpireSession
+}
+
+package "Mascotas & Modelos" {
+  UC_CreatePet
+  UC_UploadPhoto
+  UC_ListPets
+  UC_ViewPet
+  UC_View3D
+  UC_UploadModel
+  UC_EditModel
+}
+
+@enduml

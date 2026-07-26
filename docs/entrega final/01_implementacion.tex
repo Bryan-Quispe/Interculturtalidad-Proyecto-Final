@@ -1,0 +1,23 @@
+\section{Implementaci\'on}
+
+La implementaci\'on del proyecto se enfoc\'o en una plataforma web para localizar mascotas perdidas con apoyo de im\'agenes reales y modelos 3D por categor\'ia.
+
+\subsection{Componentes principales}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Frontend:} interfaz en Next.js para home, login, registro y panel.
+    \item \textbf{Backend:} API en NestJS con autenticaci\'on JWT, control de mascotas y modelos 3D.
+    \item \textbf{Base de datos:} PostgreSQL administrada con Prisma.
+    \item \textbf{Modelos 3D:} carga de archivos \texttt{.glb}, \texttt{.gltf} y \texttt{.obj} agrupados por categor\'ia.
+\end{itemize}
+
+\subsection{Funcionalidades implementadas}
+\begin{itemize}[leftmargin=*]
+    \item Registro e inicio de sesi\'on de usuarios.
+    \item Alta, edici\'on y eliminaci\'on de mascotas por usuario.
+    \item Asociaci\'on de mascota con un modelo 3D de la misma categor\'ia.
+    \item Visualizaci\'on de mascotas perdidas por zona.
+    \item Carga de im\'agenes de apoyo para presentaci\'on visual.
+\end{itemize}
+
+\subsection{Alcance t\'ecnico}
+La soluci\'on permite mantener el cat\'alogo de mascotas y sus modelos 3D, con una estructura preparada para crecer hacia edici\'on visual avanzada y gesti\'on por barrio o zona.

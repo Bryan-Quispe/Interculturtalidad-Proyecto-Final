@@ -1,0 +1,122 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Sprint Backlog}\\[0.3em]\Large Plataforma Web de Mascotas Urbanas, Rurales y Modelos 3D}
+\author{Bryan Quispe}
+\date{20 de abril de 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} Sprint Backlog\\[0.35em]}
+{\LARGE Tareas del Sprint con estimación\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Versión} & 1.1 \\
+\textbf{Fecha} & 17 de junio de 2026 \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Periodo} & 20 de abril de 2026 al 7 de agosto de 2026 \\
+\end{tabular}
+
+\vfill
+{\large Documento Scrum para la ejecución del Sprint}
+\end{titlepage}
+
+\section{Visión de sprints}
+\textbf{Sprint 1} - Autenticación, sesión y alta básica de mascotas.
+
+\textbf{Sprint 2} - Fotos reales, detalle de mascota y carga inicial de modelo 3D local.
+
+\textbf{Sprint 3} - Catálogo, filtros urbano/rural y preparación de modelo editable.
+
+\textbf{Sprint 4} - Edición de modelos 3D y guardado no destructivo.
+
+\section{Sprint 1}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{1.8cm}}
+\toprule
+\textbf{ID} & \textbf{Tarea} & \textbf{Historia} & \textbf{Estimación} & \textbf{Estado} \\
+\midrule
+SB-01 & Crear formulario de registro y validaciones & PB-01 & 5 pts & Hecho \\
+SB-02 & Implementar login con JWT & PB-02 & 5 pts & Hecho \\
+SB-03 & Crear endpoint de alta de mascota & PB-03 & 5 pts & Hecho \\
+SB-04 & Implementar listado de mascotas del usuario & PB-04 & 3 pts & Hecho \\
+SB-05 & Manejo de errores y mensajes consistentes & PB-09 & 3 pts & Hecho \\
+SB-06 & Configurar expiración de sesión por inactividad & PB-06 & 3 pts & Hecho \\
+\bottomrule
+\end{longtable}
+
+\section{Sprint 2}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{1.8cm}}
+\toprule
+\textbf{ID} & \textbf{Tarea} & \textbf{Historia} & \textbf{Estimación} & \textbf{Estado} \\
+\midrule
+SB-07 & Subir fotos de mascota & PB-10 & 5 pts & Hecho \\
+SB-08 & Asociar foto principal por mascota & PB-10 & 3 pts & Hecho \\
+SB-09 & Vista de detalle de mascota & PB-05 & 5 pts & Hecho \\
+SB-10 & Carga de modelo 3D local desde \texttt{backend/Modelos} & PB-05 & 5 pts & Hecho \\
+SB-11 & Soporte OBJ/MTL con texturas JPG & PB-07 & 5 pts & Hecho \\
+\bottomrule
+\end{longtable}
+
+\section{Sprint 3}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{1.8cm}}
+\toprule
+\textbf{ID} & \textbf{Tarea} & \textbf{Historia} & \textbf{Estimación} & \textbf{Estado} \\
+\midrule
+SB-12 & Clasificación urbano/rural en mascota & PB-03 & 3 pts & Hecho \\
+SB-13 & Filtros por tipo, contexto y búsqueda & PB-04 & 5 pts & Hecho \\
+SB-14 & Catálogo visual de modelos locales & PB-07 & 4 pts & Hecho \\
+SB-15 & Preparar metadatos editables del modelo & PB-08 & 4 pts & Hecho \\
+\bottomrule
+\end{longtable}
+
+\section{Sprint 4}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{1.8cm}}
+\toprule
+\textbf{ID} & \textbf{Tarea} & \textbf{Historia} & \textbf{Estimación} & \textbf{Estado} \\
+\midrule
+SB-16 & Editor 3D para escala, rotación y posición & PB-08 & 8 pts & Pendiente \\
+SB-17 & Guardado no destructivo de transformaciones & PB-08 & 5 pts & Pendiente \\
+SB-18 & Versionado de ediciones por mascota & PB-08 & 5 pts & Pendiente \\
+SB-19 & Persistencia de cambios sin sobrescribir el original & PB-08 & 3 pts & Pendiente \\
+SB-20 & Pruebas E2E de edición 3D & PB-08 & 5 pts & Pendiente \\
+\bottomrule
+\end{longtable}
+
+\section{Capacidad estimada}
+\begin{itemize}[leftmargin=*]
+    \item Capacidad Sprint 1: 24 puntos.
+    \item Capacidad Sprint 2: 23 puntos.
+    \item Capacidad Sprint 3: 16 puntos.
+    \item Capacidad Sprint 4: 26 puntos.
+\end{itemize}
+
+\section{Criterio de control}
+\begin{itemize}[leftmargin=*]
+    \item Cada tarea debe estar vinculada a una historia priorizada.
+    \item Los Sprint 1, 2 y 3 se consideran cerrados como avance histórico.
+    \item El Sprint 4 permanece pendiente y cubre únicamente edición de modelos 3D.
+\end{itemize}
+
+\end{document}

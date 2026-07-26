@@ -1,0 +1,438 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Casos de Uso}\\[0.3em]\Large Plataforma Web de Mascotas 3D}
+\author{Bryan Quispe}
+\date{10 de mayo de 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} Casos de Uso\\[0.35em]}
+{\LARGE Especificaci\'on detallada de flujos de negocio\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Versi\'on} & 1.1 \\
+\textbf{Fecha} & 16 de junio de 2026 \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Alcance} & MVP en desarrollo: Mascotas urbanas/rurales, fotos y modelos 3D editables \\
+\end{tabular}
+
+\vfill
+{\large Documento para compilaci\'on en Overleaf}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducci\'on}
+Este documento describe los casos de uso principales de la plataforma en desarrollo. Un caso de uso representa la interacci\'on entre un actor humano y el sistema dentro de una frontera funcional concreta. La plataforma permite registrar mascotas urbanas y rurales, subir fotograf\'ias, asociar modelos 3D locales y editar transformaciones b\'asicas del modelo. Cada caso incluye acciones del usuario, respuestas del sistema, precondiciones, flujos alternos y postcondiciones.
+
+\section{CU-01: Registrarse en la plataforma}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-01 \\
+\hline
+\textbf{Nombre} & Registrarse en la plataforma \\
+\hline
+\textbf{Descripci\'on} & Un nuevo usuario se crea una cuenta en el sistema. \\
+\hline
+\textbf{Actor principal} & Usuario no autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario accede al formulario de registro. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario ingresa email, contrase\~na y confirmaci\'on de contrase\~na.
+    \item El sistema valida que el email sea \'unico.
+    \item El sistema valida que la contrase\~na cumpla requisitos (8+ caracteres).
+    \item El sistema crea el usuario en la base de datos con contrase\~na hasheada.
+    \item El sistema retorna mensaje de \'exito.
+    \item El usuario es redirigido a la p\'agina de login.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Email ya existe $\rightarrow$ Mostrar error, permitir reintento.
+    \item FA-02: Contrase\~na d\'ebil $\rightarrow$ Mostrar requisitos, permitir reintento.
+    \item FA-03: Contrase\~nas no coinciden $\rightarrow$ Mostrar error, permitir reintento.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Usuario registrado en la base de datos.
+    \item Usuario puede iniciar sesi\'on.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-01}}
+\caption{Diagrama conceptual: CU-01 Registrarse}
+\end{figure}
+
+\newpage
+
+\section{CU-02: Iniciar sesi\'on}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-02 \\
+\hline
+\textbf{Nombre} & Iniciar sesi\'on \\
+\hline
+\textbf{Descripci\'on} & Un usuario registrado inicia sesi\'on y obtiene acceso a su cuenta. \\
+\hline
+\textbf{Actor principal} & Usuario no autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario est\'a registrado y accede al formulario de login. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario ingresa email y contrase\~na.
+    \item El sistema valida credenciales contra la base de datos.
+    \item El sistema genera un JWT v\'alido por 24 horas.
+    \item El sistema retorna el token al frontend.
+    \item El frontend guarda el token en localStorage.
+    \item El usuario es redirigido al dashboard.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Credenciales inv\'alidas $\rightarrow$ Mostrar error gen\'erico, permitir reintento.
+    \item FA-02: Usuario no existe $\rightarrow$ Mostrar error gen\'erico, permitir reintento.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Usuario autenticado con sesi\'on activa.
+    \item Token almacenado en el cliente.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-02}}
+\caption{Diagrama conceptual: CU-02 Login}
+\end{figure}
+
+\newpage
+
+\section{CU-03: Registrar una mascota}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-03 \\
+\hline
+\textbf{Nombre} & Registrar una mascota \\
+\hline
+\textbf{Descripci\'on} & Un usuario autenticado crea un registro de mascota urbana o rural. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario ha iniciado sesi\'on y accede a la p\'agina de crear mascota. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario ingresa nombre, edad, tipo de animal y contexto urbano/rural.
+    \item El usuario puede agregar rasgos como raza/especie, color, descripci\'on y sector referencial.
+    \item El sistema valida campos obligatorios.
+    \item El sistema crea el registro de mascota asociado al usuario y a su contexto.
+    \item El sistema retorna ID de la mascota.
+    \item El usuario ve confirmaci\'on de \'exito.
+    \item El usuario es redirigido a la lista de mascotas.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Campos obligatorios incompletos $\rightarrow$ Mostrar validaci\'on, permitir correcci\'on.
+    \item FA-02: Token expirado $\rightarrow$ Redirigir a login.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Mascota registrada en la base de datos con clasificaci\'on urbano/rural.
+    \item Asociada al usuario propietario.
+    \item Visible en el listado del usuario.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-03}}
+\caption{Diagrama conceptual: CU-03 Registrar mascota}
+\end{figure}
+
+\newpage
+
+\section{CU-04: Ver lista de mascotas}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-04 \\
+\hline
+\textbf{Nombre} & Ver lista de mascotas \\
+\hline
+\textbf{Descripci\'on} & Usuario autenticado visualiza todas sus mascotas. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario ha iniciado sesi\'on. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario accede al dashboard.
+    \item El sistema consulta mascotas del usuario autenticado.
+    \item El sistema retorna lista en JSON con id, nombre, edad, tipo, contexto urbano/rural y foto principal.
+    \item El frontend renderiza tarjetas con informaci\'on de cada mascota.
+    \item El usuario puede clickear en una mascota para ver detalles.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: No hay mascotas registradas $\rightarrow$ Mostrar mensaje vac\'io y bot\'on para crear.
+    \item FA-02: Token expirado $\rightarrow$ Redirigir a login.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Usuario ve su lista de mascotas.
+    \item Puede navegar a detalles de cada mascota.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-04}}
+\caption{Diagrama conceptual: CU-04 Listado de mascotas}
+\end{figure}
+
+\newpage
+
+\section{CU-05: Ver detalle de mascota y modelo 3D}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-05 \\
+\hline
+\textbf{Nombre} & Ver detalle de mascota y modelo 3D \\
+\hline
+\textbf{Descripci\'on} & Usuario autenticado visualiza el detalle de una mascota y su modelo 3D dentro del sistema. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario ha iniciado sesi\'on y selecciona una mascota del listado. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario selecciona una mascota espec\'ifica desde la lista.
+    \item El sistema valida que la mascota pertenezca al usuario autenticado.
+    \item El sistema recupera los datos de la mascota, su contexto urbano/rural, su foto y el modelo 3D asociado desde \texttt{backend/Modelos}.
+    \item El sistema renderiza el detalle en pantalla.
+    \item El usuario interact\'ua con el modelo para verlo desde distintos \'angulos.
+    \item El usuario puede regresar al listado o continuar con otra mascota.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Modelo 3D no disponible $\rightarrow$ Mostrar placeholder.
+    \item FA-02: Foto no existe $\rightarrow$ Mostrar imagen por defecto.
+    \item FA-03: Token expirado $\rightarrow$ Redirigir a login.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Usuario visualiza detalle de su mascota.
+    \item Modelo 3D renderizado correctamente.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-05}}
+\caption{Diagrama conceptual: CU-05 Detalle y modelo 3D}
+\end{figure}
+
+\newpage
+
+\section{CU-06: Expiraci\'on de sesi\'on por inactividad}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-06 \\
+\hline
+\textbf{Nombre} & Expiraci\'on de sesi\'on por inactividad \\
+\hline
+\textbf{Descripci\'on} & El sistema cierra la sesi\'on tras inactividad prolongada. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & El usuario est\'a autenticado y mantiene una sesi\'on activa. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario interact\'ua con el sistema y reinicia el contador de inactividad.
+    \item El sistema detecta la falta de actividad durante el umbral definido.
+    \item El sistema invalida la sesi\'on y elimina credenciales locales.
+    \item El usuario es redirigido al inicio de sesi\'on al intentar continuar.
+\end{enumerate}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Usuario no autenticado.
+    \item Token removido del cliente.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][3cm][c]{0.6\textwidth}{\centering Diagrama de caso de uso - CU-06}}
+\caption{Diagrama conceptual: CU-06 Expiraci\'on de sesi\'on por inactividad}
+\end{figure}
+
+\newpage
+\section{CU-07: Subir fotos de mascota}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-07 \\
+\hline
+\textbf{Nombre} & Subir fotos de mascota \\
+\hline
+\textbf{Descripci\'on} & Usuario autenticado agrega fotograf\'ias reales a una mascota registrada. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & La mascota existe y pertenece al usuario autenticado. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario abre el detalle de una mascota urbana o rural.
+    \item El usuario selecciona una o varias im\'agenes JPG/PNG.
+    \item El sistema valida formato, tama\~no y relaci\'on con el usuario propietario.
+    \item El sistema almacena las fotos y marca una como imagen principal si aplica.
+    \item El detalle de la mascota muestra las fotos junto al modelo 3D asociado.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Archivo excede 5MB $\rightarrow$ Mostrar error y permitir seleccionar otra imagen.
+    \item FA-02: Formato no permitido $\rightarrow$ Rechazar archivo y mantener el formulario.
+    \item FA-03: Mascota no pertenece al usuario $\rightarrow$ Denegar operaci\'on.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Fotos almacenadas y asociadas a la mascota.
+    \item La ficha combina evidencia visual real con representaci\'on 3D.
+\end{itemize}
+
+\newpage
+\section{CU-08: Editar modelo 3D de mascota}
+
+\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\hline
+\textbf{Identificador} & CU-08 \\
+\hline
+\textbf{Nombre} & Editar modelo 3D de mascota \\
+\hline
+\textbf{Descripci\'on} & Usuario autenticado personaliza un modelo 3D asociado a una mascota sin sobrescribir el archivo original. \\
+\hline
+\textbf{Actor principal} & Usuario autenticado \\
+\hline
+\textbf{Precondiciones} & Existe un modelo 3D disponible en \texttt{backend/Modelos} y la mascota pertenece al usuario. \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Flujo normal}:
+\begin{enumerate}[leftmargin=*]
+    \item El usuario abre el visor 3D desde el detalle de la mascota.
+    \item El sistema carga el modelo local, por ejemplo Australian Cattle Dog en OBJ/MTL con texturas JPG.
+    \item El usuario modifica escala, rotaci\'on, posici\'on o metadatos visuales permitidos.
+    \item El sistema previsualiza los cambios en el canvas 3D.
+    \item El usuario guarda la edici\'on.
+    \item El sistema registra una versi\'on o conjunto de transformaciones asociado a la mascota.
+\end{enumerate}
+
+\textbf{Flujos alternativos}:
+\begin{itemize}[leftmargin=*]
+    \item FA-01: Modelo no disponible $\rightarrow$ Mostrar placeholder y opci\'on de reintento.
+    \item FA-02: Cambio fuera de l\'imites permitidos $\rightarrow$ Restaurar valor anterior.
+    \item FA-03: Error al guardar versi\'on $\rightarrow$ Mantener previsualizaci\'on local y mostrar error.
+\end{itemize}
+
+\textbf{Postcondiciones}:
+\begin{itemize}[leftmargin=*]
+    \item Transformaciones guardadas sin alterar el archivo original del cat\'alogo.
+    \item El detalle de mascota conserva foto real y modelo 3D personalizado.
+\end{itemize}
+
+\newpage
+\section{Referencias}
+Fuentes consultadas para formato y convenciones de casos de uso:
+\begin{thebibliography}{9}
+\bibitem{scrumguide}
+K. Schwaber y J. Sutherland,
+\textit{The Scrum Guide: The Definitive Guide to Scrum: The Rules of the Game},
+The Scrum Guide, 2020. Dispon\'ible en: \url{https://scrumguides.org}
+
+\bibitem{ieee830}
+IEEE,
+\textit{IEEE Recommended Practice for Software Requirements Specifications},
+IEEE Std 830-1998.
+
+\bibitem{cockburn}
+Alistair Cockburn,
+\textit{Writing Effective Use Cases}, Addison-Wesley, 2000.
+\end{thebibliography}
+
+\end{document}

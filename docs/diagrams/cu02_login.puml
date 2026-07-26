@@ -1,0 +1,32 @@
+@startuml CU02_IniciarSesion
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Usuario\n(no autenticado)" as Guest
+
+start
+note right
+Frontera del sistema: Sistema Web de Mascotas 3D
+end note
+
+|Sistema|
+:Registrar acceso;
+
+|Usuario|
+:Capturar credenciales;
+
+|Sistema|
+:Validar credenciales;
+
+if (¿Credenciales válidas?) then (sí)
+  :Generar JWT;
+  :Entregar sesión al cliente;
+else (no)
+  :Mostrar error de autenticación;
+endif
+
+stop
+
+@enduml

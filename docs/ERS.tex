@@ -1,0 +1,233 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Especificaci\'on de Requisitos de Software}\\[0.3em]\Large Plataforma Web de Mascotas 3D}
+\author{Bryan Quispe}
+\date{10 de mayo de 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} ERS\\[0.35em]}
+{\LARGE Especificaci\'on de Requisitos de Software\\[0.5em]}
+{\large Plataforma Web de Mascotas 3D\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Versi\'on} & 1.1 \\
+\textbf{Fecha} & 16 de junio de 2026 \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Estado} & En desarrollo \\
+\textbf{Alcance} & MVP en desarrollo: Autenticaci\'on, mascotas urbanas/rurales, fotos, visualizaci\'on y edici\'on 3D \\
+\end{tabular}
+
+\vfill
+{\large Documento de requisitos para compilaci\'on en Overleaf}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducci\'on}
+Este documento especifica los requisitos funcionales y no funcionales de la plataforma web de mascotas 3D en desarrollo. La soluci\'on permite registrar mascotas urbanas y rurales, subir fotograf\'ias reales, asociar modelos 3D almacenados en \texttt{backend/Modelos} y editar sus transformaciones b\'asicas. Ser\'a la base para el dise\~no, desarrollo y validaci\'on de la soluci\'on.
+
+\section{Requisitos Funcionales}
+
+\subsection{RF-01: Registro de usuario}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: La plataforma debe permitir el registro de nuevos usuarios.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Validar email \'unico en la base de datos.
+        \item Contrase\~na debe tener al menos 8 caracteres.
+        \item Contrase\~na debe estar hasheada con Bcrypt (10 rondas).
+        \item Mensaje de error claro si email existe.
+        \item Respuesta REST 201 Created en caso de \'exito.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 1
+\end{itemize}
+
+\subsection{RF-02: Inicio de sesi\'on (Login)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: La plataforma debe permitir que usuarios registrados inicien sesi\'on y accedan a rutas protegidas.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Validar email y contrase\~na contra la base de datos.
+        \item Generar JWT con identificador de usuario y fecha de expiraci\'on.
+        \item Respuesta REST 200 OK con token en el body.
+        \item Mensaje gen\'erico si las credenciales no coinciden.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 1
+\end{itemize}
+
+\subsection{RF-03: Registro de mascota}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: Usuario autenticado puede crear un registro de mascota urbana o rural.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Campos obligatorios: nombre, edad, tipo de animal y contexto (\texttt{urbano} o \texttt{rural}).
+        \item Registrar rasgos de identificaci\'on como color, raza/especie, descripci\'on y sector referencial cuando aplique.
+        \item Asociar mascota al usuario propietario.
+        \item Timestamp de creaci\'on autom\'atico.
+        \item Respuesta REST 201 Created.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 1
+\end{itemize}
+
+\subsection{RF-04: Listado de mascotas}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: Usuario autenticado puede ver y filtrar la lista de sus mascotas urbanas y rurales.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Retornar solo mascotas asociadas al usuario autenticado.
+        \item Incluir nombre, edad, tipo, contexto urbano/rural, foto principal y fecha de creaci\'on.
+        \item Permitir filtros por tipo, contexto y texto de b\'usqueda.
+        \item Respuesta REST 200 OK con lista JSON.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 1
+\end{itemize}
+
+\subsection{RF-05: Visualizaci\'on de detalle de mascota y modelo 3D}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: Usuario autenticado puede ver el detalle de una mascota, sus fotos y su modelo 3D asociado.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Mostrar datos de la mascota, contexto urbano/rural y foto asociada si existe.
+        \item Cargar modelo 3D desde el cat\'alogo local ubicado en \texttt{backend/Modelos}.
+        \item Soportar el modelo inicial Australian Cattle Dog en formato OBJ/MTL con texturas JPG.
+        \item Permitir rotaci\'on, zoom y vista b\'asica del modelo en el visor.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 2
+\end{itemize}
+
+\subsection{RF-06: Carga de fotos de mascota}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: Usuario puede subir una o varias fotos de su mascota para apoyar identificaci\'on, recuerdo visual y comparaci\'on con el modelo 3D.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item Aceptar JPG y PNG.
+        \item Tama\~no m\'aximo 5MB.
+        \item Compresi\'on autom\'atica.
+        \item Almacenamiento seguro en servidor.
+    \end{itemize}
+    \item \textbf{Prioridad}: Media
+    \item \textbf{Sprint}: 2
+\end{itemize}
+
+\subsection{RF-07: Gestión de modelos 3D (Admin)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Descripci\'on}: El sistema administra modelos 3D locales desde \texttt{backend/Modelos}. Un usuario con rol \texttt{admin} puede registrar, versionar y administrar modelos 3D; un usuario autenticado puede editar o personalizar versiones permitidas del modelo seg\'un las reglas del sistema.
+    \item \textbf{Criterios de aceptaci\'on}:
+    \begin{itemize}[leftmargin=*]
+        \item El sistema reconoce modelos OBJ/MTL con texturas JPG y prepara extensi\'on futura a GLB/GLTF.
+        \item El admin puede asignar metadatos (tipo de animal, nombre, contexto recomendado, versi\'on y ruta de archivos).
+        \item Versionado simple: cada edici\'on o subida puede crear una nueva versi\'on del modelo sin sobrescribir el original.
+        \item Permisos: solo admins pueden eliminar o publicar modelos para uso en el cat\'alogo.
+        \item El usuario autenticado puede editar transformaciones permitidas: escala, rotaci\'on, posici\'on, color/metadatos y nombre visible.
+        \item Respuesta REST 201 Created en subida exitosa.
+    \end{itemize}
+    \item \textbf{Prioridad}: Alta
+    \item \textbf{Sprint}: 2
+\end{itemize}
+
+\section{Requisitos No Funcionales}
+
+\subsection{RNF-01: Seguridad}
+\begin{itemize}[leftmargin=*]
+    \item Todas las contrase\~nas hasheadas con Bcrypt.
+    \item JWT firmado con clave privada.
+    \item CORS configurado para solo dominio propio.
+    \item Sin SQL injection en queries.
+\end{itemize}
+
+\subsection{RNF-02: Rendimiento}
+\begin{itemize}[leftmargin=*]
+    \item Endpoint de login: <500ms.
+    \item Listado de mascotas: <1000ms.
+    \item Carga de modelo 3D optimizado: <2 segundos en archivos livianos; modelos OBJ pesados deben mostrar indicador de carga y no bloquear la interfaz.
+    \item Edici\'on de transformaciones 3D debe responder visualmente en <100ms en el cliente.
+\end{itemize}
+
+\subsection{RNF-03: Disponibilidad}
+\begin{itemize}[leftmargin=*]
+    \item Disponibilidad esperada: 95\% en MVP.
+    \item Tiempo de recuperaci\'on ante fallo: <30 minutos.
+\end{itemize}
+
+\subsection{RNF-04: Compatibilidad}
+\begin{itemize}[leftmargin=*]
+    \item Backend: Node.js + NestJS.
+    \item Frontend: Next.js + React.
+    \item Base de datos: PostgreSQL.
+    \item Navegadores: Chrome, Firefox, Edge \'ultimas versiones.
+\end{itemize}
+
+\subsection{RNF-05: Gestión de sesión / Timeout}
+\begin{itemize}[leftmargin=*]
+    \item La sesión del usuario expirará automáticamente tras 10 minutos de inactividad.
+    \item Al cerrar la aplicación el cliente debe eliminar credenciales locales (token) para proteger la sesión.
+    \item El servidor puede aplicar políticas de expiraci\'on o revocaci\'on de tokens para cumplir el requisito.
+\end{itemize}
+
+\section{Restricciones}
+\begin{itemize}[leftmargin=*]
+    \item Presupuesto limitado para hosting en MVP.
+    \item Equipo de 3-4 desarrolladores.
+    \item Plazo: 4 semanas para el MVP.
+    \item Sin dependencias externas obligatorias para modelos 3D locales; el cat\'alogo inicial vive en \texttt{backend/Modelos}.
+    \item El modelo inicial disponible es Australian Cattle Dog con archivos OBJ, MTL y texturas JPG.
+\end{itemize}
+
+\section{Glosario}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{JWT}: JSON Web Token para autenticaci\'on.
+    \item \textbf{PBI}: Product Backlog Item.
+    \item \textbf{MVP}: M\'inimo Producto Viable.
+    \item \textbf{GLB}: Formato binario para modelos 3D.
+    \item \textbf{OBJ/MTL}: Formatos de geometr\'ia y materiales usados por el modelo 3D inicial.
+    \item \textbf{Mascota urbana/rural}: Clasificaci\'on funcional para diferenciar mascotas de entorno dom\'estico urbano, comunitario o de campo.
+\end{itemize}
+\newpage
+\section{Referencias}
+Las siguientes fuentes se usaron como referencia para el formato y las convenciones de este documento:
+\begin{thebibliography}{9}
+\bibitem{scrumguide}
+K. Schwaber y J. Sutherland,
+\textit{The Scrum Guide: The Definitive Guide to Scrum: The Rules of the Game},
+The Scrum Guide, 2020. Dispon\'ible en: \url{https://scrumguides.org}
+
+\bibitem{ieee830}
+IEEE,
+\textit{IEEE Recommended Practice for Software Requirements Specifications},
+IEEE Std 830-1998 (recomendaci\'on ampliamente utilizada para estructura de SRS).
+\end{thebibliography}
+
+\end{document}

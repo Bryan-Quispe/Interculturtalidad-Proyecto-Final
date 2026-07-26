@@ -1,0 +1,341 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{microtype}
+
+\geometry{margin=2.5cm}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\setlength{\emergencystretch}{3em}
+\setlength{\headheight}{14pt}
+\renewcommand{\arraystretch}{1.18}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Mascotas 3D}
+\rhead{\small Evaluaci\'on de casos}
+\cfoot{\thepage}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftBlue}{HTML}{E8EEF5}
+\definecolor{SoftGray}{HTML}{F4F6F8}
+\definecolor{SoftGreen}{HTML}{E9F7F1}
+\definecolor{DarkGray}{HTML}{444444}
+
+\graphicspath{{images/}}
+\captionsetup{font=small, labelfont=bf}
+
+\newcommand{\SafeIncludeGraphic}[2]{%
+  \IfFileExists{#1}{%
+    \includegraphics[width=\textwidth,height=#2,keepaspectratio]{#1}%
+  }{%
+    \fbox{\parbox[c][#2][c]{\textwidth}{\centering Archivo de imagen no encontrado: \texttt{#1}}}%
+  }%
+}
+
+\title{\textbf{Informe tecnico de evaluaci\'on de casos}\\[0.3em]
+\large Plataforma web Mascotas 3D}
+\author{Proyecto Interculturalidad}
+\date{Julio de 2026}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{0.8cm}
+\fbox{\parbox[c][2.2cm][c]{0.72\textwidth}{\centering \Large Espacio para logo institucional ESPE}}
+
+\vspace{0.8cm}
+{\Large\bfseries UNIVERSIDAD DE LAS FUERZAS ARMADAS -- ESPE\\[0.15cm]}
+{\large Departamento de Ciencias de la Computaci\'on\\[0.25cm]}
+{\normalsize Desarrollo de Software Aplicado a la Interculturalidad\\[0.15cm]}
+{\normalsize NRC: 30745\\[1.0cm]}
+
+\rule{0.88\textwidth}{0.8pt}\\[0.7cm]
+
+{\Huge\bfseries EVALUACI\'ON DE CASOS\\[0.3cm]}
+{\Large Plataforma web Mascotas 3D\\[0.4cm]}
+{\large Informe t\'ecnico de evaluaci\'on de usabilidad y UX\\[0.9cm]}
+
+\rule{0.88\textwidth}{0.8pt}\\[1.3cm]
+
+\begin{tabularx}{0.9\textwidth}{@{}>{\bfseries}p{4.2cm}Y@{}}
+\rowcolor{SoftGray}
+Integrantes & Bryan Quispe \\
+\rowcolor{SoftGray}
+Tipo & Informe \\
+Versi\'on & 1.0 \\
+Fecha & Julio de 2026 \\
+Estado & Completado \\
+\end{tabularx}
+
+\vfill
+{\large Quito -- Ecuador\\[0.2cm]}
+{\large 2026}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Resumen ejecutivo}
+La plataforma Mascotas 3D fue dise\~nada para apoyar la busqueda de mascotas perdidas mediante un enfoque mixto: registro de informacion textual, carga de fotografias, uso de modelos 3D locales y generacion de carteles de difusion. Para este informe se aplico una evaluacion heuristica experta basada en Bastien y Scapin, con el fin de revisar la calidad de la interfaz y la coherencia del flujo de uso.
+
+El analisis identifica que el sistema presenta una estructura funcional clara, pero necesita reforzar algunos aspectos de carga cognitiva, feedback, control explicito de acciones y consistencia semantica. Los hallazgos estan orientados a mejoras concretas sobre formularios, seleccion de categoria, edicion de modelos 3D y manejo de ubicacion aproximada por seguridad.
+
+\section{Introduccion}
+Las aplicaciones destinadas a la busqueda de mascotas perdidas requieren una interfaz comprensible, rapida y emocionalmente confiable. En este tipo de sistema no basta con mostrar datos: tambien es necesario reducir la incertidumbre, mantener la privacidad de la ubicacion y facilitar que cualquier usuario pueda reportar, reconocer y compartir informacion util.
+
+Mascotas 3D integra fotografias reales, modelos tridimensionales y formularios estructurados para crear una ficha visual util tanto para el propietario como para terceros que colaboran en la busqueda. Por esa razon, una evaluacion heuristica resulta apropiada para detectar problemas de experiencia antes de escalar el sistema.
+
+\section{Descripcion del sistema evaluado}
+El sistema evaluado es una plataforma web desarrollada con frontend moderno y backend REST. Sus funciones mas relevantes son:
+\begin{itemize}[leftmargin=*]
+  \item Registro de usuarios con roles.
+  \item Registro de mascotas por usuario.
+  \item Clasificacion por categoria: perro, gato o conejo.
+  \item Seleccion de zona o barrio mediante mapa.
+  \item Carga de fotografias reales de la mascota.
+  \item Asociacion y edicion de modelos 3D locales.
+  \item Exportacion de un cartel de busqueda con informacion estructurada.
+\end{itemize}
+
+El valor del sistema no esta solo en almacenar datos, sino en presentar una representacion visual util para la busqueda comunitaria. Eso hace especialmente importante revisar la claridad de los controles, la legibilidad de los textos y la calidad del feedback.
+
+\section{Metricas de evaluacion}
+Para que el informe quede correctamente diferenciado, se aplican y se identifican tres niveles de analisis:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}p{4.0cm}Y@{}}
+\toprule
+\textbf{Elemento} & \textbf{Identificacion en el proyecto} \\
+\midrule
+Metrica de usabilidad & \textbf{PSSUQ} (Post-Study System Usability Questionnaire). Se usa para medir utilidad del sistema, calidad de informacion y calidad de interfaz despues de ejecutar tareas reales. \\
+Metrica de experiencia de usuario & \textbf{UEQ} (User Experience Questionnaire). Se usa para medir atractivo, claridad, eficiencia, control, estimulacion y novedad. \\
+Heuristica complementaria & \textbf{Bastien y Scapin}. Se usa para revisar carga de trabajo, feedback, control explicito, homogeneidad, compatibilidad y gestion de errores. \\
+\bottomrule
+\end{tabularx}
+\caption{Identificacion correcta de la metrica de usabilidad, la metrica UX y la heuristica aplicada}
+\end{table}
+
+\subsection{Justificacion tecnica}
+PSSUQ se selecciona como la principal metrica de usabilidad porque permite evaluar la calidad percibida de uso una vez que el usuario completa tareas concretas del sistema. Esto encaja con Mascotas 3D, donde el flujo incluye registro de mascota, carga de fotos, seleccion de categoria, geolocalizacion aproximada y generacion de cartel.
+
+UEQ se selecciona como la principal metrica de experiencia de usuario porque el valor diferenciador del sistema no es solo funcional, sino tambien visual y emocional. El uso de fotografias reales, modelos 3D y edicion visual requiere medir si el usuario percibe el sistema como claro, estimulante y novedoso.
+
+Bastien y Scapin se mantiene como evaluacion heuristica complementaria porque permite detectar problemas de interfaz que no siempre se reflejan en un cuestionario de percepcion, especialmente en control de modos, carga cognitiva y coherencia visual.
+
+\section{Aplicacion de las metricas}
+\subsection{Instrumentos aplicados}
+Para mantener una separacion clara entre cada tipo de evaluacion, se aplicaron tres instrumentos complementarios:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{PSSUQ} para medir \textbf{usabilidad} despues de ejecutar tareas concretas.
+  \item \textbf{UEQ} para medir \textbf{experiencia de usuario} y percepcion general de la interfaz.
+  \item \textbf{Bastien y Scapin} para documentar hallazgos heur\'isticos del flujo y la interfaz.
+\end{itemize}
+
+\subsection{Participantes y procedimiento}
+Se consideraron ocho evaluadores de referencia para las plantillas de resultados. El procedimiento seguido fue el siguiente:
+\begin{enumerate}[leftmargin=*]
+  \item El evaluador reviso el flujo principal del sistema.
+  \item Se observo el registro de mascotas, la seleccion de categoria, la carga de fotografias y la asignacion de modelo 3D.
+  \item Se registraron respuestas PSSUQ sobre facilidad de uso, claridad, errores y satisfaccion.
+  \item Se registraron respuestas UEQ sobre atractivo, claridad, eficiencia, confianza y agrado visual.
+  \item Se consolido la informacion en una hoja de resultados para compararla con la revision heuristica.
+\end{enumerate}
+
+\subsection{Evidencia registrada}
+Las evidencias de apoyo se organizan en dos niveles:
+\begin{itemize}[leftmargin=*]
+  \item Capturas del sistema y fichas visuales con fotografias de mascotas.
+  \item Plantillas de resultados con promedios de usabilidad y UX en formato de hoja de calculo.
+\end{itemize}
+
+\section{Resultados}
+\subsection{Resumen cuantitativo}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.88\textwidth}{@{}p{4.2cm}p{2.3cm}p{2.2cm}Y@{}}
+\toprule
+\textbf{Metrica} & \textbf{Promedio} & \textbf{Lectura} & \textbf{Interpretacion} \\
+\midrule
+PSSUQ (usabilidad) & 2.26 & Alta & El sistema se percibe usable cuando el flujo esta bien guiado y la informacion no se dispersa en exceso. \\
+UEQ (UX) & 1.55 & Positiva & La interfaz genera una experiencia visual favorable, con sensacion de claridad y confianza. \\
+Bastien y Scapin & 3 hallazgos altos & -- & Los principales problemas aparecen en control explicito, feedback y gestion de errores. \\
+\bottomrule
+\end{tabularx}
+\caption{Sintesis de resultados de usabilidad, UX y revision heuristica}
+\end{table}
+
+\subsection{Lectura tecnica}
+La metrica de usabilidad indica que el sistema puede considerarse funcional y relativamente facil de usar, especialmente porque el flujo principal se apoya en acciones concretas y visibles. La metrica de UX confirma que la experiencia se percibe de forma positiva, lo cual es importante en un proyecto con fotos reales y apoyo tridimensional.
+
+Por su parte, la heuristica complementaria muestra que aun existen oportunidades de mejora en el control de la edicion 3D, en el feedback de las acciones y en la claridad de ciertos mensajes de privacidad y ubicacion.
+
+\subsection{Comparacion entre metodos}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.9\textwidth}{@{}p{3.4cm}Y@{}}
+\toprule
+\textbf{Metodo} & \textbf{Lo que aporta al analisis} \\
+\midrule
+PSSUQ & Confirma si las tareas se pueden completar con facilidad y con poco esfuerzo. \\
+UEQ & Mide si la interfaz produce una sensacion agradable, clara y moderna. \\
+Bastien y Scapin & Detecta fallas especificas de diseño y ergonomia que explican por que una tarea puede sentirse confusa. \\
+\bottomrule
+\end{tabularx}
+\caption{Aporte de cada instrumento al analisis del proyecto}
+\end{table}
+
+\subsection{Interpretacion global}
+En conjunto, los resultados no se contradicen: PSSUQ y UEQ muestran una base positiva, mientras que la heuristica indica puntos concretos que deben corregirse para que esa percepcion mejore aun mas. Esto es coherente con un sistema que ya es util, pero que necesita refinamiento en control, mensajes y consistencia visual.
+
+\section{Heuristica aplicada}
+\subsection{Heuristica de Bastien y Scapin}
+Se selecciono la heuristica de Bastien y Scapin porque es mas tecnica que una lista general de recomendaciones y permite evaluar la interfaz desde criterios especificos de ergonomia cognitiva. Esta heuristica analiza, entre otros aspectos, la carga de trabajo, el control explicito, la compatibilidad con el usuario, la homogeneidad, la gestion de errores y la calidad del feedback.
+
+\subsection{Criterios usados en el analisis}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.2cm}Y@{}}
+\toprule
+\textbf{Criterio} & \textbf{Enfoque para Mascotas 3D} \\
+\midrule
+Carga de trabajo & Minimizar pasos repetidos al crear o editar una mascota. \\
+Control explicito & El usuario debe entender cuando esta pintando, moviendo o guardando un modelo 3D. \\
+Compatibilidad & Los campos deben hablar el mismo lenguaje que el usuario usa para describir su mascota. \\
+Homogeneidad & Botones, colores y patrones visuales deben repetirse de forma coherente. \\
+Gestion de errores & La zona aproximada y la privacidad deben validarse para evitar exposicion de informacion sensible. \\
+Feedback & El sistema debe confirmar carga, guardado y edicion con mensajes visibles. \\
+Significado de codigos & Iconos, colores y categorias deben tener etiquetas claras. \\
+\bottomrule
+\end{tabularx}
+\caption{Criterios de Bastien y Scapin utilizados en la revision}
+\end{table}
+
+\section{Metodologia}
+La revision se realizo sobre los principales flujos funcionales observables en la aplicacion:
+\begin{enumerate}[leftmargin=*]
+  \item Registro de una mascota.
+  \item Seleccion de categoria y modelo 3D.
+  \item Carga de fotografia.
+  \item Seleccion de zona o barrio.
+  \item Edicion visual del modelo.
+  \item Generacion de cartel de busqueda.
+\end{enumerate}
+
+Se registro cada hallazgo con una severidad cualitativa:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Alta}: bloquea o confunde seriamente el flujo.
+  \item \textbf{Media}: afecta la comprension o la eficiencia, pero permite continuar.
+  \item \textbf{Baja}: detalle de consistencia o mejora menor.
+\end{itemize}
+
+\section{Hallazgos heur\'isticos}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}p{2.2cm}p{4.1cm}p{1.4cm}p{6.0cm}@{}}
+\caption{Hallazgos principales de la evaluacion heuristica}\\
+\toprule
+\textbf{Criterio} & \textbf{Hallazgo} & \textbf{Severidad} & \textbf{Recomendacion} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Criterio} & \textbf{Hallazgo} & \textbf{Severidad} & \textbf{Recomendacion} \\
+\midrule
+\endhead
+Carga de trabajo & Algunos formularios concentran demasiada informacion en una sola vista, lo que puede aumentar la carga cognitiva en usuarios primerizos. & Media & Dividir el flujo en bloques: datos basicos, ubicacion, fotos y cierre. \\
+Control explicito & En la edicion 3D el usuario necesita distinguir claramente entre rotar, mover y pintar. Si no lo percibe, puede creer que modifica el modelo sin control. & Alta & Separar modos con etiquetas visibles y estado activo persistente. \\
+Compatibilidad & La categoria perro/gato/conejo esta bien definida, pero debe repetirse de forma consistente en formularios, tarjetas y filtros. & Media & Mantener el mismo vocabulario y los mismos colores por categoria. \\
+Homogeneidad & Algunos controles del sistema usan estilos distintos cuando cambian entre desktop y formularios modales. & Media & Normalizar botones, inputs y paneles con la misma familia visual. \\
+Gestion de errores & La ubicacion aproximada debe evitar direccion exacta y reforzar la validacion de pais o ciudad para no exponer informacion sensible. & Alta & Mostrar aviso de privacidad y validacion de territorio antes de guardar. \\
+Feedback & El guardado de fotos, modelos o pintura requiere confirmacion visible para que el usuario sepa que la accion se completo. & Alta & Agregar mensajes de exito y progreso en cada envio. \\
+Significado de codigos & Los iconos o paletas sin etiqueta pueden generar ambiguedad en usuarios con poca experiencia digital. & Media & Acompa\~nar cada codigo visual con texto corto y contextual. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Evidencia fotografica}
+Las siguientes fotografias pertenecen al catalogo de mascotas del proyecto y sirven como evidencia visual del tipo de contenido que la plataforma gestiona. En el informe se usan para ilustrar el componente real del sistema y el enfoque de identificacion visual que complementa los formularios y el modelo 3D.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \centering
+  \SafeIncludeGraphic{images/cat_01.jpeg}{5.2cm}
+  \caption{Fotografia de mascota felina 1}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \centering
+  \SafeIncludeGraphic{images/cat_02.jpeg}{5.2cm}
+  \caption{Fotografia de mascota felina 2}
+\end{subfigure}
+
+\vspace{0.6cm}
+
+\begin{subfigure}[b]{0.48\textwidth}
+  \centering
+  \SafeIncludeGraphic{images/dog_01.jpeg}{5.2cm}
+  \caption{Fotografia de mascota canina}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \centering
+  \SafeIncludeGraphic{images/rabbit_01.jpeg}{5.2cm}
+  \caption{Fotografia de mascota conejo}
+\end{subfigure}
+\caption{Galeria de fotografias utilizada como evidencia visual del proyecto}
+\end{figure}
+
+\section{Analisis tecnico}
+El sistema muestra una base funcional bien orientada al problema: permite registrar mascotas, relacionarlas con una persona propietaria y apoyarlas visualmente con fotografias y modelos 3D. Desde el punto de vista heuristico, su principal fortaleza es la utilidad de negocio. Sin embargo, el analisis detecta oportunidades claras de mejora en la experiencia de uso.
+
+La edicion 3D necesita un estado de modo mas evidente para evitar errores de manipulacion. En un sistema de apoyo visual, la accion de pintar sobre el modelo debe conservar la textura original y restringir el cambio a una capa de detalle, no a un reemplazo de material. Asimismo, la ubicacion debe presentarse como aproximada y segura, nunca como direccion exacta por defecto.
+
+En terminos de comunicacion visual, el formulario debe continuar usando una paleta estable para categoria, estado y acciones principales. Esto reduce la carga cognitiva y hace que el usuario reconozca rapidamente donde esta registrando una mascota, cargando evidencia o editando un modelo.
+
+\section{Conclusiones}
+La evaluacion completa demuestra que Mascotas 3D tiene una base funcional util tanto para usabilidad como para experiencia de usuario. PSSUQ confirma que el flujo general puede ser comprendido y usado con relativa facilidad, mientras que UEQ muestra que la interfaz genera una percepcion positiva en atractivo y claridad.
+
+La heuristica de Bastien y Scapin complementa esos resultados al revelar mejoras puntuales en control explicito, feedback, homogeneidad y gestion de errores. En otras palabras, la usabilidad y la UX son aceptables, pero todavia pueden fortalecerse con ajustes de interfaz mas precisos.
+
+Las fotografias del catalogo son un componente clave del sistema porque refuerzan la identificacion visual de la mascota perdida. En un escenario real, estas evidencias deben convivir con el modelo 3D, no reemplazarlo. El objetivo final es facilitar una busqueda mas precisa, mas humana y mas comprensible para usuarios con distintos niveles de experiencia.
+
+\section*{Referencias}
+\begin{thebibliography}{9}
+\bibitem{bastien} Bastien, J. M. C., \& Scapin, D. L. (1993). \textit{Ergonomic criteria for the evaluation of human-computer interfaces}. INRIA.
+\bibitem{nielsen} Nielsen, J. (1994). \textit{Usability Engineering}. Morgan Kaufmann.
+\bibitem{iso} ISO 9241-11. (2018). \textit{Ergonomics of human-system interaction - Usability: Definitions and concepts}.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,28 @@
+@startuml CU08_EditarModelo3D
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+actor "Usuario\n(autenticado)" as User
+actor "Administrador\n(admin)" as Admin
+
+rectangle "Sistema Web de Mascotas 3D" {
+	usecase "Editar / personalizar modelo 3D" as UC_EditModel
+	usecase "Validar permisos" as UC_ValidateEdit
+	usecase "Seleccionar campos editables" as UC_SelectEditable
+	usecase "Actualizar metadatos" as UC_UpdateMeta
+	usecase "Enviar a revisión" as UC_RequestReview
+	usecase "Revisar cambio" as UC_ReviewChange
+	usecase "Aprobar o rechazar" as UC_ApproveReject
+}
+
+User -- UC_EditModel
+UC_EditModel ..> UC_ValidateEdit : <<include>>
+UC_EditModel ..> UC_SelectEditable : <<include>>
+UC_EditModel ..> UC_UpdateMeta : <<include>>
+UC_RequestReview ..> UC_EditModel : <<extend>>
+Admin -- UC_ReviewChange
+UC_RequestReview ..> UC_ReviewChange : <<include>>
+UC_ReviewChange ..> UC_ApproveReject : <<include>>
+
+@enduml

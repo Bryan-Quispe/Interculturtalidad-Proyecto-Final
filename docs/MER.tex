@@ -1,0 +1,329 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype} % Mejora la distribución de caracteres y evita que las letras "se choquen"
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings} % Para mejorar el aspecto del SQL
+
+% --- Configuración de Colores Premium ---
+\definecolor{PrimaryBlue}{HTML}{0D2B45}
+\definecolor{AccentBlue}{HTML}{20639B}
+\definecolor{SoftGray}{HTML}{F8FAFC}
+\definecolor{BorderGray}{HTML}{E2E8F0}
+\definecolor{CodeBg}{HTML}{F1F5F9}
+
+% --- Geometría y Estilo ---
+\geometry{margin=2.5cm, top=3cm, bottom=3cm}
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+% --- Configuración de Tablas ---
+\newcolumntype{L}{>{\raggedright\arraybackslash}X} % Columna flexible alineada a la izquierda
+\renewcommand{\arraystretch}{1.5}
+
+% --- Configuración de Código SQL ---
+\lstset{
+    language=SQL,
+    backgroundcolor=\color{CodeBg},
+    basicstyle=\ttfamily\small\color{PrimaryBlue},
+    keywordstyle=\color{AccentBlue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    framesep=5pt,
+    rulecolor=\color{BorderGray},
+    xleftmargin=10pt,
+    showstringspaces=false
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=AccentBlue,
+    urlcolor=AccentBlue,
+    citecolor=AccentBlue,
+    pdfauthor={Equipo del Proyecto},
+    pdftitle={Modelo Entidad-Relación}
+}
+
+% --- Portada ---
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\color{PrimaryBlue}\rule{\textwidth}{1.5pt}}\\[0.5cm]
+    {\Huge \textbf{\color{PrimaryBlue} Modelo Entidad-Relación}}\\[0.2cm]
+    {\LARGE \textsf{Plataforma Web de Mascotas 3D}}\\[0.5cm]
+    {\color{PrimaryBlue}\rule{\textwidth}{1.5pt}}\\[2cm]
+
+    \begin{minipage}{0.8\textwidth}
+        \centering
+        \large
+        \renewcommand{\arraystretch}{1.8}
+        \begin{tabularx}{\textwidth}{L L}
+            \rowcolor{SoftGray} \textbf{Versión} & 1.1 \\
+            \textbf{Fecha} & Junio 2026 \\
+            \rowcolor{SoftGray} \textbf{Motor BD} & PostgreSQL (v15+) \\
+            \textbf{Alcance} & MVP: mascotas urbanas/rurales, fotos y modelos 3D editables \\
+        \end{tabularx}
+    \end{minipage}
+
+    \vfill
+    {\large \textbf{Equipo de Desarrollo}\\[0.2cm] Proyecto de Interculturalidad}\\[0.5cm]
+    {\small \today}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+% --- Secciones ---
+\section{Introducción}
+Este documento detalla la estructura lógica y física de la base de datos para la plataforma de mascotas 3D. Se define la arquitectura de datos necesaria para soportar la gestión de usuarios, perfiles de mascotas urbanas y rurales, archivos multimedia, modelos tridimensionales locales y transformaciones editables, asegurando integridad, escalabilidad y rendimiento óptimo.
+
+\section{Diagrama Conceptual}
+El modelo se centra en la interacción entre los usuarios y sus mascotas registradas, permitiendo combinar fotos reales con modelos 3D locales y personalización no destructiva.
+
+\begin{itemize}[label=\color{AccentBlue}\textbullet, leftmargin=*]
+    \item \textbf{Usuarios}: Núcleo del sistema; gestionan su propia cuenta y mascotas.
+    \item \textbf{Mascotas}: La entidad principal de interacción, vinculada a un usuario, a un contexto urbano/rural y a un modelo base.
+    \item \textbf{Modelos 3D}: Catálogo de representaciones visuales disponibles en la plataforma. El MVP usa modelos locales en \texttt{backend/Modelos}, empezando por Australian Cattle Dog en OBJ/MTL con texturas JPG.
+    \item \textbf{Fotos}: Galería de imágenes cargadas por los usuarios para cada mascota.
+    \item \textbf{Transformaciones 3D}: Ajustes personalizados de escala, rotación, posición y metadatos visibles sin modificar el archivo original.
+\end{itemize}
+
+\section{Diccionario de Datos: Entidades y Atributos}
+A continuación se describen las especificaciones técnicas de cada tabla. El uso de \texttt{UUID} garantiza identificadores únicos universales, facilitando futuras migraciones o escalado horizontal.
+
+\subsection{Entidad: Usuarios}
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{PrimaryBlue}}l l l L}
+        \toprule
+        \rowcolor{SoftGray} Atributo & Tipo & Clave & Descripción \\
+        \midrule
+        id & UUID & PK & Identificador único universal. \\
+        email & VARCHAR(255) & UNIQUE & Correo electrónico del usuario. \\
+        password\_hash & VARCHAR(255) & - & Hash de seguridad (Bcrypt/Argon2). \\
+        nombre & VARCHAR(100) & - & Nombre completo o alias. \\
+        created\_at & TIMESTAMP & - & Marca temporal de registro. \\
+        updated\_at & TIMESTAMP & - & Última actualización del perfil. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Entidad: Mascotas}
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{PrimaryBlue}}l l l L}
+        \toprule
+        \rowcolor{SoftGray} Atributo & Tipo & Clave & Descripción \\
+        \midrule
+        id & UUID & PK & Identificador único. \\
+        usuario\_id & UUID & FK & Relación con la tabla \textbf{Usuarios}. \\
+        nombre & VARCHAR(100) & - & Nombre de la mascota. \\
+        edad & INTEGER & - & Edad (debe ser valor positivo). \\
+        tipo\_animal & VARCHAR(50) & - & Categoría (Perro, Gato, etc.). \\
+        contexto & VARCHAR(20) & - & Clasificación funcional: \texttt{urbano} o \texttt{rural}. \\
+        modelo3d\_id & UUID & FK & Modelo 3D local asociado, si existe. \\
+        descripcion & TEXT & - & Reseña o biografía. \\
+        created\_at & TIMESTAMP & - & Fecha de creación del perfil. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\newpage
+\subsection{Entidad: Modelos 3D}
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{PrimaryBlue}}l l l L}
+        \toprule
+        \rowcolor{SoftGray} Atributo & Tipo & Clave & Descripción \\
+        \midrule
+        id & UUID & PK & Identificador único. \\
+        tipo\_animal & VARCHAR(50) & - & Tipo de animal recomendado para el modelo. \\
+        contexto\_recomendado & VARCHAR(20) & - & Uso recomendado: urbano, rural o mixto. \\
+        nombre & VARCHAR(100) & - & Nombre descriptivo del modelo. \\
+        archivo\_nombre & VARCHAR(255) & - & Referencia al archivo físico. \\
+        archivo\_material & VARCHAR(255) & - & Archivo MTL asociado cuando el formato lo requiere. \\
+        ruta\_almacenamiento & VARCHAR(500) & - & Ruta en el servidor/cloud storage; en MVP apunta a \texttt{backend/Modelos}. \\
+        tamaño\_bytes & BIGINT & - & Peso del archivo para optimización. \\
+        formato & VARCHAR(20) & - & Formato del modelo: OBJ, GLB, GLTF u otro soportado. \\
+        mime\_type & VARCHAR(50) & - & Tipo MIME o identificador técnico del modelo. \\
+        version & INTEGER & - & Versión publicada del modelo. \\
+        editable & BOOLEAN & - & Indica si el usuario puede personalizar transformaciones. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Entidad: Fotos}
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{PrimaryBlue}}l l l L}
+        \toprule
+        \rowcolor{SoftGray} Atributo & Tipo & Clave & Descripción \\
+        \midrule
+        id & UUID & PK & Identificador de la imagen. \\
+        mascota\_id & UUID & FK & Relación con la tabla \textbf{Mascotas}. \\
+        nombre\_archivo & VARCHAR(255) & - & Nombre original del archivo. \\
+        ruta\_almacenamiento & VARCHAR(500) & - & Localización física. \\
+        tamaño\_bytes & BIGINT & - & Peso de la imagen (máx. 5MB). \\
+        mime\_type & VARCHAR(50) & - & Tipo de imagen (JPEG, PNG). \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Entidad: Transformaciones 3D}
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{PrimaryBlue}}l l l L}
+        \toprule
+        \rowcolor{SoftGray} Atributo & Tipo & Clave & Descripción \\
+        \midrule
+        id & UUID & PK & Identificador de la transformación. \\
+        mascota\_id & UUID & FK & Mascota propietaria de la personalización. \\
+        modelo3d\_id & UUID & FK & Modelo base usado como origen. \\
+        escala\_x, escala\_y, escala\_z & DECIMAL(8,3) & - & Escala por eje. \\
+        rotacion\_x, rotacion\_y, rotacion\_z & DECIMAL(8,3) & - & Rotación por eje. \\
+        posicion\_x, posicion\_y, posicion\_z & DECIMAL(8,3) & - & Posición por eje. \\
+        color\_principal & VARCHAR(20) & - & Color o etiqueta visual opcional. \\
+        nombre\_visible & VARCHAR(100) & - & Nombre personalizado mostrado al usuario. \\
+        version & INTEGER & - & Versión de la edición guardada. \\
+        created\_at & TIMESTAMP & - & Fecha de creación de la edición. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Relaciones y Lógica de Negocio}
+
+\subsection{Usuario $\rightarrow$ Mascota (1:N)}
+Un usuario puede gestionar múltiples mascotas. La eliminación de un usuario conlleva la eliminación automática de sus mascotas vinculadas (\textit{ON DELETE CASCADE}).
+
+\subsection{Mascota $\rightarrow$ Foto (1:N)}
+Cada mascota puede tener una galería de fotos. Al igual que con el usuario, si se elimina la mascota, sus fotos asociadas se borran del registro de la base de datos.
+
+\subsection{Mascota $\rightarrow$ Modelo 3D (N:1)}
+Las mascotas se asocian a un modelo 3D local mediante el campo \texttt{modelo3d\_id}. Esto permite que el sistema cargue el modelo correcto en el visor 3D según la especie, raza o selección del usuario.
+
+\subsection{Mascota $\rightarrow$ Transformaciones 3D (1:N)}
+Cada mascota puede guardar una o varias transformaciones del modelo. Estas ediciones almacenan parámetros de visualización y no modifican los archivos originales ubicados en \texttt{backend/Modelos}.
+
+\newpage
+\section{Implementación: Script SQL (PostgreSQL)}
+
+A continuación se presenta el script optimizado para la creación de la base de datos.
+
+\subsection{Definición de Tablas}
+\begin{lstlisting}
+-- Tabla de Usuarios
+CREATE TABLE usuarios (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  nombre VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Mascotas
+CREATE TABLE mascotas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  modelo3d_id UUID,
+  nombre VARCHAR(100) NOT NULL,
+  edad INTEGER CHECK (edad >= 0),
+  tipo_animal VARCHAR(50) NOT NULL,
+  contexto VARCHAR(20) NOT NULL CHECK (contexto IN ('urbano', 'rural')),
+  descripcion TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Modelos 3D
+CREATE TABLE modelos3d (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tipo_animal VARCHAR(50) NOT NULL,
+  contexto_recomendado VARCHAR(20) DEFAULT 'mixto',
+  nombre VARCHAR(100) NOT NULL,
+  archivo_nombre VARCHAR(255) NOT NULL,
+  archivo_material VARCHAR(255),
+  ruta_almacenamiento VARCHAR(500) NOT NULL,
+  tamano_bytes BIGINT,
+  formato VARCHAR(20) NOT NULL DEFAULT 'OBJ',
+  mime_type VARCHAR(50),
+  version INTEGER DEFAULT 1,
+  editable BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE mascotas
+ADD CONSTRAINT fk_mascotas_modelo3d
+FOREIGN KEY (modelo3d_id) REFERENCES modelos3d(id);
+
+-- Tabla de Fotos
+CREATE TABLE fotos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mascota_id UUID NOT NULL REFERENCES mascotas(id) ON DELETE CASCADE,
+  nombre_archivo VARCHAR(255) NOT NULL,
+  ruta_almacenamiento VARCHAR(500) NOT NULL,
+  tamano_bytes BIGINT,
+  mime_type VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Transformaciones 3D
+CREATE TABLE transformaciones3d (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mascota_id UUID NOT NULL REFERENCES mascotas(id) ON DELETE CASCADE,
+  modelo3d_id UUID NOT NULL REFERENCES modelos3d(id),
+  escala_x DECIMAL(8,3) DEFAULT 1,
+  escala_y DECIMAL(8,3) DEFAULT 1,
+  escala_z DECIMAL(8,3) DEFAULT 1,
+  rotacion_x DECIMAL(8,3) DEFAULT 0,
+  rotacion_y DECIMAL(8,3) DEFAULT 0,
+  rotacion_z DECIMAL(8,3) DEFAULT 0,
+  posicion_x DECIMAL(8,3) DEFAULT 0,
+  posicion_y DECIMAL(8,3) DEFAULT 0,
+  posicion_z DECIMAL(8,3) DEFAULT 0,
+  color_principal VARCHAR(20),
+  nombre_visible VARCHAR(100),
+  version INTEGER DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\subsection{Optimización Mediante Índices}
+\begin{lstlisting}
+-- Indices para mejorar el rendimiento de consultas frecuentes
+CREATE INDEX idx_mascotas_usuario_id ON mascotas(usuario_id);
+CREATE INDEX idx_mascotas_contexto ON mascotas(contexto);
+CREATE INDEX idx_mascotas_modelo3d_id ON mascotas(modelo3d_id);
+CREATE INDEX idx_fotos_mascota_id ON fotos(mascota_id);
+CREATE INDEX idx_transformaciones_mascota_id ON transformaciones3d(mascota_id);
+CREATE INDEX idx_modelos3d_tipo_animal ON modelos3d(tipo_animal);
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+\end{lstlisting}
+
+\section{Consideraciones Finales}
+\begin{itemize}[label=\color{AccentBlue}\checkmark, leftmargin=*]
+    \item \textbf{Normalización}: El modelo cumple con la 3NF para evitar redundancias.
+    \item \textbf{Integridad}: Se han implementado \texttt{CHECK constraints} y \texttt{FOREIGN KEYS} con borrado en cascada.
+    \item \textbf{Privacidad}: El almacenamiento de contraseñas se realiza mediante hash, nunca en texto plano.
+    \item \textbf{Edición no destructiva}: Las transformaciones 3D se guardan por mascota; los archivos originales del catálogo local permanecen intactos.
+\end{itemize}
+
+\end{document}

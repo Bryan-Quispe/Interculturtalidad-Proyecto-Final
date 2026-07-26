@@ -1,0 +1,25 @@
+@startuml CU05_VerDetalleModelo
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Usuario\n(autenticado)" as User
+
+rectangle "Sistema Web de Mascotas 3D" {
+  usecase "Ver detalle de mascota" as UC_ViewPet
+  usecase "Validar propiedad de la mascota" as UC_ValidateOwner
+  usecase "Cargar datos de la mascota" as UC_LoadPetData
+  usecase "Mostrar foto de la mascota" as UC_ShowPhoto
+  usecase "Visualizar modelo 3D" as UC_View3D
+  usecase "Rotar / acercar modelo" as UC_InteractModel
+}
+
+User -- UC_ViewPet
+UC_ViewPet ..> UC_ValidateOwner : <<include>>
+UC_ViewPet ..> UC_LoadPetData : <<include>>
+UC_ViewPet ..> UC_ShowPhoto : <<include>>
+UC_ViewPet ..> UC_View3D : <<include>>
+UC_InteractModel ..> UC_View3D : <<extend>>
+
+@enduml

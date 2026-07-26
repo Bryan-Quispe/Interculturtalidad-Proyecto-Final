@@ -1,0 +1,54 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Entrega Final}\\[0.3em]\Large Plataforma Web de Mascotas 3D}
+\author{Bryan Quispe}
+\date{2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} Entrega Final\\[0.35em]}
+{\LARGE Documentaci\'on t\'ecnica y funcional\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Proyecto} & Plataforma Web de Mascotas 3D \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Fecha} & 2026 \\
+\textbf{Contenido} & Implementaci\'on, validaci\'on, verificaci\'on y mantenimiento \\
+\end{tabular}
+
+\vfill
+{\large Documentaci\'on final de entrega}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\input{01_implementacion.tex}
+\input{02_validacion.tex}
+\input{03_verificacion.tex}
+\input{04_mantenimiento.tex}
+
+\end{document}

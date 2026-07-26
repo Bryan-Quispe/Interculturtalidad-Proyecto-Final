@@ -1,0 +1,36 @@
+\section{Plan del MVP}
+\subsection{Sprint Goal del Sprint 1}
+Implementar autenticaci\'on y alta de mascotas urbanas/rurales con persistencia en base de datos.
+
+\subsection{Sprint Goal del Sprint 2}
+Agregar carga de fotos, visualizaci\'on 3D desde \texttt{backend/Modelos} y edici\'on b\'asica de modelos.
+
+\subsection{PBIs priorizados}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.7cm} >{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+\textbf{ID} & \textbf{PBI} & \textbf{Prioridad} & \textbf{Sprint} \\
+\midrule
+PBI-01 & Registro de usuario con validaci\'on y hash de contrase\~na & Alta & 1 \\
+PBI-02 & Inicio de sesi\'on con JWT & Alta & 1 \\
+PBI-03 & Alta de mascota con contexto urbano/rural & Alta & 1 \\
+PBI-04 & Listado y filtros de mascotas por usuario, tipo y contexto & Alta & 1 \\
+PBI-05 & Validaciones y respuestas de error estandarizadas & Alta & 1 \\
+PBI-06 & Visualizaci\'on de modelo 3D local desde \texttt{backend/Modelos} & Alta & 2 \\
+PBI-07 & Carga de fotos de mascota & Alta & 2 \\
+PBI-08 & Edici\'on b\'asica de modelos 3D (escala, rotaci\'on, posici\'on, metadatos) & Alta & 2 \\
+PBI-09 & Versionado de transformaciones sin sobrescribir el modelo original & Media & 2 \\
+\bottomrule
+\end{longtable}
+
+\subsection{Trazabilidad b\'asica}
+\begin{itemize}[leftmargin=*]
+    \item REQ-01: Registro de usuarios.
+    \item REQ-02: Login con JWT.
+    \item REQ-03: Registro de mascotas urbanas/rurales.
+    \item REQ-04: Listado y filtros de mascotas.
+    \item REQ-05: Visualizaci\'on de detalle de mascota y modelo 3D local.
+    \item REQ-06: Carga de fotos de mascota.
+    \item REQ-07: Gesti\'on de modelos 3D y personalizaci\'on permitida.
+    \item REQ-08: Edici\'on no destructiva de transformaciones 3D.
+    \item RNF-05: Expiraci\'on de sesi\'on por inactividad.
+\end{itemize}

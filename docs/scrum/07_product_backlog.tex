@@ -1,0 +1,81 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Product Backlog}\\[0.3em]\Large Plataforma Web de Mascotas 3D}
+\author{Bryan Quispe}
+\date{20 de abril de 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} Product Backlog\\[0.35em]}
+{\LARGE Lista priorizada de historias de usuario\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Versión} & 1.0 \\
+\textbf{Fecha} & 20 de abril de 2026 \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Periodo} & 20 de abril de 2026 al 7 de agosto de 2026 \\
+\end{tabular}
+
+\vfill
+{\large Documento Scrum para la gestión del Product Backlog}
+\end{titlepage}
+
+\section{Objetivo}
+Definir y ordenar las historias de usuario que aportan valor al producto, con trazabilidad hacia el alcance del MVP y base para Sprint Planning.
+
+\section{Historias priorizadas}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{6.4cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2cm}}
+\toprule
+\textbf{ID} & \textbf{Historia de usuario} & \textbf{Prioridad} & \textbf{Sprint} \\
+\midrule
+PB-01 & Como usuario, quiero registrarme para crear una cuenta en la plataforma. & Alta & 1 \\
+PB-02 & Como usuario, quiero iniciar sesión para acceder a mis funciones protegidas. & Alta & 1 \\
+PB-03 & Como usuario autenticado, quiero registrar una mascota para administrar su información. & Alta & 1 \\
+PB-04 & Como usuario autenticado, quiero ver la lista de mis mascotas para acceder a ellas rápidamente. & Alta & 1 \\
+PB-05 & Como usuario autenticado, quiero ver el detalle de una mascota y su modelo 3D para interactuar con él. & Alta & 2 \\
+PB-06 & Como usuario autenticado, quiero que mi sesión expire tras inactividad para mantener la seguridad. & Alta & 1 \\
+PB-07 & Como administrador, quiero subir modelos 3D para que estén disponibles en el sistema. & Alta & 2 \\
+PB-08 & Como usuario autenticado, quiero personalizar modelos permitidos para adaptar la experiencia. & Media & 2 \\
+PB-09 & Como usuario, quiero recibir mensajes claros de error para corregir mis acciones. & Alta & 1 \\
+PB-10 & Como usuario, quiero cargar foto de mascota para complementar su perfil. & Media & 2 \\
+\bottomrule
+\end{longtable}
+
+\section{Criterios de priorización}
+\begin{itemize}[leftmargin=*]
+    \item Valor de negocio.
+    \item Riesgo técnico.
+    \item Dependencias funcionales.
+    \item Viabilidad dentro del Sprint.
+\end{itemize}
+
+\section{Observaciones}
+\begin{itemize}[leftmargin=*]
+    \item El backlog es vivo y puede refinarse en cada Sprint Planning.
+    \item Las historias de menor prioridad quedan para iteraciones posteriores o futuras.
+\end{itemize}
+
+\end{document}

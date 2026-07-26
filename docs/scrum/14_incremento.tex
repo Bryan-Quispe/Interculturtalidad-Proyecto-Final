@@ -1,0 +1,64 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+
+\geometry{margin=2.4cm}
+\setstretch{1.12}
+\usepackage{enumitem}
+
+\definecolor{PrimaryBlue}{HTML}{16324F}
+\definecolor{SoftGray}{HTML}{F3F6F8}
+
+\title{\Huge\textbf{Incremento}\\[0.3em]\Large Plataforma Web de Mascotas 3D}
+\author{Bryan Quispe}
+\date{20 de abril de 2026}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\bfseries\color{PrimaryBlue} Incremento\\[0.35em]}
+{\LARGE Producto funcional y utilizable\\[1.2cm]}
+
+\begin{tabular}{p{5cm} p{8cm}}
+\rowcolor{SoftGray}
+\textbf{Versión} & 1.0 \\
+\textbf{Fecha} & 20 de abril de 2026 \\
+\textbf{Autor} & Bryan Quispe \\
+\textbf{Periodo} & 20 de abril de 2026 al 7 de agosto de 2026 \\
+\end{tabular}
+
+\vfill
+{\large Documento Scrum para la entrega del incremento}
+\end{titlepage}
+
+\section{Incremento del Sprint}
+El incremento representa el producto utilizable que cumple la Definition of Done y puede demostrarse a los interesados.
+
+\section{Componentes entregados}
+\begin{itemize}[leftmargin=*]
+    \item Registro de usuario con validaciones.
+    \item Inicio de sesión con JWT.
+    \item Alta de mascotas.
+    \item Listado de mascotas por usuario.
+    \item Expiración de sesión por inactividad.
+\end{itemize}
+
+\section{Estado}
+\begin{itemize}[leftmargin=*]
+    \item Producto funcional base listo para revisión.
+    \item Sin bloqueos críticos en autenticación o alta de mascotas.
+\end{itemize}
+
+\end{document}

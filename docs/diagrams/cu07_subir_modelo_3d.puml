@@ -1,0 +1,25 @@
+@startuml CU07_SubirModelo3D
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Administrador\n(admin)" as Admin
+
+rectangle "Sistema Web de Mascotas 3D" {
+  usecase "Subir modelo 3D" as UC_UploadModel
+  usecase "Validar formato y tamaño" as UC_ValidateModel
+  usecase "Registrar metadatos" as UC_RegisterMeta
+  usecase "Versionar modelo" as UC_VersionModel
+  usecase "Publicar catálogo" as UC_PublishCatalog
+  usecase "Rechazar archivo" as UC_RejectFile
+}
+
+Admin -- UC_UploadModel
+UC_UploadModel ..> UC_ValidateModel : <<include>>
+UC_UploadModel ..> UC_RegisterMeta : <<include>>
+UC_UploadModel ..> UC_VersionModel : <<include>>
+UC_UploadModel ..> UC_PublishCatalog : <<include>>
+UC_RejectFile ..> UC_UploadModel : <<extend>>
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml CU03_RegistrarMascota
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+actor "Usuario\n(autenticado)" as User
+
+rectangle "Sistema Web de Mascotas 3D" {
+	usecase "Registrar mascota" as UC_CreatePet
+	usecase "Validar formulario" as UC_ValidateForm
+	usecase "Guardar mascota" as UC_SavePet
+	usecase "Cargar foto" as UC_UploadPhoto
+	usecase "Asociar mascota al usuario" as UC_AssignOwner
+}
+
+User -- UC_CreatePet
+UC_CreatePet ..> UC_ValidateForm : <<include>>
+UC_CreatePet ..> UC_SavePet : <<include>>
+UC_CreatePet ..> UC_AssignOwner : <<include>>
+UC_UploadPhoto ..> UC_CreatePet : <<extend>>
+
+@enduml

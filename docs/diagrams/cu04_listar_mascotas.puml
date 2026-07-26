@@ -1,0 +1,22 @@
+@startuml CU04_ListarMascotas
+left to right direction
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageStyle rectangle
+actor "Usuario\n(autenticado)" as User
+
+rectangle "Sistema Web de Mascotas 3D" {
+	usecase "Ver lista de mascotas" as UC_ListPets
+	usecase "Validar sesión" as UC_ValidateSession
+	usecase "Consultar mascotas" as UC_QueryPets
+	usecase "Aplicar filtros\ny paginación" as UC_FilterPets
+	usecase "Mostrar estado vacío" as UC_EmptyState
+}
+
+User -- UC_ListPets
+UC_ListPets ..> UC_ValidateSession : <<include>>
+UC_ListPets ..> UC_QueryPets : <<include>>
+UC_ListPets ..> UC_FilterPets : <<include>>
+UC_EmptyState ..> UC_ListPets : <<extend>>
+
+@enduml
