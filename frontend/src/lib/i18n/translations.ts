@@ -132,6 +132,8 @@ export const dict = {
   ],
   'auth.email': ['Correo Electrónico', 'Llikachaski'],
   'auth.password': ['Contraseña', 'Pakalla shimi'],
+  'auth.emailRequired': ['Escribe tu correo electrónico.', 'Kikinpak llikachaskita killkay.'],
+  'auth.passwordRequired': ['Escribe tu contraseña.', 'Kikinpak pakalla shimita killkay.'],
   'auth.name': ['Nombre Completo', 'Tukuy shuti'],
   'auth.namePlaceholder': ['Tu nombre completo', 'Kikinpak tukuy shuti'],
   'auth.passwordHint': ['Mínimo 6 caracteres', 'Sukta killkamanta yalli'],
@@ -145,6 +147,71 @@ export const dict = {
   'auth.errorLogin': ['Error al iniciar sesión', 'Yaykunapi pantay'],
   'auth.errorRegister': ['Error al registrarse', 'Killkarinapi pantay'],
   'auth.viewSlide': ['Ver', 'Rikuna'],
+  'auth.captchaTitle': ['Verificación', 'Rikuchiy'],
+  'auth.captchaHint': [
+    'Resuelve la operación para confirmar que no eres un robot.',
+    'Mana robot kashkata rikuchinkapak kay yupayta paktachi.',
+  ],
+  'auth.captchaQuestion': ['¿Cuánto es {a} + {b}?', '¿{a} yapa {b}, mashnatak?'],
+  'auth.captchaRequired': ['Responde la operación.', 'Yupayta kutichi.'],
+  'auth.captchaWrong': [
+    'La respuesta no es correcta. Prueba con la nueva operación.',
+    'Kutichiyka mana allichu. Mushuk yupaywan ruray.',
+  ],
+  'auth.captchaNew': ['Cambiar operación', 'Shuk yupayta mañana'],
+  'auth.fixLoginErrors': [
+    'Revisa el correo, la contraseña y la verificación antes de continuar.',
+    'Katishpa, llikachaski, pakalla shimi, wakichiyta allichi.',
+  ],
+
+  // ---------- Validación del registro ----------
+  'reg.nameRequired': ['Escribe tu nombre.', 'Kikinpak shutita killkay.'],
+  'reg.nameTooShort': [
+    'El nombre debe tener al menos 2 letras.',
+    'Shutika ishkay killkamanta yalli charina kan.',
+  ],
+  'reg.nameTooLong': [
+    'El nombre no puede superar los 60 caracteres.',
+    'Shutika sukta chunka killkata mana yalliy ushanchu.',
+  ],
+  'reg.nameInvalid': [
+    'El nombre solo puede tener letras y espacios, sin números ni símbolos.',
+    'Shutipika killkakuna, chushak kuskakunallami tiyay ushan; yupaykuna, unanchakunapash mana.',
+  ],
+  'reg.emailRequired': ['Escribe tu correo electrónico.', 'Kikinpak llikachaskita killkay.'],
+  'reg.emailInvalid': [
+    'El correo no es válido. Debe tener la forma nombre@dominio.com',
+    'Llikachaskika mana allichu. Kayshina kana kan: shuti@dominio.com',
+  ],
+  'reg.passwordRequired': ['Escribe una contraseña.', 'Shuk pakalla shimita killkay.'],
+  'reg.passwordTooShort': [
+    'La contraseña debe tener al menos 6 caracteres.',
+    'Pakalla shimika sukta killkamanta yalli charina kan.',
+  ],
+  'reg.confirmLabel': ['Repite la contraseña', 'Pakalla shimita kutin killkay'],
+  'reg.confirmRequired': ['Repite la contraseña.', 'Pakalla shimita kutin killkay.'],
+  'reg.confirmMismatch': [
+    'Las contraseñas no coinciden.',
+    'Pakalla shimikunaka mana chayllatakchu.',
+  ],
+  'reg.showPassword': ['Mostrar contraseña', 'Pakalla shimita rikuchina'],
+  'reg.hidePassword': ['Ocultar contraseña', 'Pakalla shimita pakana'],
+  'reg.captchaTitle': ['Verificación', 'Rikuchiy'],
+  'reg.captchaHint': [
+    'Resuelve la operación para confirmar que no eres un robot.',
+    'Mana robot kashkata rikuchinkapak kay yupayta paktachi.',
+  ],
+  'reg.captchaQuestion': ['¿Cuánto es {a} + {b}?', '¿{a} yapa {b}, mashnatak?'],
+  'reg.captchaRequired': ['Responde la operación.', 'Yupayta kutichi.'],
+  'reg.captchaWrong': [
+    'La respuesta no es correcta. Prueba con la nueva operación.',
+    'Kutichiyka mana allichu. Mushuk yupaywan ruray.',
+  ],
+  'reg.captchaNew': ['Cambiar operación', 'Shuk yupayta mañana'],
+  'reg.fixErrors': [
+    'Revisa los campos marcados antes de continuar.',
+    'Manarak katishpa unanchashka kuskakunata allichi.',
+  ],
 
   // ---------- Panel / dashboard ----------
   'dash.title': ['Panel de Mascotas Domésticas', 'Wasi wiwakunata kamana panka'],

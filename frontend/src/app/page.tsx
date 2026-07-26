@@ -12,12 +12,12 @@ import { TranslationKey } from '@/lib/i18n/translations';
 
 /** El texto alternativo se arma con el idioma activo, no se escribe fijo. */
 const featureAnimals = [
-  { src: '/api/animal-images/coco.jpeg', label: 'Coco' },
-  { src: '/api/animal-images/oreo.jpeg', label: 'Oreo' },
-  { src: '/api/animal-images/conejo.jpeg', label: 'Conejo' },
-  { src: '/api/animal-images/gatito.jpeg', label: 'Gatito' },
-  { src: '/api/animal-images/gato griton.jpeg', label: 'Gato Gritón' },
-  { src: '/api/animal-images/perrita uwu.jpeg', label: 'Perrita' },
+  { src: '/animales/coco.jpeg', label: 'Coco' },
+  { src: '/animales/oreo.jpeg', label: 'Oreo' },
+  { src: '/animales/conejo.jpeg', label: 'Conejo' },
+  { src: '/animales/gatito.jpeg', label: 'Gatito' },
+  { src: '/animales/gato-griton.jpeg', label: 'Gato Gritón' },
+  { src: '/animales/perrita-uwu.jpeg', label: 'Perrita' },
 ];
 
 export default function Home() {
