@@ -1,0 +1,174 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== MODELOS DE USUARIO ==========
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  role      Role       @default(USER)
+  avatar    String?
+  zona       String?
+  
+  // Relaciones
+  animales  Animal[]
+  modelos   Modelo3D[]
+  
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+// ========== MODELOS DE NEGOCIO ==========
+model Animal {
+  id          String     @id @default(cuid())
+  nombre      String
+  descripcion String?
+  raza        String?
+  categoria   CategoriaAnimal
+  zona        String?
+  googlePlaceId String?
+  latitud     Float?
+  longitud    Float?
+  telefonoContacto String?
+  ultimaVezVisto String?
+  fechaVisto  DateTime?
+  isPublico   Boolean    @default(true)
+  fotos       Json?
+  
+  caracteristicas CaracteristicasAnimal?
+  
+  // Relación con modelos 3D
+  modelo      Modelo3D?  @relation("AnimalModelo", fields: [modeloId], references: [id])
+  modeloId    String?
+  
+  // Relación con usuario propietario
+  usuario     User       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String
+  
+  // Metadatos
+  imagen      String?
+  slug        String     @unique @default(uuid())
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([usuarioId])
+  @@index([modeloId])
+  @@map("animales")
+}
+
+enum CategoriaAnimal {
+  PERRO
+  GATO
+  CONEJO
+}
+
+model CaracteristicasAnimal {
+  id        String  @id @default(cuid())
+  tamano    String?
+  color     String?
+  habitat   String?
+  
+  animal    Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  animalId  String  @unique
+
+  @@map("caracteristicas_animales")
+}
+
+model Modelo3D {
+  id          String     @id @default(cuid())
+  nombre      String
+  categoria   CategoriaAnimal
+  raza        String?
+  descripcion String?
+  
+  // Archivo
+  archivo     ArchivoModelo?
+  
+  // Transformaciones por defecto
+  transformaciones TransformacionesModelo?
+  
+  // Propiedades de visualización
+  color       String     @default("#3498db")
+  pinturas    Json?
+  isPublico   Boolean    @default(false)
+  
+  // Relación con usuario propietario (Admin puede crear)
+  usuario     User       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String
+
+  // Relación inversa con Animal
+  animales    Animal[]   @relation("AnimalModelo")
+
+  // Copia personalizada: al pintar no se altera el modelo base, se crea una
+  // versión propia que apunta aquí al original del que partió.
+  derivadoDe   Modelo3D?  @relation("ModeloDerivado", fields: [derivadoDeId], references: [id], onDelete: SetNull)
+  derivadoDeId String?
+  derivados    Modelo3D[] @relation("ModeloDerivado")
+
+  // Metadatos
+  slug        String     @unique @default(uuid())
+  descargas   Int        @default(0)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([usuarioId])
+  @@index([derivadoDeId])
+  @@map("modelos_3d")
+}
+
+model ArchivoModelo {
+  id        String  @id @default(cuid())
+  filename  String
+  path      String
+  mimetype  String
+  tamano    Int     // en bytes
+  
+  modelo    Modelo3D @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+  modeloId  String  @unique
+
+  @@map("archivos_modelos")
+}
+
+model TransformacionesModelo {
+  id        String  @id @default(cuid())
+  
+  // Escala
+  escalaX   Float   @default(1.0)
+  escalaY   Float   @default(1.0)
+  escalaZ   Float   @default(1.0)
+  
+  // Rotación (en radianes)
+  rotacionX Float   @default(0.0)
+  rotacionY Float   @default(0.0)
+  rotacionZ Float   @default(0.0)
+  
+  // Posición
+  posicionX Float   @default(0.0)
+  posicionY Float   @default(0.0)
+  posicionZ Float   @default(0.0)
+  
+  modelo    Modelo3D @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+  modeloId  String  @unique
+
+  @@map("transformaciones_modelos")
+}
