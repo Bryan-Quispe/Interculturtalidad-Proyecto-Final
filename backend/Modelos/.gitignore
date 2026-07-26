@@ -1,0 +1,10 @@
+# En el repositorio solo viajan los modelos .glb que sirve la aplicación.
+# Lo demás son restos de descarga que no se usan y que además rompen el
+# límite de longitud de ruta de Windows al clonar.
+
+# Paquetes comprimidos y su contenido ya extraído (duplicado).
+*.zip
+Australian_Cattle_Dog_v1_L3.*/
+
+# Documentos que no son modelos y quedaron aquí por error.
+*.pdf

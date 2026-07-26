@@ -1,0 +1,21 @@
+# Dependencias y artefactos de compilación
+node_modules/
+dist/
+.next/
+.next-build/
+out/
+*.tsbuildinfo
+
+# Secretos: nunca deben salir del equipo. Ver backend/.env.example
+.env
+.env.local
+.env.*.local
+
+# Subidas en tiempo de ejecución (efímeras en el servidor)
+uploads/
+
+# Temporales y ruido del sistema
+tmp/
+*.log
+.DS_Store
+Thumbs.db
