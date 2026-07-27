@@ -1,0 +1,429 @@
+<title>Wasi Wiwakuna 3D — Especificación de Requisitos de Software</title>
+
+<style>
+  :root {
+    --paper:     #ffffff;
+    --paper-2:   #f4f7f5;
+    --line:      #d3ded8;
+    --line-soft: #e7eeea;
+    --text:      #16232a;
+    --text-soft: #566d76;
+    --accent:    #0a6f52;
+    --accent-2:  #0d4f5e;
+    --ochre:     #96631f;
+    --coral:     #a8342a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #0b1a20;
+      --paper-2:   #12262e;
+      --line:      #23414b;
+      --line-soft: #1a333c;
+      --text:      #e4ede9;
+      --text-soft: #96b0b8;
+      --accent:    #45c79a;
+      --accent-2:  #6ec5d6;
+      --ochre:     --ochre;
+      --ochre:     #d6a75f;
+      --coral:     #ef8074;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b1a20; --paper-2: #12262e; --line: #23414b; --line-soft: #1a333c;
+    --text: #e4ede9; --text-soft: #96b0b8; --accent: #45c79a; --accent-2: #6ec5d6;
+    --ochre: #d6a75f; --coral: #ef8074;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --paper-2: #f4f7f5; --line: #d3ded8; --line-soft: #e7eeea;
+    --text: #16232a; --text-soft: #566d76; --accent: #0a6f52; --accent-2: #0d4f5e;
+    --ochre: #96631f; --coral: #a8342a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    max-width: 210mm;
+    padding: 0 clamp(1.1rem, 5vw, 2.4rem) 5rem;
+    background: var(--paper);
+    color: var(--text);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    /* Ninguna palabra larga debe sobresalir del bloque de texto. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, Roboto, Arial, sans-serif;
+    font-weight: 650;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+    hyphens: none;
+  }
+
+  h1 { font-size: 2.05rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.32rem;
+    margin: 3.2rem 0 .9rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  h3 { font-size: 1.04rem; margin: 1.9rem 0 .5rem; }
+  h4 {
+    font-size: .82rem;
+    margin: 1.4rem 0 .4rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-soft);
+  }
+
+  p { margin: 0 0 .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: .84em;
+    /* Rutas y nombres largos parten en vez de desbordar la celda. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  code {
+    background: var(--line-soft);
+    padding: .08em .32em;
+    border-radius: 2px;
+  }
+
+  .kw {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .87em;
+    color: var(--accent-2);
+  }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover {
+    padding: 4.5rem 0 3rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .cover .institution {
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 3.4rem;
+  }
+  .cover .proyecto {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-soft);
+    margin: 0 0 .5rem;
+  }
+  .cover .autor {
+    margin: 2.6rem 0 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+  }
+
+  /* ── Índice ────────────────────────────────────────────────── */
+  .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
+  .toc h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.05rem; }
+  .toc ol { margin: .6rem 0 0; padding-left: 1.3rem; font-family: "Segoe UI", sans-serif; font-size: .9rem; }
+  .toc li { margin: .22rem 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Tablas ────────────────────────────────────────────────── */
+  .tabla-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding-bottom: .45rem;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: .42rem .6rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  thead th {
+    background: var(--paper-2);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-soft);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+  td.cod { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── Piezas ────────────────────────────────────────────────── */
+  ul, ol { margin: 0 0 .95rem; padding-left: 1.35rem; }
+  li { margin: .22rem 0; }
+
+  .nota {
+    border-left: 3px solid var(--ochre);
+    background: color-mix(in srgb, var(--ochre) 8%, transparent);
+    padding: .75rem 1rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .nota strong { color: var(--ochre); }
+
+  .ficha {
+    border: 1px solid var(--line);
+    margin: 1.2rem 0;
+  }
+  .ficha > div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ficha > div:last-child { border-bottom: 0; }
+  .ficha dt, .ficha .k {
+    background: var(--paper-2);
+    padding: .42rem .7rem;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .ficha .v { padding: .42rem .7rem; font-size: .9rem; }
+  .ficha .v ol { margin: 0; padding-left: 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.6rem 0; }
+
+  .pie {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .78rem;
+    color: var(--text-soft);
+  }
+
+  /* ── Impresión ─────────────────────────────────────────────── */
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper: #fff; --paper-2: #f2f5f3; --line: #b9c7c0; --line-soft: #dde6e1;
+      --text: #101c22; --text-soft: #4c626b; --accent: #075c44; --accent-2: #0b4553;
+      --ochre: #7d5218; --coral: #8f2b22;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { max-width: none; padding: 0; font-size: 10.5pt; }
+    .cover { padding-top: 0; page-break-after: always; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: auto; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    table, .ficha, .nota { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .tabla-wrap { overflow: visible; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<header class="cover">
+  <p class="institution">DES SOFT APLI DOMI DE INTERCUL</p>
+  <p class="proyecto">Wasi Wiwakuna 3D</p>
+  <h1>Especificación de Requisitos de Software</h1>
+  <p class="autor">Bryan Quispe</p>
+</header>
+
+<nav class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#s1">1. Introducción y contexto</a></li>
+    <li><a href="#s2">2. Especificación de requisitos</a></li>
+  </ol>
+</nav>
+
+<h2 id="s1">1. Introducción y contexto</h2>
+<h3>1.1 Problemática</h3>
+<p>Cuando una mascota se pierde, la búsqueda ocurre en canales informales: grupos de mensajería del barrio, publicaciones sueltas en redes sociales y carteles impresos a mano. Ese circuito falla por razones concretas y repetidas, no por falta de voluntad de quienes participan.</p>
+<ol>
+  <li><strong>La información llega incompleta.</strong> Un mensaje reenviado pierde la fotografía, o llega la fotografía sin el teléfono. Nada obliga a incluir lo indispensable.</li>
+  <li><strong>Una fotografía no siempre basta para identificar al animal.</strong> Las fotografías domésticas se toman de noche, movidas o con el animal echado, y muchos animales mestizos se parecen entre sí en esas condiciones.</li>
+  <li><strong>Publicar la dirección exacta expone al propietario.</strong> El impulso de dar todos los datos convierte un cartel de búsqueda en información aprovechable por terceros.</li>
+  <li><strong>La información se dispersa.</strong> Un mensaje de hace tres semanas es irrecuperable en la práctica: quien encuentra un animal no tiene dónde consultar.</li>
+  <li><strong>Todo el circuito opera en castellano.</strong> Esta es la carencia que da sentido intercultural al proyecto.</li>
+</ol>
+
+<h3>1.2 Justificación intercultural</h3>
+<p>El artículo 2 de la Constitución del Ecuador de 2008 reconoce el kichwa como lengua oficial de relación intercultural, y es la lengua indígena con mayor número de hablantes del país. Pese a ello, la oferta de software cotidiano en kichwa es prácticamente inexistente: una familia kichwahablante que pierde un animal debe operar en una lengua que no es la propia para resolver un asunto doméstico elemental.</p>
+<p>El dominio elegido no es accesorio. El animal de crianza —<span class="kw">wiwa</span>— forma parte de la economía familiar andina: cuida el ganado, controla plagas y contribuye al sustento. Perderlo constituye una pérdida material, no solo afectiva.</p>
+
+<h3>1.3 Objetivo general</h3>
+<p>Facilitar la difusión organizada y visual de mascotas perdidas mediante una ficha digital que combine información verificable, fotografías reales y una referencia tridimensional personalizable, accesible tanto en castellano como en kichwa y respetuosa con la privacidad del propietario.</p>
+
+<h3>1.4 Objetivos específicos</h3>
+<ol>
+  <li>Gestionar usuarios, roles y sesiones seguras.</li>
+  <li>Asociar cada mascota con un propietario responsable.</li>
+  <li>Registrar características, fotografías, contacto y último avistamiento.</li>
+  <li>Filtrar el catálogo de modelos tridimensionales según la especie.</li>
+  <li>Permitir rotación, acercamiento y pintura sobre la textura del modelo.</li>
+  <li>Generar un cartel en PDF configurable que no revele coordenadas exactas.</li>
+  <li>Ofrecer la interfaz completa en kichwa y castellano, conmutable en caliente.</li>
+  <li>Proporcionar administración y consulta pública controlada.</li>
+</ol>
+
+<h3>1.5 Alcance</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 1. Delimitación del alcance</caption>
+    <thead><tr><th style="width:50%">Incluido</th><th>Excluido</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Registro, inicio de sesión y autorización por roles.</td>
+        <td>Reconocimiento automático de mascotas mediante inteligencia artificial.</td>
+      </tr>
+      <tr>
+        <td>Gestión completa de mascotas y sus características.</td>
+        <td>Rastreo por GPS en tiempo real.</td>
+      </tr>
+      <tr>
+        <td>Catálogo tridimensional filtrado y personalizable.</td>
+        <td>Aplicación móvil nativa.</td>
+      </tr>
+      <tr>
+        <td>Generación y exportación del cartel de búsqueda.</td>
+        <td>Mensajería interna entre usuarios.</td>
+      </tr>
+      <tr>
+        <td>Interfaz bilingüe kichwa–castellano.</td>
+        <td>Verificación gubernamental de identidad.</td>
+      </tr>
+      <tr>
+        <td>Consulta pública sin necesidad de cuenta.</td>
+        <td>Impresión física o reparto de carteles.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s2">2. Especificación de requisitos</h2>
+<h3>2.1 Requisitos funcionales</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 2. Requisitos funcionales del sistema</caption>
+    <thead>
+      <tr><th style="width:4.5rem">Código</th><th>Requisito</th><th style="width:4.5rem">Prioridad</th><th style="width:5.5rem">Estado</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cod">RF-01</td><td>Registrar usuarios con nombre, correo y contraseña.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-02</td><td>Autenticar usuarios y emitir una sesión mediante JWT.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-03</td><td>Diferenciar permisos de usuario y administrador.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-04</td><td>Crear, consultar, editar y eliminar mascotas.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-05</td><td>Asociar cada mascota con su propietario autenticado.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-06</td><td>Permitir las categorías perro, gato y conejo mediante selección controlada.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-07</td><td>Registrar raza, descripción, tamaño, color y otras características.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-08</td><td>Cargar y mostrar varias fotografías de la mascota.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-09</td><td>Registrar teléfono y fecha del último avistamiento.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-10</td><td>Seleccionar la zona o el barrio sobre un mapa interactivo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-11</td><td>Rechazar ubicaciones que no pertenezcan al Ecuador.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-12</td><td>Consultar mascotas públicas por zona o categoría.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-13</td><td>Mostrar al administrador las mascotas de todos los usuarios.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-14</td><td>Filtrar los registros administrativos por propietario.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-15</td><td>Cargar y catalogar modelos tridimensionales por especie.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-16</td><td>Ofrecer únicamente los modelos compatibles con la categoría elegida.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-17</td><td>Visualizar modelos en formato GLB, GLTF u OBJ.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-18</td><td>Separar los modos de rotación, acercamiento y pintura.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-19</td><td>Pintar sobre la superficie del modelo conservando su textura original.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-20</td><td>Ofrecer lápiz, pincel, brocha, paleta de color, deshacer y limpiar.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-21</td><td>Guardar los trazos y reconstruir la personalización al reabrir.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-22</td><td>Elegir la visibilidad pública o privada del modelo editado.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-23</td><td>Previsualizar y editar el contenido del cartel antes de exportarlo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-24</td><td>Seleccionar, ordenar y escoger la imagen principal del PDF.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-25</td><td>Exportar el cartel con el nombre de la mascota, la fecha y la hora en el archivo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-26</td><td>Conmutar la interfaz entre castellano, kichwa y modo bilingüe simultáneo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-27</td><td>Traducir en pantalla los valores de lista cerrada ya almacenados.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-28</td><td>Registrar la descripción y la referencia del avistamiento en ambas lenguas.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-29</td><td>Recoger el carácter y las señas mediante una lista cerrada traducible.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-30</td><td>Generar el cartel en PDF en el idioma seleccionado.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-31</td><td>Tomar un color del propio modelo mediante cuentagotas con lupa de píxeles.</td><td>Could</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-32</td><td>Registrar la referencia a pie de calle del avistamiento, corregible a mano.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-33</td><td>Admitir varios números de contacto por ficha.</td><td>Should</td><td>Completado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.2 Requisitos no funcionales</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 3. Requisitos no funcionales</caption>
+    <thead><tr><th style="width:5rem">Código</th><th style="width:9rem">Atributo</th><th>Criterio de aceptación</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">RNF-01</td><td>Seguridad</td><td>Las rutas privadas se protegen con JWT y autorización por rol o por propiedad del recurso.</td></tr>
+      <tr><td class="cod">RNF-02</td><td>Privacidad</td><td>Las vistas públicas y el PDF exportado no muestran latitud ni longitud.</td></tr>
+      <tr><td class="cod">RNF-03</td><td>Integridad</td><td>Los objetos de transferencia y los formularios validan campos obligatorios y categorías.</td></tr>
+      <tr><td class="cod">RNF-04</td><td>Usabilidad</td><td>Los flujos principales presentan etiquetas, estados y retroalimentación explícita.</td></tr>
+      <tr><td class="cod">RNF-05</td><td>Adaptabilidad</td><td>La interfaz evita desbordamientos en pantallas de escritorio y de teléfono.</td></tr>
+      <tr><td class="cod">RNF-06</td><td>Rendimiento</td><td>Las texturas y las imágenes se limitan o se reducen antes de procesarse.</td></tr>
+      <tr><td class="cod">RNF-07</td><td>Compatibilidad</td><td>Navegador moderno con WebGL y JavaScript habilitados.</td></tr>
+      <tr><td class="cod">RNF-08</td><td>Mantenibilidad</td><td>Interfaz, servicios, persistencia y documentación permanecen separados.</td></tr>
+      <tr><td class="cod">RNF-09</td><td>Trazabilidad</td><td>Cada requisito se relaciona con una historia, un sprint y un componente.</td></tr>
+      <tr><td class="cod">RNF-10</td><td>Exportabilidad</td><td>El PDF respeta el formato A4, con imágenes completas y texto sin desbordamiento.</td></tr>
+      <tr><td class="cod">RNF-11</td><td>Accesibilidad</td><td>Etiquetas ARIA en controles sin texto y atributo <code>lang</code> ajustado a la lengua mostrada.</td></tr>
+      <tr><td class="cod">RNF-12</td><td>Pertinencia lingüística</td><td>La traducción aplica la norma ortográfica ALKI y declara la fuente de cada término.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.3 Reglas de negocio</h3>
+<ol>
+  <li>Una mascota pertenece exactamente a un usuario.</li>
+  <li>Un usuario gestiona sus propios registros; el administrador supervisa todos.</li>
+  <li>La categoría de la mascota determina los modelos tridimensionales disponibles.</li>
+  <li>La ubicación publicada es aproximada y debe pertenecer al Ecuador.</li>
+  <li>El teléfono es obligatorio para descargar un cartel de búsqueda.</li>
+  <li>La personalización se guarda sin destruir el archivo base compartido.</li>
+  <li>Un modelo personalizado puede permanecer privado o compartirse con la comunidad.</li>
+  <li>La vista tridimensional es una referencia; las fotografías siguen siendo la evidencia principal.</li>
+  <li>El PDF admite hasta ocho fotografías seleccionadas.</li>
+  <li>El texto libre escrito por una persona nunca se traduce de forma automática.</li>
+</ol>
+
+<h3>2.4 Supuestos y dependencias</h3>
+<ul>
+  <li>La base de datos PostgreSQL y la interfaz de programación deben encontrarse disponibles.</li>
+  <li>La búsqueda y la geocodificación inversa dependen de Nominatim, el servicio público de OpenStreetMap, que no requiere clave de acceso.</li>
+  <li>Los modelos deben tener un formato compatible y, para una pintura precisa, geometría con suficiente densidad de malla.</li>
+  <li>El alojamiento de fotografías depende de las credenciales de Cloudinary configuradas en el servidor.</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<p class="pie">
+  Wasi Wiwakuna 3D · Especificación de Requisitos de Software<br>
+  DES SOFT APLI DOMI DE INTERCUL · Bryan Quispe
+</p>

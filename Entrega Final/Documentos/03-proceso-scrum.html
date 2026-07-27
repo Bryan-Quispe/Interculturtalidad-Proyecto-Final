@@ -1,0 +1,497 @@
+<title>Wasi Wiwakuna 3D — Documentación del proceso Scrum</title>
+
+<style>
+  :root {
+    --paper:     #ffffff;
+    --paper-2:   #f4f7f5;
+    --line:      #d3ded8;
+    --line-soft: #e7eeea;
+    --text:      #16232a;
+    --text-soft: #566d76;
+    --accent:    #0a6f52;
+    --accent-2:  #0d4f5e;
+    --ochre:     #96631f;
+    --coral:     #a8342a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #0b1a20;
+      --paper-2:   #12262e;
+      --line:      #23414b;
+      --line-soft: #1a333c;
+      --text:      #e4ede9;
+      --text-soft: #96b0b8;
+      --accent:    #45c79a;
+      --accent-2:  #6ec5d6;
+      --ochre:     --ochre;
+      --ochre:     #d6a75f;
+      --coral:     #ef8074;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b1a20; --paper-2: #12262e; --line: #23414b; --line-soft: #1a333c;
+    --text: #e4ede9; --text-soft: #96b0b8; --accent: #45c79a; --accent-2: #6ec5d6;
+    --ochre: #d6a75f; --coral: #ef8074;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --paper-2: #f4f7f5; --line: #d3ded8; --line-soft: #e7eeea;
+    --text: #16232a; --text-soft: #566d76; --accent: #0a6f52; --accent-2: #0d4f5e;
+    --ochre: #96631f; --coral: #a8342a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    max-width: 210mm;
+    padding: 0 clamp(1.1rem, 5vw, 2.4rem) 5rem;
+    background: var(--paper);
+    color: var(--text);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    /* Ninguna palabra larga debe sobresalir del bloque de texto. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, Roboto, Arial, sans-serif;
+    font-weight: 650;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+    hyphens: none;
+  }
+
+  h1 { font-size: 2.05rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.32rem;
+    margin: 3.2rem 0 .9rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  h3 { font-size: 1.04rem; margin: 1.9rem 0 .5rem; }
+  h4 {
+    font-size: .82rem;
+    margin: 1.4rem 0 .4rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-soft);
+  }
+
+  p { margin: 0 0 .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: .84em;
+    /* Rutas y nombres largos parten en vez de desbordar la celda. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  code {
+    background: var(--line-soft);
+    padding: .08em .32em;
+    border-radius: 2px;
+  }
+
+  .kw {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .87em;
+    color: var(--accent-2);
+  }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover {
+    padding: 4.5rem 0 3rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .cover .institution {
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 3.4rem;
+  }
+  .cover .proyecto {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-soft);
+    margin: 0 0 .5rem;
+  }
+  .cover .autor {
+    margin: 2.6rem 0 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+  }
+
+  /* ── Índice ────────────────────────────────────────────────── */
+  .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
+  .toc h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.05rem; }
+  .toc ol { margin: .6rem 0 0; padding-left: 1.3rem; font-family: "Segoe UI", sans-serif; font-size: .9rem; }
+  .toc li { margin: .22rem 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Tablas ────────────────────────────────────────────────── */
+  .tabla-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding-bottom: .45rem;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: .42rem .6rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  thead th {
+    background: var(--paper-2);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-soft);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+  td.cod { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── Piezas ────────────────────────────────────────────────── */
+  ul, ol { margin: 0 0 .95rem; padding-left: 1.35rem; }
+  li { margin: .22rem 0; }
+
+  .nota {
+    border-left: 3px solid var(--ochre);
+    background: color-mix(in srgb, var(--ochre) 8%, transparent);
+    padding: .75rem 1rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .nota strong { color: var(--ochre); }
+
+  .ficha {
+    border: 1px solid var(--line);
+    margin: 1.2rem 0;
+  }
+  .ficha > div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ficha > div:last-child { border-bottom: 0; }
+  .ficha dt, .ficha .k {
+    background: var(--paper-2);
+    padding: .42rem .7rem;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .ficha .v { padding: .42rem .7rem; font-size: .9rem; }
+  .ficha .v ol { margin: 0; padding-left: 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.6rem 0; }
+
+  .pie {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .78rem;
+    color: var(--text-soft);
+  }
+
+  /* ── Impresión ─────────────────────────────────────────────── */
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper: #fff; --paper-2: #f2f5f3; --line: #b9c7c0; --line-soft: #dde6e1;
+      --text: #101c22; --text-soft: #4c626b; --accent: #075c44; --accent-2: #0b4553;
+      --ochre: #7d5218; --coral: #8f2b22;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { max-width: none; padding: 0; font-size: 10.5pt; }
+    .cover { padding-top: 0; page-break-after: always; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: auto; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    table, .ficha, .nota { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .tabla-wrap { overflow: visible; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<header class="cover">
+  <p class="institution">DES SOFT APLI DOMI DE INTERCUL</p>
+  <p class="proyecto">Wasi Wiwakuna 3D</p>
+  <h1>Documentación del proceso Scrum</h1>
+  <p class="autor">Bryan Quispe</p>
+</header>
+
+<nav class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#s4">1. Marco de trabajo Scrum</a></li>
+    <li><a href="#s5">2. Cronograma y desarrollo de los sprints</a></li>
+    <li><a href="#s6">3. Product Backlog</a></li>
+  </ol>
+</nav>
+
+<h2 id="s4">1. Marco de trabajo Scrum</h2>
+<h3>1.1 Adaptación de los roles</h3>
+<p>Al tratarse de un proyecto académico con un responsable técnico principal, se documenta una adaptación de los roles. No se afirman reuniones ni participantes que no hayan tenido lugar.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 6. Responsabilidades de Scrum y su aplicación</caption>
+    <thead><tr><th style="width:9rem">Responsabilidad</th><th>Aplicación en el proyecto</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Product Owner</strong></td><td>Mantiene la visión, prioriza el Product Backlog y valida el valor entregado. Asumido por el responsable del proyecto con retroalimentación del docente.</td></tr>
+      <tr><td><strong>Scrum Master</strong></td><td>Facilita el proceso, identifica impedimentos y protege la meta del sprint. Se materializa en el seguimiento escrito y la retrospectiva de cierre.</td></tr>
+      <tr><td><strong>Equipo de desarrollo</strong></td><td>Diseña, implementa, prueba y documenta el incremento. Responsable técnico: Bryan Quispe.</td></tr>
+      <tr><td><strong>Interesados</strong></td><td>Docente de la asignatura, evaluadores y usuarios de prueba.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>1.2 Eventos</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 7. Eventos, propósito y evidencia</caption>
+    <thead><tr><th style="width:9rem">Evento</th><th>Propósito</th><th style="width:9rem">Evidencia</th></tr></thead>
+    <tbody>
+      <tr><td>Sprint</td><td>Contenedor temporal de dos o tres semanas que produce un incremento demostrable.</td><td>Incremento y acta</td></tr>
+      <tr><td>Sprint Planning</td><td>Definir la meta del sprint y seleccionar las historias que la sostienen.</td><td>Meta y Sprint Backlog</td></tr>
+      <tr><td>Daily Scrum</td><td>Revisar el avance diario, ajustar el plan y registrar impedimentos.</td><td>Bitácora resumida</td></tr>
+      <tr><td>Sprint Review</td><td>Inspeccionar el incremento y recoger observaciones.</td><td>Funciones demostradas</td></tr>
+      <tr><td>Sprint Retrospective</td><td>Mejorar proceso, calidad y forma de trabajo.</td><td>Acciones acordadas</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>1.3 Definición de preparado</h3>
+<p>Una historia puede incorporarse a un sprint cuando cumple todas estas condiciones:</p>
+<ol>
+  <li>Expresa actor, necesidad y beneficio.</li>
+  <li>Tiene criterios de aceptación comprobables.</li>
+  <li>Sus dependencias están identificadas.</li>
+  <li>Tiene prioridad y estimación asignadas.</li>
+  <li>Es suficientemente pequeña para completarse dentro del sprint.</li>
+  <li>No depende de una decisión crítica aún sin resolver.</li>
+</ol>
+
+<h3>1.4 Definición de terminado</h3>
+<p>Una historia se considera terminada cuando cumple todas estas condiciones:</p>
+<ol>
+  <li>La implementación está integrada en la rama principal.</li>
+  <li>El proyecto compila sin errores de tipos.</li>
+  <li>Los permisos y las validaciones correspondientes funcionan.</li>
+  <li>El flujo principal ha sido probado manualmente.</li>
+  <li>La interfaz no presenta desbordamientos en escritorio ni en teléfono.</li>
+  <li>No se exponen secretos ni la ubicación exacta del propietario.</li>
+  <li>La documentación afectada ha sido actualizada.</li>
+  <li>El incremento puede demostrarse desde la interfaz.</li>
+</ol>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s5">2. Cronograma y desarrollo de los sprints</h2>
+<p>El proyecto se desarrolló entre el <strong>24 de mayo</strong> y el <strong>25 de julio de 2026</strong>: nueve semanas repartidas en cuatro sprints.</p>
+
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 8. Cronograma general</caption>
+    <thead><tr><th style="width:4.5rem">Sprint</th><th style="width:9rem">Fechas</th><th>Meta del sprint</th><th class="num" style="width:4.5rem">Puntos</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">Sprint 1</td><td>24 de mayo – 6 de junio</td><td>Disponer de una base técnica segura y persistente.</td><td class="num">24</td></tr>
+      <tr><td class="cod">Sprint 2</td><td>7 – 20 de junio</td><td>Gestionar mascotas asociadas a su propietario.</td><td class="num">24</td></tr>
+      <tr><td class="cod">Sprint 3</td><td>21 de junio – 11 de julio</td><td>Apoyar la búsqueda con fotografías, mapa y visualización.</td><td class="num">33</td></tr>
+      <tr><td class="cod">Sprint 4</td><td>12 – 25 de julio</td><td>Mejorar la identificación visual y cerrar el producto.</td><td class="num">37</td></tr>
+      <tr><td class="cod">EP-INT</td><td>Transversal, sprints 2 a 4</td><td>Capa intercultural kichwa–castellano.</td><td class="num">21</td></tr>
+      <tr><td colspan="3"><strong>Total del proyecto</strong></td><td class="num"><strong>139</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nota">
+  <strong>Sobre la épica transversal.</strong> La capa intercultural no se ejecutó dentro de un único sprint. La arquitectura de internacionalización debe existir antes de poder traducir pantallas, y cada pantalla se tradujo conforme se construía, de modo que la épica atraviesa los sprints 2 a 4.
+</div>
+
+<h3>2.1 Sprint 1 · Base técnica y acceso seguro</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">24 de mayo – 6 de junio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Disponer de una base técnica segura y persistente sobre la que construir el dominio.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-01 a HU-06 · 24 puntos comprometidos, 24 aceptados</span></div>
+  <div><span class="k">Entregado</span><span class="v">Registro e inicio de sesión, contraseñas cifradas con bcrypt, sesión mediante JWT, roles de usuario y administrador, esquema relacional en Prisma e interfaz adaptable.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el ciclo completo de registro, inicio de sesión y acceso a una ruta protegida. Se confirmó el rechazo de peticiones sin token.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Definir el esquema de datos antes de escribir servicios evitó reescrituras posteriores. Como mejora se acordó fijar la definición de terminado por escrito antes del siguiente sprint.</span></div>
+</div>
+
+<h3>2.2 Sprint 2 · Gestión de mascotas</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">7 – 20 de junio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Permitir que cada propietario gestione sus mascotas sin acceder a las ajenas.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-07 a HU-12, HU-26, HU-27 · 24 puntos del dominio y 8 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Altas, consultas, ediciones y bajas de mascotas; categorías controladas; características de identificación; vista administrativa con filtro por propietario. Se incorporó la arquitectura de traducción tipada y el conmutador de idioma.</span></div>
+  <div><span class="k">Review</span><span class="v">Se comprobó que un usuario no recibe registros de otro y que el administrador visualiza el conjunto completo.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Se detectó que la separación de permisos debía resolverse en el servidor y no filtrando en la interfaz. Se corrigió dentro del propio sprint mediante rutas diferenciadas.</span></div>
+</div>
+
+<h3>2.3 Sprint 3 · Búsqueda, difusión y visualización</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">21 de junio – 11 de julio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Convertir el registro en una herramienta útil para buscar y difundir.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-13 a HU-18, HU-28 · 33 puntos del dominio y 5 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Carga de fotografías hacia Cloudinary, selección de la zona sobre el mapa, validación territorial, catálogo filtrado por especie, visor tridimensional y primera versión del cartel en PDF. Se añadió la traducción en pantalla de los valores ya almacenados.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el flujo completo desde el registro hasta la descarga del cartel. Se verificó que el PDF no incluye coordenadas.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Concentrar cuatro integraciones externas en un mismo sprint elevó el riesgo. Se acordó distribuirlas en el futuro y, como medida inmediata, priorizar la que bloqueaba al resto.</span></div>
+</div>
+
+<h3>2.4 Sprint 4 · Identificación visual y cierre</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">12 – 25 de julio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Elevar la calidad de la identificación visual y dejar el producto listo para su defensa.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-19 a HU-25, HU-29 a HU-31 · 37 puntos del dominio y 8 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Modos separados del visor, pintura sobre la superficie del modelo, cuentagotas con lupa de píxeles, copias personalizadas, editor completo del cartel, modo bilingüe simultáneo, cartel en el idioma elegido y glosario documentado. Se completó el despliegue en Render y Vercel.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el sistema sobre el entorno desplegado, no en local. Se confirmó la conmutación de idioma en todo el recorrido.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">El despliegue reveló supuestos que en local pasaban inadvertidos. Se concluyó que un esqueleto desplegado desde el primer sprint habría evitado ese trabajo de última hora.</span></div>
+</div>
+
+<h3>2.5 Registro resumido de seguimiento diario</h3>
+<p>Se conserva un registro representativo del seguimiento, no la totalidad de las jornadas.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 9. Muestra del registro de seguimiento</caption>
+    <thead><tr><th style="width:6rem">Fecha</th><th>Avance</th><th style="width:11rem">Impedimento</th></tr></thead>
+    <tbody>
+      <tr><td>27 may</td><td>Esquema relacional y primera migración aplicada.</td><td>Ninguno</td></tr>
+      <tr><td>3 jun</td><td>Inicio de sesión emitiendo token; guardas pendientes.</td><td>Ninguno</td></tr>
+      <tr><td>11 jun</td><td>Altas y bajas de mascotas operativas.</td><td>Permisos resueltos en la interfaz; se trasladan al servidor</td></tr>
+      <tr><td>18 jun</td><td>Vista administrativa con filtro por propietario.</td><td>Ninguno</td></tr>
+      <tr><td>25 jun</td><td>Carga de fotografías hacia el servicio externo.</td><td>La credencial no puede viajar al navegador</td></tr>
+      <tr><td>1 jul</td><td>Visor tridimensional cargando modelos del catálogo.</td><td>Modelos sin densidad de malla suficiente</td></tr>
+      <tr><td>8 jul</td><td>Primera exportación del cartel en PDF.</td><td>Ninguno</td></tr>
+      <tr><td>15 jul</td><td>Pintura reimplementada sobre la superficie del modelo.</td><td>Los trazos quedaban desalineados al rotar</td></tr>
+      <tr><td>21 jul</td><td>Editor del cartel y modo bilingüe simultáneo.</td><td>Ninguno</td></tr>
+      <tr><td>24 jul</td><td>Despliegue en Render y Vercel; migraciones aplicadas.</td><td>Supuestos de sistema de archivos compartido</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.6 Evolución del producto</h3>
+<p>Las siguientes decisiones se adoptaron tras inspeccionar un incremento, y constituyen la evidencia de adaptación del proceso.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 10. Adaptaciones registradas</caption>
+    <thead><tr><th style="width:3rem">N.º</th><th>Situación detectada</th><th>Decisión adoptada</th><th class="num" style="width:4rem">Sprint</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">A1</td><td>Los trazos quedaban desalineados de la superficie al rotar el modelo.</td><td>Reimplementar la pintura sobre la geometría del modelo en lugar del espacio de pantalla.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A2</td><td>Rotar y pintar de forma simultánea producía trazos accidentales.</td><td>Hacer que los modos de rotación, acercamiento y pintura sean mutuamente excluyentes.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A3</td><td>Pintar un modelo del catálogo lo degradaba para el resto de usuarios.</td><td>Crear una copia personalizada al editar, dejando intacto el original compartido.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A4</td><td>Publicar la dirección exacta exponía al propietario.</td><td>Separar la ubicación interna de la referencia pública y excluir las coordenadas del PDF.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A5</td><td>La credencial del servicio de imágenes no podía viajar al navegador.</td><td>Encaminar toda subida a través del servidor.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A6</td><td>Las mascotas registradas antes de la traducción se mostraban solo en castellano.</td><td>Traducir en pantalla los valores de lista cerrada, sin migrar la base de datos.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A7</td><td>El nombre del barrio devuelto por el mapa no coincide con el de uso local.</td><td>Rellenar el sector automáticamente pero permitir su corrección manual.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A8</td><td>Un único teléfono deja la ficha sin respuesta si esa persona no está disponible.</td><td>Admitir varios números de contacto por ficha.</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s6">3. Product Backlog</h2>
+<p>La priorización sigue el criterio MoSCoW. Los puntos representan complejidad relativa y no equivalen a horas de trabajo.</p>
+
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 11. Product Backlog completo</caption>
+    <thead>
+      <tr><th style="width:4.2rem">Código</th><th>Historia de usuario</th><th style="width:4.2rem">Prior.</th><th class="num" style="width:3.2rem">Pts.</th><th class="num" style="width:3.4rem">Sprint</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cod">HU-01</td><td>Como visitante quiero crear una cuenta para administrar mis mascotas.</td><td>Must</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-02</td><td>Como usuario quiero iniciar sesión de forma segura.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-03</td><td>Como sistema quiero proteger las rutas privadas mediante JWT.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-04</td><td>Como administrador quiero disponer de un rol diferenciado.</td><td>Must</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-05</td><td>Como equipo quiero persistencia relacional mediante Prisma.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-06</td><td>Como usuario quiero una interfaz web adaptable.</td><td>Should</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-07</td><td>Como usuario quiero registrar una mascota.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-08</td><td>Como usuario quiero elegir entre perro, gato o conejo.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-09</td><td>Como usuario quiero registrar las características de identificación.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-10</td><td>Como usuario quiero editar y eliminar mis mascotas.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-11</td><td>Como usuario quiero consultar únicamente mis registros.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-12</td><td>Como administrador quiero consultar y filtrar todas las mascotas.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-13</td><td>Como usuario quiero cargar varias fotografías reales.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-14</td><td>Como usuario quiero señalar el último lugar sobre un mapa.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-15</td><td>Como propietario quiero publicar solo una zona aproximada.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-16</td><td>Como usuario quiero ver modelos filtrados según la especie.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-17</td><td>Como usuario quiero visualizar y acomodar un modelo tridimensional.</td><td>Must</td><td class="num">8</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-18</td><td>Como usuario quiero exportar una ficha de búsqueda en PDF.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-19</td><td>Como usuario quiero modos separados para rotar, acercar y pintar.</td><td>Must</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-20</td><td>Como usuario quiero pintar rasgos conservando la textura original.</td><td>Must</td><td class="num">8</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-21</td><td>Como usuario quiero distintos tamaños de pincel, colores y deshacer.</td><td>Should</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-22</td><td>Como usuario quiero decidir si comparto mi modelo personalizado.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-23</td><td>Como usuario quiero editar y previsualizar el cartel.</td><td>Must</td><td class="num">8</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-24</td><td>Como usuario quiero elegir la portada, el orden y el formato de las fotos.</td><td>Must</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-25</td><td>Como usuario quiero un nombre de archivo identificable y seguro.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-26</td><td>Como equipo quiero una arquitectura de traducción tipada, de modo que una clave inexistente falle al compilar.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-27</td><td>Como usuario kichwahablante quiero cambiar de idioma antes de iniciar sesión.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-28</td><td>Como usuario quiero que los datos ya guardados se muestren en mi idioma.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-29</td><td>Como usuario quiero un modo bilingüe simultáneo.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-30</td><td>Como usuario quiero que el cartel se genere en el idioma elegido.</td><td>Must</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-31</td><td>Como equipo quiero documentar cada término con su fuente lexicográfica.</td><td>Must</td><td class="num">2</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.1 Backlog futuro</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 12. Mejoras pendientes de priorizar</caption>
+    <thead><tr><th style="width:4.5rem">Código</th><th>Mejora</th><th style="width:5rem">Prioridad</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">BF-01</td><td>Estados de la búsqueda: perdida, encontrada y cerrada.</td><td>Must</td></tr>
+      <tr><td class="cod">BF-02</td><td>Pruebas automatizadas de extremo a extremo en integración continua.</td><td>Must</td></tr>
+      <tr><td class="cod">BF-03</td><td>Avisos a quienes sigan un sector cuando aparezca una mascota cercana.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-04</td><td>Validación del glosario kichwa con hablantes nativos.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-05</td><td>Moderación de los modelos publicados en el catálogo compartido.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-06</td><td>Exportación del modelo personalizado como archivo GLB.</td><td>Could</td></tr>
+      <tr><td class="cod">BF-07</td><td>Incorporación de otras lenguas de relación intercultural.</td><td>Could</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<p class="pie">
+  Wasi Wiwakuna 3D · Documentación del proceso Scrum<br>
+  DES SOFT APLI DOMI DE INTERCUL · Bryan Quispe
+</p>

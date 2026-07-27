@@ -113,38 +113,29 @@
   }
   .cover .institution {
     font-family: "Segoe UI", sans-serif;
-    font-size: .74rem;
-    letter-spacing: .13em;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .15em;
     text-transform: uppercase;
-    color: var(--text-soft);
-    line-height: 1.9;
-    margin-bottom: 2.2rem;
+    color: var(--accent);
+    margin: 0 0 3.4rem;
   }
-  .cover .subtitle {
-    font-size: 1.1rem;
-    font-style: italic;
-    color: var(--text-soft);
-    margin: .7rem 0 0;
-  }
-  .cover dl {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: .38rem 1.3rem;
-    margin: 2.6rem 0 0;
+  .cover .proyecto {
     font-family: "Segoe UI", sans-serif;
-    font-size: .87rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-soft);
+    margin: 0 0 .5rem;
   }
-  .cover dt { color: var(--text-soft); }
-  .cover dd { margin: 0; font-weight: 600; }
-  .rellenar {
-    display: inline-block;
-    width: min(18rem, 100%);
-    max-width: 100%;
-    border-bottom: 1px solid var(--text-soft);
-    vertical-align: baseline;
-    height: 1.1em;
+  .cover .autor {
+    margin: 2.6rem 0 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
   }
-  .rellenar.corta { width: min(8rem, 100%); }
 
   /* ── Índice ────────────────────────────────────────────────── */
   .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
@@ -258,44 +249,6 @@
     a { color: inherit; text-decoration: none; }
   }
 </style>
-
-<header class="cover">
-  <p class="institution">
-    Universidad de las Fuerzas Armadas ESPE<br>
-    Departamento de Ciencias de la Computación<br>
-    Desarrollo de Software Aplicado a la Interculturalidad · Tercer parcial
-  </p>
-  <h1>Wasi Wiwakuna 3D</h1>
-  <p class="subtitle">Plataforma bilingüe kichwa–castellano para la búsqueda de mascotas perdidas</p>
-  <dl>
-    <dt>Responsable técnico</dt><dd>Bryan Quispe</dd>
-    <dt>Integrantes</dt><dd><span class="rellenar"></span></dd>
-    <dt>NRC</dt><dd><span class="rellenar corta"></span></dd>
-    <dt>Carrera</dt><dd><span class="rellenar"></span></dd>
-    <dt>Período del proyecto</dt><dd>24 de mayo – 25 de julio de 2026 (9 semanas)</dd>
-    <dt>Marco de trabajo</dt><dd>Scrum, cuatro sprints</dd>
-    <dt>Estado</dt><dd>Sistema desplegado y operativo</dd>
-    <dt>Fecha del informe</dt><dd>25 de julio de 2026</dd>
-  </dl>
-</header>
-
-<nav class="toc">
-  <h2>Contenido</h2>
-  <ol>
-    <li><a href="#s1">Introducción y contexto</a></li>
-    <li><a href="#s2">Especificación de requisitos</a></li>
-    <li><a href="#s3">Casos de uso</a></li>
-    <li><a href="#s4">Marco de trabajo Scrum</a></li>
-    <li><a href="#s5">Cronograma y desarrollo de los sprints</a></li>
-    <li><a href="#s6">Product Backlog</a></li>
-    <li><a href="#s7">Arquitectura y modelo de datos</a></li>
-    <li><a href="#s8">Calidad, verificación y validación</a></li>
-    <li><a href="#s9">Matriz de trazabilidad</a></li>
-    <li><a href="#s10">Gestión de riesgos</a></li>
-    <li><a href="#s11">Conclusiones y trabajo futuro</a></li>
-    <li><a href="#s12">Anexos</a></li>
-  </ol>
-</nav>
 
 <!-- ══════════════════════════════════════════════════════════ -->
 <h2 id="s1">1. Introducción y contexto</h2>

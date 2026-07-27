@@ -1,43 +1,26 @@
-# Qué subir en la entrega final
+# Documentos de la entrega final
 
-La rúbrica pide cinco entregables. Esta tabla dice qué es cada uno y de dónde
-sacarlo.
+Seis documentos independientes. Cada uno se abre con doble clic y se exporta a
+PDF por separado.
 
-| # | Entregable | Qué subir | Dónde está |
-| --- | --- | --- | --- |
-| 1 | Sistema funcional | La URL de la aplicación desplegada | `https://interculturtalidad-proyecto-final.vercel.app` |
-| 2 | Código fuente | El enlace al repositorio, o un ZIP del proyecto **sin** `node_modules` | `github.com/Bryan-Quispe/Interculturtalidad-Proyecto-Final` |
-| 3 | Presentación | `presentacion.pdf`, exportado desde el HTML | [../Presentacion/](../Presentacion/) |
-| 4 | Documentación del proceso | `informe-entrega-final.pdf`, exportado desde el HTML de esta carpeta | esta carpeta |
-| 5 | Repositorio | El mismo enlace del punto 2 | — |
+| Archivo | Contenido |
+| --- | --- |
+| [`01-especificacion-de-requisitos.html`](01-especificacion-de-requisitos.html) | Problemática, justificación intercultural, objetivos, alcance, 33 requisitos funcionales, 12 no funcionales y reglas de negocio |
+| [`02-casos-de-uso.html`](02-casos-de-uso.html) | Actores, 15 casos de uso y tres desarrollados con flujos alternos |
+| [`03-proceso-scrum.html`](03-proceso-scrum.html) | Roles, eventos, definición de terminado, cronograma, los cuatro sprints con review y retrospectiva, y el Product Backlog de 31 historias |
+| [`04-arquitectura.html`](04-arquitectura.html) | Capas, modelo de datos y puntos de acceso de la interfaz de programación |
+| [`05-calidad-y-pruebas.html`](05-calidad-y-pruebas.html) | Estrategia de pruebas, 15 casos con su resultado y matriz de trazabilidad |
+| [`06-riesgos-y-cierre.html`](06-riesgos-y-cierre.html) | Ocho riesgos con su mitigación, conclusiones, limitaciones declaradas, trabajo futuro y anexos |
 
 ---
 
-## El informe
+## Generar los PDF
 
-[`informe-entrega-final.html`](informe-entrega-final.html) reúne en un solo
-documento todo lo que la rúbrica evalúa del proceso:
+Para cada documento:
 
-| Sección | Contenido |
-| --- | --- |
-| 1 | Introducción, problemática, justificación intercultural, objetivos y alcance |
-| 2 | Especificación de requisitos: 33 funcionales, 12 no funcionales, reglas de negocio |
-| 3 | Casos de uso: actores, listado de 15 y tres desarrollados en detalle |
-| 4 | Marco Scrum: roles, eventos, definición de preparado y de terminado |
-| 5 | Cronograma, los cuatro sprints con su review y retrospectiva, y las adaptaciones |
-| 6 | Product Backlog completo, 31 historias, y el backlog futuro |
-| 7 | Arquitectura, modelo de datos e interfaz de programación |
-| 8 | Plan de calidad y 15 casos de prueba con su resultado |
-| 9 | Matriz de trazabilidad |
-| 10 | Gestión de riesgos |
-| 11 | Conclusiones, limitaciones declaradas y trabajo futuro |
-| 12 | Anexos: credenciales, documentación complementaria y estructura del repositorio |
-
-### Generar el PDF
-
-1. Doble clic en `informe-entrega-final.html`.
+1. Doble clic en el archivo.
 2. **Ctrl + P**.
-3. Ajustar tres valores:
+3. Ajustar:
 
 | Campo | Valor |
 | --- | --- |
@@ -46,35 +29,61 @@ documento todo lo que la rúbrica evalúa del proceso:
 | Márgenes | **Predeterminados** |
 | Gráficos de fondo | **Activado** |
 
-4. Guardar como `informe-entrega-final.pdf` en esta misma carpeta.
+4. Guardar con el mismo nombre y extensión `.pdf`.
 
-> **«Gráficos de fondo» es el que se olvida.** Sin él, las tablas salen sin
-> fondo en las cabeceras y el documento pierde legibilidad. En Chrome y Edge
+> **«Gráficos de fondo» es el que se olvida.** Sin él las cabeceras de las
+> tablas salen sin fondo y el documento pierde legibilidad. En Chrome y Edge
 > está dentro de **Más configuraciones**.
 
-El documento ya trae su propia hoja de impresión: A4 vertical, márgenes de
-18 mm, y ninguna tabla ni ficha se parte entre dos páginas.
+Cada archivo trae su propia hoja de impresión: A4 vertical, márgenes de 18 mm,
+y ninguna tabla ni ficha se corta entre dos páginas.
 
 ---
 
-## Antes de entregar
+## Qué subir
 
-- [ ] Rellenar **integrantes**, **NRC** y **carrera** en la portada del informe.
-- [ ] Rellenar los mismos datos en la primera diapositiva de la presentación.
-- [ ] Exportar los dos PDF y comprobar que ninguna tabla queda cortada.
+La rúbrica pide cinco entregables:
+
+| # | Entregable | Qué subir |
+| --- | --- | --- |
+| 1 | Sistema funcional | `https://interculturtalidad-proyecto-final.vercel.app` |
+| 2 | Código fuente | Enlace al repositorio, o un ZIP **sin** `node_modules` |
+| 3 | Presentación | `presentacion.pdf`, desde [`../Presentacion/`](../Presentacion/) |
+| 4 | Documentación del proceso | Los seis PDF de esta carpeta |
+| 5 | Repositorio | `github.com/Bryan-Quispe/Interculturtalidad-Proyecto-Final` |
+
+### Antes de entregar
+
+- [ ] Exportar los seis PDF y revisar que ninguna tabla quede cortada.
+- [ ] Exportar la presentación.
 - [ ] Comprobar que la aplicación desplegada responde. En el plan gratuito el
-      servicio se suspende tras 15 minutos de inactividad y la primera carga
-      tarda cerca de un minuto.
+      servicio se suspende tras 15 minutos sin uso y la primera carga tarda
+      cerca de un minuto.
 - [ ] Verificar que el repositorio es accesible para el docente.
-- [ ] Confirmar que ningún archivo `.env` viaja en la entrega:
+- [ ] Confirmar que ningún `.env` viaja en la entrega:
       `git ls-files | grep -i env` solo debe listar los `.env.example`.
+
+---
+
+## Modificar los documentos
+
+Los seis se generan desde un contenido común para que no se descuadren entre
+sí. Si hay que corregir algo:
+
+1. Editar `_contenido.html`, que es el documento maestro.
+2. Ejecutar `node generar-documentos.js` en esta carpeta.
+
+No conviene editar los archivos numerados a mano: la siguiente ejecución del
+generador los sobrescribe.
+
+Para cambiar el reparto de secciones, el nombre del autor o el de la materia,
+se ajusta la cabecera de `generar-documentos.js`.
 
 ---
 
 ## Documentación de respaldo
 
-El informe resume el proceso. El detalle completo sigue en el repositorio y no
-hace falta imprimirlo, pero conviene tenerlo localizado por si el tribunal
+No hace falta imprimirla, pero conviene tenerla localizada por si el tribunal
 pregunta:
 
 | Contenido | Ubicación |
@@ -85,4 +94,3 @@ pregunta:
 | Procedimiento de despliegue | [`docs/DESPLIEGUE.md`](../../docs/DESPLIEGUE.md) |
 | Documentos por criterio de la rúbrica | [`../Documentacion/`](../Documentacion/) |
 | Guion de la defensa y preguntas previstas | [`../Documentacion/06_DEFENSA_TECNICA.md`](../Documentacion/06_DEFENSA_TECNICA.md) |
-| Instrumento de usabilidad y evaluación heurística | [`../`](../) |

@@ -1,0 +1,362 @@
+<title>Wasi Wiwakuna 3D — Plan de calidad, pruebas y trazabilidad</title>
+
+<style>
+  :root {
+    --paper:     #ffffff;
+    --paper-2:   #f4f7f5;
+    --line:      #d3ded8;
+    --line-soft: #e7eeea;
+    --text:      #16232a;
+    --text-soft: #566d76;
+    --accent:    #0a6f52;
+    --accent-2:  #0d4f5e;
+    --ochre:     #96631f;
+    --coral:     #a8342a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #0b1a20;
+      --paper-2:   #12262e;
+      --line:      #23414b;
+      --line-soft: #1a333c;
+      --text:      #e4ede9;
+      --text-soft: #96b0b8;
+      --accent:    #45c79a;
+      --accent-2:  #6ec5d6;
+      --ochre:     --ochre;
+      --ochre:     #d6a75f;
+      --coral:     #ef8074;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b1a20; --paper-2: #12262e; --line: #23414b; --line-soft: #1a333c;
+    --text: #e4ede9; --text-soft: #96b0b8; --accent: #45c79a; --accent-2: #6ec5d6;
+    --ochre: #d6a75f; --coral: #ef8074;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --paper-2: #f4f7f5; --line: #d3ded8; --line-soft: #e7eeea;
+    --text: #16232a; --text-soft: #566d76; --accent: #0a6f52; --accent-2: #0d4f5e;
+    --ochre: #96631f; --coral: #a8342a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    max-width: 210mm;
+    padding: 0 clamp(1.1rem, 5vw, 2.4rem) 5rem;
+    background: var(--paper);
+    color: var(--text);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    /* Ninguna palabra larga debe sobresalir del bloque de texto. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, Roboto, Arial, sans-serif;
+    font-weight: 650;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+    hyphens: none;
+  }
+
+  h1 { font-size: 2.05rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.32rem;
+    margin: 3.2rem 0 .9rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  h3 { font-size: 1.04rem; margin: 1.9rem 0 .5rem; }
+  h4 {
+    font-size: .82rem;
+    margin: 1.4rem 0 .4rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-soft);
+  }
+
+  p { margin: 0 0 .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: .84em;
+    /* Rutas y nombres largos parten en vez de desbordar la celda. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  code {
+    background: var(--line-soft);
+    padding: .08em .32em;
+    border-radius: 2px;
+  }
+
+  .kw {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .87em;
+    color: var(--accent-2);
+  }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover {
+    padding: 4.5rem 0 3rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .cover .institution {
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 3.4rem;
+  }
+  .cover .proyecto {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-soft);
+    margin: 0 0 .5rem;
+  }
+  .cover .autor {
+    margin: 2.6rem 0 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+  }
+
+  /* ── Índice ────────────────────────────────────────────────── */
+  .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
+  .toc h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.05rem; }
+  .toc ol { margin: .6rem 0 0; padding-left: 1.3rem; font-family: "Segoe UI", sans-serif; font-size: .9rem; }
+  .toc li { margin: .22rem 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Tablas ────────────────────────────────────────────────── */
+  .tabla-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding-bottom: .45rem;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: .42rem .6rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  thead th {
+    background: var(--paper-2);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-soft);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+  td.cod { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── Piezas ────────────────────────────────────────────────── */
+  ul, ol { margin: 0 0 .95rem; padding-left: 1.35rem; }
+  li { margin: .22rem 0; }
+
+  .nota {
+    border-left: 3px solid var(--ochre);
+    background: color-mix(in srgb, var(--ochre) 8%, transparent);
+    padding: .75rem 1rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .nota strong { color: var(--ochre); }
+
+  .ficha {
+    border: 1px solid var(--line);
+    margin: 1.2rem 0;
+  }
+  .ficha > div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ficha > div:last-child { border-bottom: 0; }
+  .ficha dt, .ficha .k {
+    background: var(--paper-2);
+    padding: .42rem .7rem;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .ficha .v { padding: .42rem .7rem; font-size: .9rem; }
+  .ficha .v ol { margin: 0; padding-left: 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.6rem 0; }
+
+  .pie {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .78rem;
+    color: var(--text-soft);
+  }
+
+  /* ── Impresión ─────────────────────────────────────────────── */
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper: #fff; --paper-2: #f2f5f3; --line: #b9c7c0; --line-soft: #dde6e1;
+      --text: #101c22; --text-soft: #4c626b; --accent: #075c44; --accent-2: #0b4553;
+      --ochre: #7d5218; --coral: #8f2b22;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { max-width: none; padding: 0; font-size: 10.5pt; }
+    .cover { padding-top: 0; page-break-after: always; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: auto; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    table, .ficha, .nota { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .tabla-wrap { overflow: visible; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<header class="cover">
+  <p class="institution">DES SOFT APLI DOMI DE INTERCUL</p>
+  <p class="proyecto">Wasi Wiwakuna 3D</p>
+  <h1>Plan de calidad, pruebas y trazabilidad</h1>
+  <p class="autor">Bryan Quispe</p>
+</header>
+
+<nav class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#s8">1. Calidad, verificación y validación</a></li>
+    <li><a href="#s9">2. Matriz de trazabilidad</a></li>
+  </ol>
+</nav>
+
+<h2 id="s8">1. Calidad, verificación y validación</h2>
+<h3>1.1 Estrategia</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 16. Niveles de prueba aplicados</caption>
+    <thead><tr><th style="width:8rem">Nivel</th><th>Propósito</th><th style="width:11rem">Técnica</th></tr></thead>
+    <tbody>
+      <tr><td>Estático</td><td>Detectar errores de tipos y de estructura.</td><td>Comprobación de tipos y revisión de código</td></tr>
+      <tr><td>Compilación</td><td>Confirmar que ambos proyectos generan sus artefactos.</td><td>Construcción de producción</td></tr>
+      <tr><td>Servicios</td><td>Verificar respuestas, permisos y persistencia.</td><td>Peticiones a los puntos de acceso</td></tr>
+      <tr><td>Integración</td><td>Confirmar el flujo entre interfaz, servicios y base de datos.</td><td>Recorridos completos</td></tr>
+      <tr><td>Interfaz</td><td>Detectar desbordamientos y estados confusos.</td><td>Revisión en escritorio y teléfono</td></tr>
+      <tr><td>Aceptación</td><td>Confirmar que el producto resuelve la necesidad.</td><td>Escenarios con usuario</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>1.2 Casos de prueba críticos</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 17. Casos de prueba y resultado</caption>
+    <thead><tr><th style="width:4.2rem">Código</th><th>Escenario</th><th>Resultado esperado</th><th style="width:5rem">Estado</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">CP-01</td><td>Registro con un correo nuevo.</td><td>Cuenta creada y contraseña almacenada cifrada.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-02</td><td>Inicio de sesión válido e inválido.</td><td>Token en el caso válido y rechazo controlado en el inválido.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-03</td><td>Un usuario consulta sus mascotas.</td><td>No recibe registros ajenos.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-04</td><td>El administrador consulta y filtra por propietario.</td><td>Visualiza todos los registros autorizados.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-05</td><td>Crear un gato y abrir el selector tridimensional.</td><td>Solo aparecen modelos de gato.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-06</td><td>Seleccionar un punto fuera del Ecuador.</td><td>Mensaje de zona no válida.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-07</td><td>Cambiar al modo de pintura.</td><td>El arrastre pinta y no rota ni acerca.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-08</td><td>Cerrar y reabrir un modelo pintado.</td><td>Los trazos reaparecen sobre la textura.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-09</td><td>Preparar el cartel sin teléfono.</td><td>Se bloquea la descarga y se indica el campo requerido.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-10</td><td>Elegir la portada y ordenar las fotografías.</td><td>La vista previa y el PDF respetan la configuración.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-11</td><td>Exportar el cartel.</td><td>Formato A4 legible, imágenes completas y nombre con fecha.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-12</td><td>Revisar la privacidad del PDF.</td><td>No contiene latitud ni longitud.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-13</td><td>Conmutar el idioma en pleno recorrido.</td><td>La interfaz cambia sin recargar y conserva el estado.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-14</td><td>Cerrar sesión con el idioma kichwa activo.</td><td>Se borra la sesión y se conserva la preferencia de idioma.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-15</td><td>Consultar una mascota registrada antes de la traducción.</td><td>Tamaño, color y raza se muestran en la lengua activa.</td><td>Superado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>1.3 Evidencia de compilación</h3>
+<p>Ambos proyectos compilan sin errores. La comprobación forma parte de la definición de terminado y no de una verificación final aislada.</p>
+<ul>
+  <li>Servicios: construcción de NestJS completada sin advertencias de tipos.</li>
+  <li>Interfaz: construcción de Next.js completada; cinco rutas generadas como contenido estático.</li>
+  <li>Persistencia: siete migraciones versionadas y aplicadas sobre el entorno de producción.</li>
+</ul>
+
+<h3>1.4 Usabilidad</h3>
+<p>Se diseñó un instrumento de evaluación basado en las heurísticas de Bastien y Scapin, complementado con los cuestionarios PSSUQ, para usabilidad percibida, y UEQ, para experiencia de usuario. El instrumento se encuentra preparado en la carpeta de la entrega.</p>
+<div class="nota">
+  <strong>Declaración sobre los datos de usabilidad.</strong> Los valores que acompañan al instrumento corresponden a participantes de ejemplo y no a un estudio ejecutado con usuarios reales. Se documentan como estructura del instrumento y no como hallazgos empíricos. Presentarlos de otro modo constituiría evidencia falsa.
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s9">2. Matriz de trazabilidad</h2>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 18. Relación entre requisitos, historias, sprints y componentes</caption>
+    <thead><tr><th style="width:7rem">Requisito</th><th style="width:8rem">Historia</th><th class="num" style="width:3.4rem">Sprint</th><th>Componente o evidencia</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">RF-01, RF-02</td><td class="cod">HU-01, HU-02</td><td class="num">1</td><td>Módulo de autenticación; pantallas de registro e inicio de sesión.</td></tr>
+      <tr><td class="cod">RF-03</td><td class="cod">HU-03, HU-04</td><td class="num">1</td><td>Guarda de sesión, guarda de roles y enumeración <code>Role</code>.</td></tr>
+      <tr><td class="cod">RF-04, RF-05</td><td class="cod">HU-07, HU-10, HU-11</td><td class="num">2</td><td>Módulo de mascotas y relación con el propietario.</td></tr>
+      <tr><td class="cod">RF-06</td><td class="cod">HU-08</td><td class="num">2</td><td>Enumeración <code>CategoriaAnimal</code> y selector controlado.</td></tr>
+      <tr><td class="cod">RF-07</td><td class="cod">HU-09</td><td class="num">2</td><td>Entidad de características y formulario de alta.</td></tr>
+      <tr><td class="cod">RF-08, RF-09</td><td class="cod">HU-13</td><td class="num">3</td><td>Campos de fotografías, teléfono y fecha del avistamiento.</td></tr>
+      <tr><td class="cod">RF-10, RF-11</td><td class="cod">HU-14, HU-15</td><td class="num">3</td><td>Selector de ubicación con validación territorial.</td></tr>
+      <tr><td class="cod">RF-12</td><td class="cod">HU-15</td><td class="num">3</td><td>Punto de acceso al catálogo público.</td></tr>
+      <tr><td class="cod">RF-13, RF-14</td><td class="cod">HU-12</td><td class="num">2</td><td>Vista administrativa y filtro por propietario.</td></tr>
+      <tr><td class="cod">RF-15, RF-16</td><td class="cod">HU-16</td><td class="num">3</td><td>Servicio de modelos y catálogo por categoría.</td></tr>
+      <tr><td class="cod">RF-17</td><td class="cod">HU-17</td><td class="num">3</td><td>Visor tridimensional y cargadores de formato.</td></tr>
+      <tr><td class="cod">RF-18</td><td class="cod">HU-19</td><td class="num">4</td><td>Modos de interacción excluyentes del visor.</td></tr>
+      <tr><td class="cod">RF-19, RF-21</td><td class="cod">HU-20</td><td class="num">4</td><td>Capa de pintura sobre la geometría y campo de trazos.</td></tr>
+      <tr><td class="cod">RF-20, RF-31</td><td class="cod">HU-21</td><td class="num">4</td><td>Herramientas de pincel, paleta y cuentagotas con lupa.</td></tr>
+      <tr><td class="cod">RF-22</td><td class="cod">HU-22</td><td class="num">4</td><td>Indicador de visibilidad y confirmación de publicación.</td></tr>
+      <tr><td class="cod">RF-23, RF-24</td><td class="cod">HU-23, HU-24</td><td class="num">4</td><td>Editor del cartel con vista previa en tiempo real.</td></tr>
+      <tr><td class="cod">RF-25, RF-30</td><td class="cod">HU-25, HU-30</td><td class="num">4</td><td>Generador del documento y composición del nombre de archivo.</td></tr>
+      <tr><td class="cod">RF-26, RF-27</td><td class="cod">HU-26, HU-27, HU-28</td><td class="num">2–3</td><td>Proveedor de idioma, diccionario tipado y traducción de valores almacenados.</td></tr>
+      <tr><td class="cod">RF-28, RF-29</td><td class="cod">HU-29, HU-31</td><td class="num">4</td><td>Campos bilingües de texto libre y catálogo de rasgos.</td></tr>
+      <tr><td class="cod">RF-32, RF-33</td><td class="cod">HU-14, HU-13</td><td class="num">4</td><td>Referencia a pie de calle editable y contactos múltiples.</td></tr>
+    </tbody>
+  </table>
+</div>
+<p><strong>Cobertura.</strong> Los treinta y tres requisitos funcionales se relacionan con al menos una historia, y las treinta y una historias están asignadas a un sprint y marcadas como completadas. La cobertura documental indica que cada requisito posee una ruta de implementación identificable; no sustituye a la ejecución de casos de prueba.</p>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<p class="pie">
+  Wasi Wiwakuna 3D · Plan de calidad, pruebas y trazabilidad<br>
+  DES SOFT APLI DOMI DE INTERCUL · Bryan Quispe
+</p>

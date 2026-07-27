@@ -1,0 +1,368 @@
+<title>Wasi Wiwakuna 3D — Gestión de riesgos y cierre del proyecto</title>
+
+<style>
+  :root {
+    --paper:     #ffffff;
+    --paper-2:   #f4f7f5;
+    --line:      #d3ded8;
+    --line-soft: #e7eeea;
+    --text:      #16232a;
+    --text-soft: #566d76;
+    --accent:    #0a6f52;
+    --accent-2:  #0d4f5e;
+    --ochre:     #96631f;
+    --coral:     #a8342a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #0b1a20;
+      --paper-2:   #12262e;
+      --line:      #23414b;
+      --line-soft: #1a333c;
+      --text:      #e4ede9;
+      --text-soft: #96b0b8;
+      --accent:    #45c79a;
+      --accent-2:  #6ec5d6;
+      --ochre:     --ochre;
+      --ochre:     #d6a75f;
+      --coral:     #ef8074;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b1a20; --paper-2: #12262e; --line: #23414b; --line-soft: #1a333c;
+    --text: #e4ede9; --text-soft: #96b0b8; --accent: #45c79a; --accent-2: #6ec5d6;
+    --ochre: #d6a75f; --coral: #ef8074;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --paper-2: #f4f7f5; --line: #d3ded8; --line-soft: #e7eeea;
+    --text: #16232a; --text-soft: #566d76; --accent: #0a6f52; --accent-2: #0d4f5e;
+    --ochre: #96631f; --coral: #a8342a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    max-width: 210mm;
+    padding: 0 clamp(1.1rem, 5vw, 2.4rem) 5rem;
+    background: var(--paper);
+    color: var(--text);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    /* Ninguna palabra larga debe sobresalir del bloque de texto. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, Roboto, Arial, sans-serif;
+    font-weight: 650;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+    hyphens: none;
+  }
+
+  h1 { font-size: 2.05rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.32rem;
+    margin: 3.2rem 0 .9rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  h3 { font-size: 1.04rem; margin: 1.9rem 0 .5rem; }
+  h4 {
+    font-size: .82rem;
+    margin: 1.4rem 0 .4rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-soft);
+  }
+
+  p { margin: 0 0 .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: .84em;
+    /* Rutas y nombres largos parten en vez de desbordar la celda. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  code {
+    background: var(--line-soft);
+    padding: .08em .32em;
+    border-radius: 2px;
+  }
+
+  .kw {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .87em;
+    color: var(--accent-2);
+  }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover {
+    padding: 4.5rem 0 3rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .cover .institution {
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 3.4rem;
+  }
+  .cover .proyecto {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--text-soft);
+    margin: 0 0 .5rem;
+  }
+  .cover .autor {
+    margin: 2.6rem 0 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+  }
+
+  /* ── Índice ────────────────────────────────────────────────── */
+  .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
+  .toc h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.05rem; }
+  .toc ol { margin: .6rem 0 0; padding-left: 1.3rem; font-family: "Segoe UI", sans-serif; font-size: .9rem; }
+  .toc li { margin: .22rem 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Tablas ────────────────────────────────────────────────── */
+  .tabla-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding-bottom: .45rem;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: .42rem .6rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  thead th {
+    background: var(--paper-2);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-soft);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+  td.cod { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── Piezas ────────────────────────────────────────────────── */
+  ul, ol { margin: 0 0 .95rem; padding-left: 1.35rem; }
+  li { margin: .22rem 0; }
+
+  .nota {
+    border-left: 3px solid var(--ochre);
+    background: color-mix(in srgb, var(--ochre) 8%, transparent);
+    padding: .75rem 1rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .nota strong { color: var(--ochre); }
+
+  .ficha {
+    border: 1px solid var(--line);
+    margin: 1.2rem 0;
+  }
+  .ficha > div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ficha > div:last-child { border-bottom: 0; }
+  .ficha dt, .ficha .k {
+    background: var(--paper-2);
+    padding: .42rem .7rem;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .ficha .v { padding: .42rem .7rem; font-size: .9rem; }
+  .ficha .v ol { margin: 0; padding-left: 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.6rem 0; }
+
+  .pie {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .78rem;
+    color: var(--text-soft);
+  }
+
+  /* ── Impresión ─────────────────────────────────────────────── */
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper: #fff; --paper-2: #f2f5f3; --line: #b9c7c0; --line-soft: #dde6e1;
+      --text: #101c22; --text-soft: #4c626b; --accent: #075c44; --accent-2: #0b4553;
+      --ochre: #7d5218; --coral: #8f2b22;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { max-width: none; padding: 0; font-size: 10.5pt; }
+    .cover { padding-top: 0; page-break-after: always; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: auto; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    table, .ficha, .nota { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .tabla-wrap { overflow: visible; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<header class="cover">
+  <p class="institution">DES SOFT APLI DOMI DE INTERCUL</p>
+  <p class="proyecto">Wasi Wiwakuna 3D</p>
+  <h1>Gestión de riesgos y cierre del proyecto</h1>
+  <p class="autor">Bryan Quispe</p>
+</header>
+
+<nav class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#s10">1. Gestión de riesgos</a></li>
+    <li><a href="#s11">2. Conclusiones y trabajo futuro</a></li>
+    <li><a href="#s12">3. Anexos</a></li>
+  </ol>
+</nav>
+
+<h2 id="s10">1. Gestión de riesgos</h2>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 19. Riesgos identificados y su tratamiento</caption>
+    <thead><tr><th style="width:4rem">Código</th><th>Riesgo</th><th style="width:5rem">Impacto</th><th>Mitigación aplicada</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">R-01</td><td>Exposición de la ubicación exacta del propietario.</td><td>Alto</td><td>Separación entre ubicación interna y referencia pública; exclusión de coordenadas del documento exportado.</td></tr>
+      <tr><td class="cod">R-02</td><td>Filtración de credenciales de servicios externos.</td><td>Alto</td><td>Las credenciales residen únicamente en el servidor; las subidas se encaminan a través de él.</td></tr>
+      <tr><td class="cod">R-03</td><td>Acceso de un usuario a registros ajenos.</td><td>Alto</td><td>Verificación de propiedad en el servidor y rutas diferenciadas por rol.</td></tr>
+      <tr><td class="cod">R-04</td><td>Modelos sin geometría adecuada para la pintura.</td><td>Medio</td><td>Figura de respaldo y validación de formato en la carga.</td></tr>
+      <tr><td class="cod">R-05</td><td>Traducción lingüísticamente incorrecta.</td><td>Medio</td><td>Adopción de la norma ALKI, cita de fuentes y declaración de los términos sin verificar.</td></tr>
+      <tr><td class="cod">R-06</td><td>Suspensión del servicio en el plan gratuito durante la demostración.</td><td>Medio</td><td>Activación previa del servicio, entorno local de respaldo y grabación de la demostración.</td></tr>
+      <tr><td class="cod">R-07</td><td>Pérdida de los archivos subidos por el usuario al redesplegar.</td><td>Medio</td><td>Las fotografías se alojan en un servicio externo; la limitación se declara para los modelos.</td></tr>
+      <tr><td class="cod">R-08</td><td>Divergencia entre el esquema y las migraciones versionadas.</td><td>Alto</td><td>Verificación automatizada del esquema frente a las migraciones antes de desplegar.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s11">2. Conclusiones y trabajo futuro</h2>
+<h3>2.1 Conclusiones</h3>
+<ol>
+  <li>El sistema responde a la problemática planteada: estructura la información de búsqueda, aporta una referencia visual tridimensional personalizable, protege la ubicación del propietario y produce un cartel difundible.</li>
+  <li>El componente intercultural está integrado en el núcleo del producto y no añadido sobre él. La preferencia de idioma sobrevive al cierre de sesión, los datos almacenados se traducen en pantalla y el documento exportado se rotula en la lengua elegida.</li>
+  <li>La traducción es defendible término a término: se adopta la norma ortográfica oficial, se cita la fuente de cada entrada y no se incorpora ninguna raíz léxica inventada.</li>
+  <li>Convertir las señas y el carácter en una lista cerrada permitió que la información determinante para reconocer al animal se muestre en cualquiera de las dos lenguas, sin recurrir a una traducción automática que no existe para el kichwa ecuatoriano.</li>
+  <li>El proceso muestra adaptación real: ocho decisiones de diseño se modificaron tras inspeccionar el incremento correspondiente.</li>
+</ol>
+
+<h3>2.2 Limitaciones declaradas</h3>
+<ol>
+  <li><strong>La traducción no ha sido validada por hablantes nativos.</strong> Se sustenta en fuentes lexicográficas oficiales y aplica correctamente la norma, pero eso no sustituye la revisión de un hablante. Seis piezas de vocabulario se marcan como pendientes de contrastar.</li>
+  <li><strong>El control de versiones se adoptó en la fase final.</strong> El historial del repositorio no refleja la cronología real del trabajo; el seguimiento consta en la documentación del proceso.</li>
+  <li><strong>La capa intercultural no figuraba en el backlog inicial.</strong> Se incorporó como épica transversal, aunque constituye el componente de mayor peso de la evaluación.</li>
+  <li><strong>No se realizó una auditoría formal de accesibilidad.</strong> Se aplicaron criterios básicos, sin certificación de conformidad.</li>
+  <li><strong>La cobertura de pruebas automatizadas es la deuda técnica principal.</strong> La verificación se realizó de forma manual, guiada por los criterios de aceptación.</li>
+</ol>
+
+<h3>2.3 Trabajo futuro</h3>
+<ol>
+  <li>Someter el glosario a revisión por un docente del Sistema de Educación Intercultural Bilingüe o por la Academia de la Lengua Kichwa.</li>
+  <li>Incorporar estados de la búsqueda para que una ficha pueda cerrarse cuando el animal aparece.</li>
+  <li>Notificar a quienes sigan un sector cuando se registre una mascota cercana.</li>
+  <li>Extender la plataforma a otras lenguas de relación intercultural, para lo que la arquitectura ya está preparada.</li>
+  <li>Optimizar el uso desde el teléfono, que es el dispositivo desde el que realmente se publica una búsqueda.</li>
+  <li>Construir una batería de pruebas automatizadas que se ejecute en cada integración.</li>
+</ol>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<h2 id="s12">3. Anexos</h2>
+<h3>3.1 Acceso al sistema</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 20. Credenciales de demostración</caption>
+    <thead><tr><th style="width:8rem">Perfil</th><th>Correo</th><th style="width:8rem">Contraseña</th></tr></thead>
+    <tbody>
+      <tr><td>Administrador</td><td class="mono">admin@mascotas3d.com</td><td class="mono">Admin1234</td></tr>
+      <tr><td>Usuario</td><td class="mono">rquisper406@gmail.com</td><td class="mono">Demo1234</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.2 Documentación complementaria</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 21. Documentos que acompañan a esta entrega</caption>
+    <thead><tr><th style="width:14rem">Documento</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">docs/TRADUCCION_KICHWA.md</td><td>Glosario completo con la fuente de cada término y la declaración de honestidad.</td></tr>
+      <tr><td class="mono">docs/ARQUITECTURA_MVC.md</td><td>Separación en capas y organización del código.</td></tr>
+      <tr><td class="mono">docs/DESPLIEGUE.md</td><td>Procedimiento de despliegue y limitaciones del alojamiento.</td></tr>
+      <tr><td class="mono">docs/Documentacion_Scrum_Mascotas3D/</td><td>Quince documentos del proceso, incluidos manuales de usuario y técnico.</td></tr>
+      <tr><td class="mono">Entrega Final/Documentacion/</td><td>Ocho documentos correspondientes a los criterios de la rúbrica.</td></tr>
+      <tr><td class="mono">Entrega Final/Presentacion/</td><td>Presentación de la defensa y guía de proyección.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.3 Estructura del repositorio</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 22. Organización del código fuente</caption>
+    <thead><tr><th style="width:11rem">Ruta</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">backend/src/modules/</td><td>Módulos de autenticación, usuarios, mascotas, modelos y subidas.</td></tr>
+      <tr><td class="mono">backend/prisma/</td><td>Esquema, migraciones versionadas y datos iniciales.</td></tr>
+      <tr><td class="mono">backend/Modelos/</td><td>Modelos tridimensionales del catálogo precargado.</td></tr>
+      <tr><td class="mono">frontend/src/app/</td><td>Rutas de la aplicación.</td></tr>
+      <tr><td class="mono">frontend/src/components/</td><td>Componentes de interfaz, visor y editores.</td></tr>
+      <tr><td class="mono">frontend/src/lib/i18n/</td><td>Diccionario bilingüe y proveedor de idioma.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="pie">
+  Wasi Wiwakuna 3D · Gestión de riesgos y cierre del proyecto<br>
+  DES SOFT APLI DOMI DE INTERCUL · Bryan Quispe
+</p>
