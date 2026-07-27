@@ -1,0 +1,643 @@
+<title>Wasi Wiwakuna 3D — Defensa del proyecto</title>
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Paleta tomada del propio producto: el azul del lienzo 3D, el
+     esmeralda de la interfaz, el teal y el coral del cartel PDF, y
+     el ocre de la paleta de pintura. Los neutros llevan sesgo
+     verde-cian para que no lean como grises de plantilla.
+     ───────────────────────────────────────────────────────────── */
+  :root {
+    --ink:        #071620;
+    --ink-soft:   #16323f;
+    --paper:      #f4f7f4;
+    --paper-2:    #e8eeea;
+    --line:       #c9d6cf;
+    --text:       #0d1f28;
+    --text-soft:  #4a6470;
+    --emerald:    #0b7f5c;
+    --teal:       #087f6d;
+    --ochre:      #b4762c;
+    --coral:      #c0392f;
+    --shadow:     0 18px 50px -24px rgba(7,22,32,.45);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #071620;
+      --paper-2:   #0e2430;
+      --line:      #1e3d4c;
+      --text:      #e6efea;
+      --text-soft: #91adb6;
+      --emerald:   #34d399;
+      --teal:      #4fd1b5;
+      --ochre:     #e0aa5e;
+      --coral:     #f0776a;
+      --shadow:    0 18px 50px -24px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #071620;
+    --paper-2:   #0e2430;
+    --line:      #1e3d4c;
+    --text:      #e6efea;
+    --text-soft: #91adb6;
+    --emerald:   #34d399;
+    --teal:      #4fd1b5;
+    --ochre:     #e0aa5e;
+    --coral:     #f0776a;
+    --shadow:    0 18px 50px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"] {
+    --paper:     #f4f7f4;
+    --paper-2:   #e8eeea;
+    --line:      #c9d6cf;
+    --text:      #0d1f28;
+    --text-soft: #4a6470;
+    --emerald:   #0b7f5c;
+    --teal:      #087f6d;
+    --ochre:     #b4762c;
+    --coral:     #c0392f;
+    --shadow:    0 18px 50px -24px rgba(7,22,32,.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* El kichwa se compone en monoespaciada a propósito: en todo el
+     proyecto los términos son entradas de glosario con fuente, no
+     adorno. Marcarlos tipográficamente lo hace visible. */
+  .kw {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: .88em;
+    letter-spacing: -.01em;
+    color: var(--teal);
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.12;
+    letter-spacing: -.015em;
+  }
+
+  /* ── Armazón de diapositivas ───────────────────────────────── */
+  .deck { position: relative; }
+
+  .slide {
+    display: none;
+    min-height: 100vh;
+    padding: clamp(2rem, 5vw, 4.5rem) clamp(1.25rem, 6vw, 6rem) 6rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    animation: rise .38s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .slide.on { display: flex; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide { animation: none; }
+  }
+
+  .eyebrow {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--emerald);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+  }
+  .eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .slide h2 { font-size: clamp(1.9rem, 4.4vw, 3rem); }
+  .lede {
+    font-size: clamp(1.02rem, 1.7vw, 1.2rem);
+    color: var(--text-soft);
+    max-width: 62ch;
+    margin: 1rem 0 0;
+  }
+  .body-cols { columns: 2; column-gap: 3rem; }
+  @media (max-width: 780px) { .body-cols { columns: 1; } }
+
+  /* ── Componentes ───────────────────────────────────────────── */
+  .grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); }
+
+  .card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1.15rem 1.3rem;
+  }
+  .card h3 {
+    font-size: 1.02rem;
+    margin-bottom: .4rem;
+  }
+  .card p { margin: 0; font-size: .93rem; color: var(--text-soft); }
+
+  /* Numeración: solo donde el orden es información real
+     (los sprints y los pasos de la demostración lo son). */
+  .num {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--ochre);
+    letter-spacing: .08em;
+  }
+
+  ul.clean { list-style: none; padding: 0; margin: 1.6rem 0 0; }
+  ul.clean li {
+    padding: .62rem 0 .62rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    font-size: .97rem;
+  }
+  ul.clean li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 1.15rem;
+    width: 7px; height: 7px;
+    background: var(--emerald);
+  }
+  ul.clean li b { color: var(--text); }
+  ul.clean li:last-child { border-bottom: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.6rem;
+    font-size: .92rem;
+  }
+  th, td {
+    text-align: left;
+    padding: .6rem .8rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-soft);
+    font-weight: 700;
+  }
+  td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scroll-x { overflow-x: auto; }
+
+  .quote {
+    border-left: 3px solid var(--ochre);
+    padding: .3rem 0 .3rem 1.3rem;
+    margin: 1.8rem 0 0;
+    font-family: Georgia, serif;
+    font-size: clamp(1.05rem, 2vw, 1.32rem);
+    line-height: 1.42;
+    max-width: 54ch;
+  }
+
+  .flag {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    padding: .2rem .5rem;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+  .flag.bad  { color: var(--coral); }
+  .flag.good { color: var(--emerald); }
+
+  .stat {
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.1rem);
+    line-height: 1;
+    color: var(--emerald);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat + p { margin-top: .5rem; font-size: .88rem; }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover h1 {
+    font-size: clamp(2.6rem, 8vw, 5.4rem);
+    line-height: .98;
+  }
+  .cover .sub {
+    font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+    color: var(--text-soft);
+    margin-top: 1.1rem;
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+  .cover .meta {
+    margin-top: 3rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.2rem;
+    font-size: .86rem;
+    color: var(--text-soft);
+  }
+  .cover .meta b { display: block; color: var(--text); font-weight: 600; }
+
+  /* ── Navegación ────────────────────────────────────────────── */
+  .bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .6rem clamp(1rem, 4vw, 2.5rem);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+    z-index: 40;
+  }
+  .rail { flex: 1; height: 2px; background: var(--line); position: relative; }
+  .rail span {
+    position: absolute; inset: 0 auto 0 0;
+    background: var(--emerald);
+    transition: width .3s ease;
+  }
+  .bar button {
+    font: inherit;
+    font-size: .82rem;
+    padding: .3rem .8rem;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .bar button:hover { border-color: var(--emerald); color: var(--emerald); }
+  .bar button:focus-visible { outline: 2px solid var(--emerald); outline-offset: 2px; }
+  .count {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .78rem;
+    color: var(--text-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Impresión a PDF ───────────────────────────────────────── */
+  @media print {
+    .bar { display: none; }
+    .slide {
+      display: flex !important;
+      min-height: auto;
+      page-break-after: always;
+      padding: 1.5cm;
+      animation: none;
+    }
+  }
+</style>
+
+<div class="deck">
+
+  <!-- 1 ───────────────────────────────────────────────────────── -->
+  <section class="slide on cover">
+    <div class="eyebrow">Desarrollo de Software Aplicado a la Interculturalidad · Tercer parcial</div>
+    <h1>Wasi Wiwakuna <span style="color:var(--emerald)">3D</span></h1>
+    <p class="sub">Buscar a los animales de la casa, en la lengua de la casa.</p>
+    <div class="meta">
+      <div><b>Responsable técnico</b>Bryan Quispe</div>
+      <div><b>Período</b>24 mayo – 25 julio 2026</div>
+      <div><b>Institución</b>Universidad de las Fuerzas Armadas ESPE</div>
+      <div><b>Estado</b>Desplegado y en funcionamiento</div>
+    </div>
+  </section>
+
+  <!-- 2 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">La necesidad</div>
+    <h2>Cuando se pierde un animal, la búsqueda se hace mal</h2>
+    <p class="lede">No por falta de voluntad, sino porque el circuito informal —el grupo de WhatsApp, el cartel a mano en un poste— falla de formas concretas y repetidas.</p>
+    <ul class="clean">
+      <li><b>La información llega incompleta.</b> Un mensaje reenviado pierde la foto, o llega la foto sin el teléfono. Nada obliga a incluir lo indispensable.</li>
+      <li><b>Una fotografía no siempre basta.</b> Muchos perros mestizos negros medianos se parecen en una foto de celular tomada de noche.</li>
+      <li><b>Publicar la dirección expone al propietario.</b> El impulso de dar todos los datos convierte un cartel de búsqueda en información útil para terceros.</li>
+      <li><b>Nada se puede consultar después.</b> Un mensaje de hace tres semanas es irrecuperable. Quien encuentra un animal no tiene dónde mirar.</li>
+      <li><b>Todo el circuito ocurre en castellano.</b> Y esa es la falla que da sentido al proyecto.</li>
+    </ul>
+  </section>
+
+  <!-- 3 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">La necesidad · dimensión intercultural</div>
+    <h2>El kichwa es lengua oficial, pero no existe en el software cotidiano</h2>
+    <div class="grid g3">
+      <div class="card">
+        <div class="stat">Art. 2</div>
+        <p>La Constitución de 2008 declara el kichwa lengua oficial de relación intercultural del Ecuador.</p>
+      </div>
+      <div class="card">
+        <div class="stat">1.ª</div>
+        <p>Es la lengua indígena con más hablantes del país.</p>
+      </div>
+      <div class="card">
+        <div class="stat">≈ 0</div>
+        <p>Servicios digitales cotidianos disponibles en kichwa.</p>
+      </div>
+    </div>
+    <p class="quote">Una familia kichwahablante que pierde un animal debe operar en una lengua que no es la suya para resolver un asunto doméstico elemental.</p>
+    <p class="lede">Y el animal de crianza —<span class="kw">wiwa</span>— no es un accesorio afectivo en la economía familiar andina: cuida el ganado, controla plagas, es sustento. Perderlo es una pérdida material.</p>
+  </section>
+
+  <!-- 4 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Los usuarios</div>
+    <h2>Para quién se construyó</h2>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Actor</th><th>Quién es</th><th>Qué necesita</th></tr></thead>
+        <tbody>
+          <tr><td><b>Propietario</b><br><span class="kw">amu</span></td><td>La persona que perdió a su mascota. Hispanohablante o kichwahablante.</td><td>Publicar una ficha completa y un cartel difundible sin exponer su domicilio.</td></tr>
+          <tr><td><b>Comunidad</b><br><span class="kw">ayllullakta</span></td><td>El vecino que vio un animal o quiere ayudar. No necesita cuenta.</td><td>Consultar por especie y sector, y contrastar lo que vio.</td></tr>
+          <tr><td><b>Administrador</b><br><span class="kw">kamak</span></td><td>Responsable de la plataforma.</td><td>Supervisar registros y filtrar por propietario.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">El usuario kichwahablante <b>no es un actor aparte</b>. Es el mismo propietario o el mismo vecino, operando en su lengua. Separarlo en un "modo especial" habría reproducido la exclusión que el proyecto intenta corregir.</p>
+  </section>
+
+  <!-- 5 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">La solución</div>
+    <h2>Una ficha que se puede mirar, no solo leer</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Registro estructurado</h3><p>Un formulario con validación obliga a lo indispensable: especie, señas, contacto y zona. Lo que un mensaje reenviado no garantiza.</p></div>
+      <div class="card"><h3>Modelo 3D pintable</h3><p>Se elige un modelo de la especie y se <b>pintan las señas</b> sobre su textura: la mancha, el parche, la oreja distinta. Se rota y se mira desde cualquier ángulo.</p></div>
+      <div class="card"><h3>Zona sin exponer el domicilio</h3><p>Se distingue la ubicación interna de la referencia pública. El PDF no contiene latitud ni longitud.</p></div>
+      <div class="card"><h3>Cartel PDF listo para imprimir</h3><p>Con vista previa, orden de fotos y portada elegible. Se rotula en el idioma que se elija.</p></div>
+      <div class="card"><h3>Varios teléfonos</h3><p>Buscar no lo hace una sola persona. Si quien contesta está trabajando, el aviso no debe perderse.</p></div>
+      <div class="card"><h3>Todo en dos lenguas</h3><p>Castellano, kichwa, o ambas a la vez. Conmutable sin recargar y sin iniciar sesión.</p></div>
+    </div>
+  </section>
+
+  <!-- 6 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">La solución · demostración</div>
+    <h2>Ocho pasos, cada uno responde a un problema</h2>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th style="width:3rem">#</th><th>Acción</th><th>Qué demuestra</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td>Conmutar el idioma en la portada</td><td>Cambia toda la interfaz sin recargar, antes del inicio de sesión</td></tr>
+          <tr><td class="num">02</td><td>Registrarse e iniciar sesión</td><td>Contraseña cifrada, sesión con JWT validada en cada petición</td></tr>
+          <tr><td class="num">03</td><td>Registrar la mascota</td><td>Campos obligatorios y rasgos de lista cerrada</td></tr>
+          <tr><td class="num">04</td><td>Elegir un modelo 3D</td><td>El catálogo <b>solo</b> ofrece modelos de esa especie, filtrados en el servidor</td></tr>
+          <tr><td class="num">05</td><td>Pintar las señas</td><td>Pintura sobre coordenadas UV: el trazo queda pegado al modelo al rotar</td></tr>
+          <tr><td class="num">06</td><td>Marcar el sector en el mapa</td><td>Sector y calle de referencia, corregibles a mano</td></tr>
+          <tr><td class="num">07</td><td>Exportar el cartel</td><td>Sale en el idioma elegido y <b>sin coordenadas</b></td></tr>
+          <tr><td class="num">08</td><td>Cerrar sesión</td><td>Se borra la sesión pero <b>se conserva el idioma</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 7 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Enfoque intercultural · el argumento central</div>
+    <h2>Por qué esto no es "una traducción añadida"</h2>
+    <p class="lede">Cinco decisiones verificables en el código. Ninguna es decorativa; todas cambian cómo se comporta el sistema.</p>
+    <ul class="clean">
+      <li><b>No hay un "modo indígena".</b> El selector está en la portada, el login y el registro. Hay una aplicación que habla dos lenguas, no una versión aparte para unos usuarios.</li>
+      <li><b>La lengua no es un dato de sesión.</b> Al cerrar sesión se borra todo el almacenamiento <em>menos</em> el idioma. La lengua de una persona no caduca cuando se desconecta.</li>
+      <li><b>Los datos ya guardados también se traducen.</b> Color, tamaño y raza se guardan en castellano y se traducen en pantalla. Una mascota registrada antes de existir la traducción se ve igualmente en kichwa.</li>
+      <li><b>El cartel impreso también.</b> El PDF que se pega en el poste sale en kichwa. Si fuera decorativo se habría quedado en los botones.</li>
+      <li><b>El texto del usuario se respeta.</b> Lo que la persona escribe a mano <b>nunca</b> se traduce automáticamente. Traducir la voz de alguien es sobreescribirla.</li>
+    </ul>
+  </section>
+
+  <!-- 8 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Enfoque intercultural · rigor</div>
+    <h2>La traducción se puede defender palabra por palabra</h2>
+    <div class="grid g3">
+      <div class="card"><div class="stat">540</div><p>Cadenas traducidas, con su clave y su par en las dos lenguas.</p></div>
+      <div class="card"><div class="stat">3</div><p>Fuentes lexicográficas: Ministerio de Educación (SEIB), GAD de Chimborazo y la norma ALKI.</p></div>
+      <div class="card"><div class="stat">0</div><p>Raíces léxicas inventadas.</p></div>
+    </div>
+    <p class="lede" style="margin-top:2rem"><b>Norma ALKI</b> (Tabacundo, 1998), la que usa el Ministerio de Educación en el Sistema de Educación Intercultural Bilingüe: tres vocales, sin <code>c</code> ni <code>qu</code>. Escribimos <span class="kw">kichwa</span>, no <em>quichua</em>; <span class="kw">wasi</span>, no <em>huasi</em>; <span class="kw">hatun</span>, no <em>jatun</em>.</p>
+    <p class="lede">Escribir kichwa con ortografía castellanizada es justo la práctica que la política lingüística ecuatoriana busca corregir. <b>La elección ortográfica es, en sí misma, una postura.</b></p>
+    <p class="quote">Cuando un concepto técnico no tiene equivalente documentado, o se conserva el préstamo, o se compone con raíces atestiguadas. <span class="kw">llikachaski</span> = correo electrónico: <span class="kw">llika</span> (red) + <span class="kw">chaski</span>, el mensajero del Tawantinsuyu.</p>
+  </section>
+
+  <!-- 9 ───────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Enfoque intercultural · el problema difícil</div>
+    <h2>Qué hacer con lo que la gente escribe a mano</h2>
+    <p class="lede">La descripción libre es el dato que más sirve para reconocer a un animal, y es justo el que no se puede traducir solo. Un kichwahablante veía la ficha rotulada en su lengua y un párrafo en castellano.</p>
+    <div class="grid g2">
+      <div class="card">
+        <span class="flag bad">Descartado</span>
+        <h3 style="margin-top:.7rem">Traducción automática</h3>
+        <p>Los servicios comerciales traducen <b>quechua sureño</b> (Cusco–Bolivia): otra variedad y fuera de la norma ALKI. Usarlo destruiría el rigor que sostiene todo lo anterior.</p>
+      </div>
+      <div class="card">
+        <span class="flag good">Adoptado</span>
+        <h3 style="margin-top:.7rem">Convertir la prosa en dato</h3>
+        <p>17 rasgos de lista cerrada —carácter, pelaje, señas— guardados por identificador y no por rótulo. Un dato sí se muestra en cualquier lengua.</p>
+      </div>
+    </div>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Castellano</th><th>Kichwa</th><th>Castellano</th><th>Kichwa</th></tr></thead>
+        <tbody>
+          <tr><td>Cariñoso</td><td class="kw">Kuyak</td><td>Pelo largo</td><td class="kw">Suni millma</td></tr>
+          <tr><td>Asustadizo</td><td class="kw">Manchak</td><td>Cojea</td><td class="kw">Hankan</td></tr>
+          <tr><td>Bueno con los niños</td><td class="kw">Wawakunawan alli</td><td>Orejas caídas</td><td class="kw">Warkurishka rinri</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">A esto se suma un campo de descripción en kichwa que escribe la propia persona, y una vía que no pasa por la escritura: <b>pintar el color sobre el modelo 3D no requiere escribir en ninguna lengua</b>.</p>
+  </section>
+
+  <!-- 10 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Enfoque intercultural · qué significa respetar</div>
+    <h2>El respeto está en las decisiones, no en el discurso</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Respeto a la lengua</h3><p>Se aplica la norma oficial, se cita cada término y no se inventa vocabulario. Lo que no se pudo verificar se declara como tal.</p></div>
+      <div class="card"><h3>Respeto a la voz</h3><p>Lo que una persona escribe sobre su animal se muestra tal cual. No se traduce a ciegas ni se corrige.</p></div>
+      <div class="card"><h3>Respeto al territorio</h3><p>El sector se rellena solo pero <b>se puede corregir</b>: los mapas no conocen todos los barrios del sur de Quito, y quien vive ahí sí.</p></div>
+      <div class="card"><h3>Respeto a la privacidad</h3><p>Se publica dónde se vio al animal, nunca dónde vive su dueño. Es una regla verificable, no una promesa.</p></div>
+      <div class="card"><h3>Respeto a quien no escribe</h3><p>Señalar y pintar sobre el modelo describe al animal sin exigir lectoescritura ni vocabulario formal.</p></div>
+      <div class="card"><h3>Respeto al barrio</h3><p>La búsqueda es comunitaria: varios teléfonos, catálogo público sin cuenta, y referencias por sector, como se orienta la gente de verdad.</p></div>
+    </div>
+  </section>
+
+  <!-- 11 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Proceso de desarrollo</div>
+    <h2>Cuatro sprints en nueve semanas</h2>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Sprint</th><th>Fechas</th><th>Meta</th><th class="n">Puntos</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td class="n">24 may – 6 jun</td><td>Base técnica y acceso seguro</td><td class="n">24</td></tr>
+          <tr><td class="num">02</td><td class="n">7 jun – 20 jun</td><td>Gestión de mascotas por propietario</td><td class="n">24</td></tr>
+          <tr><td class="num">03</td><td class="n">21 jun – 11 jul</td><td>Búsqueda, difusión y visualización 3D</td><td class="n">33</td></tr>
+          <tr><td class="num">04</td><td class="n">12 jul – 25 jul</td><td>Identificación visual, cartel y cierre</td><td class="n">37</td></tr>
+          <tr><td class="num">EP</td><td class="n">transversal</td><td>Capa intercultural kichwa–castellano</td><td class="n">21</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">Scrum adaptado a un proyecto con un responsable principal. El Sprint 3 duró una semana más porque concentraba cuatro integraciones externas con riesgo propio; extenderlo fue preferible a arrastrar historias incompletas.</p>
+    <p class="lede"><b>Evidencia:</b> 15 documentos Scrum, 8 artefactos en PDF, ERS, casos de uso, modelo de datos, informe de usabilidad y evaluación heurística.</p>
+  </section>
+
+  <!-- 12 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Proceso de desarrollo · evolución</div>
+    <h2>Lo que cambió al inspeccionar cada incremento</h2>
+    <p class="lede">Un proceso organizado no se demuestra con un plan que se cumplió, sino con decisiones que cambiaron al ver el resultado.</p>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Se detectó</th><th>Se decidió</th></tr></thead>
+        <tbody>
+          <tr><td>La pintura quedaba flotando, desalineada al rotar el modelo.</td><td>Reimplementar sobre coordenadas UV de la textura en vez del espacio de pantalla.</td></tr>
+          <tr><td>Rotar y pintar a la vez producía trazos accidentales.</td><td>Hacer los tres modos del visor mutuamente excluyentes.</td></tr>
+          <tr><td>Pintar un modelo del catálogo lo degradaba para todos.</td><td>Al editar se crea una copia propia; el original queda intacto.</td></tr>
+          <tr><td>Publicar la dirección exacta exponía al propietario.</td><td>Separar ubicación interna de referencia pública; excluir coordenadas del PDF.</td></tr>
+          <tr><td>El mapa devolvía un barrio que no es el que usa la gente.</td><td>Dejar el sector editable en vez de confiar en el geocodificador.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 13 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Calidad técnica</div>
+    <h2>Cómo está construido</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Frontend</h3><p>Next.js 14, React, TypeScript, Tailwind. Three.js para el visor y la pintura. jsPDF para el cartel. Desplegado en Vercel.</p></div>
+      <div class="card"><h3>Backend</h3><p>NestJS, Passport con JWT, validación declarativa, Prisma y PostgreSQL. Desplegado en Render con migraciones versionadas.</p></div>
+    </div>
+    <ul class="clean">
+      <li><b>Las reglas viven en el servidor.</b> Endpoints distintos por rol; la propiedad se verifica antes de editar o borrar. La validación de cliente es comodidad, la de servidor es la que protege.</li>
+      <li><b>Los secretos no viajan al navegador.</b> La subida de imágenes pasa por el backend precisamente por eso.</li>
+      <li><b>Accesibilidad básica.</b> Etiquetas ARIA, errores asociados al campo, y el atributo <code>lang</code> del documento cambia a <code>qu</code> en kichwa para que un lector de pantalla lo pronuncie bien.</li>
+      <li><b>Ambos proyectos compilan sin errores</b> de TypeScript, y es parte de la definición de terminado, no una comprobación final.</li>
+    </ul>
+  </section>
+
+  <!-- 14 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Por qué perdura</div>
+    <h2>Qué hace que esto siga valiendo dentro de cinco años</h2>
+    <p class="lede">Un proyecto intercultural que depende de una moda técnica caduca con ella. Estas decisiones son las que lo hacen sostenible.</p>
+    <ul class="clean">
+      <li><b>El glosario sobrevive a la aplicación.</b> 540 términos documentados con su fuente, incluida terminología informática en kichwa, que escasea. Sirve a cualquier otro proyecto aunque este desaparezca.</li>
+      <li><b>Añadir una lengua no obliga a migrar datos.</b> Rasgos, colores y tamaños se guardan por identificador. Sumar shuar o inglés es añadir una columna al diccionario.</li>
+      <li><b>Consolida la norma en vez de fragmentarla.</b> Aplicar ALKI suma a la estandarización ortográfica; escribir "a oído" la erosiona.</li>
+      <li><b>El problema no caduca.</b> Las mascotas se seguirán perdiendo, y los barrios seguirán organizándose para buscarlas.</li>
+      <li><b>Cuesta cero mantenerlo vivo.</b> Sin claves de pago ni servicios propietarios: mapas de OpenStreetMap y despliegue en planes gratuitos.</li>
+    </ul>
+  </section>
+
+  <!-- 15 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Visión a futuro</div>
+    <h2>Lo que sigue</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Validación con hablantes</h3><p>Someter el glosario a un docente del SEIB o a la Academia de la Lengua Kichwa. Es la primera línea de trabajo y la limitación que declaramos.</p></div>
+      <div class="card"><h3>Estados de la búsqueda</h3><p><span class="kw">chinkashka</span> perdida, <span class="kw">tarishka</span> encontrada, cerrada. Hoy toda ficha vive indefinidamente.</p></div>
+      <div class="card"><h3>Avisos por sector</h3><p>Notificar a quien sigue un barrio cuando aparece una mascota cerca. La búsqueda ya es comunitaria; el sistema aún no.</p></div>
+      <div class="card"><h3>Más lenguas</h3><p>Shuar y achuar son también lenguas de relación intercultural. La arquitectura ya lo permite sin tocar la base de datos.</p></div>
+      <div class="card"><h3>Uso desde el celular</h3><p>Quien pierde un animal lo publica desde la calle, no desde un escritorio. Es el siguiente salto de usabilidad real.</p></div>
+      <div class="card"><h3>Pruebas automatizadas</h3><p>Hay infraestructura configurada pero la cobertura es la deuda técnica principal del proyecto.</p></div>
+    </div>
+  </section>
+
+  <!-- 16 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Honestidad metodológica</div>
+    <h2>Lo que no logramos</h2>
+    <p class="lede">Declararlo es preferible a que se descubra preguntando, y no resta al trabajo: lo delimita.</p>
+    <ul class="clean">
+      <li><b>La traducción no fue validada por hablantes nativos.</b> Está construida sobre fuentes oficiales y aplica correctamente la norma ALKI, pero eso no sustituye la revisión de un hablante. Seis piezas de vocabulario van marcadas como pendientes de contrastar.</li>
+      <li><b>El control de versiones se adoptó al final.</b> El historial de Git no refleja los dos meses de trabajo. El seguimiento está en la documentación Scrum. La lección: el repositorio empieza el día uno, no al entregar.</li>
+      <li><b>La capa intercultural no estaba en el backlog original.</b> Se incorporó como épica transversal, pero debió estar desde la primera planificación siendo el componente de mayor peso.</li>
+      <li><b>Sin auditoría formal de accesibilidad.</b> Se aplicaron criterios básicos, no una certificación WCAG.</li>
+    </ul>
+  </section>
+
+  <!-- 17 ──────────────────────────────────────────────────────── -->
+  <section class="slide">
+    <div class="eyebrow">Cierre</div>
+    <h2>Que el kichwa sirva para un trámite corriente</h2>
+    <p class="quote" style="border-color:var(--emerald)">La interculturalidad no debería limitarse a los temas patrimoniales. Que una lengua sirva para buscar al perro de la casa —un asunto doméstico, urgente y técnico— es lo que comunica que está viva.</p>
+    <p class="lede">La ausencia de kichwa en el software cotidiano transmite lo contrario: que es una lengua del pasado o del ámbito ceremonial. Este proyecto es un argumento en contra, escrito en código.</p>
+    <div class="meta" style="margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--line);display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.86rem;color:var(--text-soft)">
+      <div><b style="display:block;color:var(--text)">Sistema</b>mascotas3d-api.onrender.com</div>
+      <div><b style="display:block;color:var(--text)">Repositorio</b>github.com/Bryan-Quispe</div>
+      <div><b style="display:block;color:var(--text)">Glosario</b>docs/TRADUCCION_KICHWA.md</div>
+    </div>
+    <p class="lede" style="margin-top:2.5rem;font-family:Georgia,serif;font-style:italic;font-size:1.3rem;color:var(--emerald)">Yupaychani. Gracias.</p>
+  </section>
+
+</div>
+
+<nav class="bar" aria-label="Navegación de la presentación">
+  <button type="button" id="prev">← Anterior</button>
+  <button type="button" id="next">Siguiente →</button>
+  <div class="rail"><span id="fill"></span></div>
+  <div class="count"><span id="cur">1</span> / <span id="tot">17</span></div>
+</nav>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var cur = document.getElementById('cur');
+  var fill = document.getElementById('fill');
+  document.getElementById('tot').textContent = slides.length;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('on', k === i); });
+    cur.textContent = i + 1;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('next').addEventListener('click', function () { show(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { show(i - 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')  { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End')  show(slides.length - 1);
+  });
+
+  show(0);
+</script>
