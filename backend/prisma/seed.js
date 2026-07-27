@@ -59,7 +59,6 @@ async function main() {
         nombre: 'Perro Husky',
         categoria: CategoriaAnimal.PERRO,
         raza: 'Husky Siberiano',
-        descripcion: 'Modelo 3D realista de un perro husky',
         color: '#8B4513',
         isPublico: true,
         usuarioId: admin.id,
@@ -110,7 +109,6 @@ async function main() {
         nombre: 'Gato tricolor',
         categoria: CategoriaAnimal.GATO,
         raza: 'Desconocida',
-        descripcion: 'Modelo 3D de un gato tricolor',
         color: '#10b981',
         isPublico: true,
         usuarioId: admin.id,
@@ -154,7 +152,6 @@ async function main() {
         nombre: 'Conejo café',
         categoria: CategoriaAnimal.CONEJO,
         raza: 'Desconocida',
-        descripcion: 'Modelo 3D de un conejo café',
         color: '#f59e0b',
         isPublico: true,
         usuarioId: admin.id,
@@ -188,7 +185,6 @@ async function main() {
         nombre: 'Perro café',
         categoria: CategoriaAnimal.PERRO,
         raza: 'Desconocida',
-        descripcion: 'Modelo 3D de un perro café',
         color: '#3b82f6',
         isPublico: true,
         usuarioId: admin.id,
@@ -268,6 +264,9 @@ async function main() {
       nombre: 'Toby',
       categoria: CategoriaAnimal.PERRO,
       descripcion: 'Perro familiar, activo y muy sociable.',
+      // La descripcion libre no se traduce; los rasgos si. Se siembran para
+      // que la ficha en kichwa muestre como es el animal sin depender de ella.
+      rasgos: ['jugueton','buenoConNinos','carinoso','peloCorto','llevaCollar'],
       raza: 'Perro mestizo',
       caracteristicas: {
         tamano: 'Mediano',
@@ -281,6 +280,9 @@ async function main() {
       nombre: 'Luna',
       categoria: CategoriaAnimal.PERRO,
       descripcion: 'Perra tranquila, ideal para compañía en interiores.',
+      // La descripcion libre no se traduce; los rasgos si. Se siembran para
+      // que la ficha en kichwa muestre como es el animal sin depender de ella.
+      rasgos: ['tranquilo','carinoso','peloCorto'],
       raza: 'Labrador',
       caracteristicas: {
         tamano: 'Grande',
@@ -293,6 +295,9 @@ async function main() {
       nombre: 'Mishi',
       categoria: CategoriaAnimal.GATO,
       descripcion: 'Gato curioso y elegante, siempre atento a su entorno.',
+      // La descripcion libre no se traduce; los rasgos si. Se siembran para
+      // que la ficha en kichwa muestre como es el animal sin depender de ella.
+      rasgos: ['asustadizo','manchado','peloCorto'],
       raza: 'Gato doméstico',
       caracteristicas: {
         tamano: 'Pequeño',
@@ -305,6 +310,9 @@ async function main() {
       nombre: 'Copito',
       categoria: CategoriaAnimal.CONEJO,
       descripcion: 'Conejo dócil y muy tranquilo para ambientes familiares.',
+      // La descripcion libre no se traduce; los rasgos si. Se siembran para
+      // que la ficha en kichwa muestre como es el animal sin depender de ella.
+      rasgos: ['tranquilo','peloLargo','orejasCaidas'],
       raza: 'Conejo enano',
       caracteristicas: {
         tamano: 'Pequeño',
@@ -320,6 +328,7 @@ async function main() {
       update: {
         nombre: item.nombre,
         descripcion: item.descripcion,
+        rasgos: item.rasgos,
         raza: item.raza,
         categoria: item.categoria,
         usuarioId: user.id,
@@ -329,6 +338,7 @@ async function main() {
         slug: item.slug,
         nombre: item.nombre,
         descripcion: item.descripcion,
+        rasgos: item.rasgos,
         raza: item.raza,
         categoria: item.categoria,
         usuarioId: user.id,
