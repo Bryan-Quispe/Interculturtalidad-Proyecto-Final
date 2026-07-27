@@ -16,6 +16,7 @@ import ConfirmHoldDialog from '@/components/ConfirmHoldDialog';
 import { ExportAnimalReportResult } from '@/lib/pet-report';
 import { clearSessionKeepingLanguage, useLanguage } from '@/lib/i18n/LanguageProvider';
 import { TranslationKey } from '@/lib/i18n/translations';
+import { claveRasgo, rasgosValidos } from '@/lib/rasgos';
 
 /** Especies del catálogo 3D, en el orden en que se muestran las pestañas. */
 const MODEL_CATEGORIES: Animal['categoria'][] = ['PERRO', 'GATO', 'CONEJO'];
@@ -545,6 +546,18 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
+                {rasgosValidos(selectedAnimal.rasgos).length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {rasgosValidos(selectedAnimal.rasgos).map((rasgo) => (
+                      <span
+                        key={rasgo}
+                        className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200"
+                      >
+                        {t(claveRasgo(rasgo))}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 {selectedAnimal.descripcion && (
                   <div>
                     <h3 className="font-bold text-gray-300 mb-2 text-sm uppercase tracking-wider">{t('dash.description')}</h3>
@@ -670,6 +683,15 @@ export default function DashboardPage() {
                       <span className="text-2xl opacity-60 group-hover:opacity-100 transition">🐾</span>
                     </div>
 
+                    {rasgosValidos(animal.rasgos).length > 0 && (
+                      <div className="mb-3 flex flex-wrap gap-1.5">
+                        {rasgosValidos(animal.rasgos).slice(0, 4).map((rasgo) => (
+                          <span key={rasgo} className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-300">
+                            {t(claveRasgo(rasgo))}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {animal.descripcion && <p className="text-gray-400 mb-4 text-sm line-clamp-2">{descripcionDe(animal)}</p>}
 
                     {animal.caracteristicas && (

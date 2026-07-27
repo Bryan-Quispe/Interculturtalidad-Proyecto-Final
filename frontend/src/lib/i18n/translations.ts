@@ -747,6 +747,39 @@ export const dict = {
     'Lo que la distingue de otras mascotas parecidas.',
     'Shuk rikchak wiwakunamanta imawan chikanyarin.',
   ],
+  // ── Rasgos de lista cerrada ──
+  // A diferencia de la descripción libre, estos sí se muestran en las dos
+  // lenguas: son datos, no prosa. Ver frontend/src/lib/rasgos.ts.
+  'traits.title': ['¿Cómo es la mascota?', '¿Imashina kan wiwa?'],
+  'traits.hint': [
+    'Marca lo que corresponda. Esto sí se muestra en kichwa y en castellano.',
+    'Imalla kashkata akllay. Kaymi ishkantin shimipi rikurin.',
+  ],
+  'traits.character': ['Carácter', 'Kawsay'],
+  'traits.coat': ['Pelaje', 'Millma'],
+  'traits.marks': ['Señas y accesorios', 'Unanchakuna'],
+  'traits.none': ['Sin rasgos marcados', 'Mana unanchakuna akllashka'],
+
+  'trait.carinoso': ['Cariñoso', 'Kuyak'],
+  'trait.asustadizo': ['Asustadizo', 'Manchak'],
+  'trait.tranquilo': ['Tranquilo', 'Kasilla'],
+  'trait.jugueton': ['Juguetón', 'Pukllak'],
+  'trait.buenoConNinos': ['Bueno con los niños', 'Wawakunawan alli'],
+  'trait.noConOtrosAnimales': ['No se lleva con otros animales', 'Shuk wiwakunawan mana alli'],
+
+  'trait.manchado': ['Manchado, dos colores', 'Muru'],
+  'trait.peloLargo': ['Pelo largo', 'Suni millma'],
+  'trait.peloCorto': ['Pelo corto', 'Kuru millma'],
+  'trait.peloRizado': ['Pelo rizado', 'Kaspa millma'],
+  'trait.sinPelo': ['Sin pelo', 'Millma illak'],
+
+  'trait.cojea': ['Cojea', 'Hankan'],
+  'trait.orejasCaidas': ['Orejas caídas', 'Warkurishka rinri'],
+  'trait.colaLarga': ['Cola larga', 'Suni chupa'],
+  'trait.colaCorta': ['Cola corta', 'Kuru chupa'],
+  'trait.faltaUnOjo': ['Le falta un ojo', 'Shuk ñawi illak'],
+  'trait.llevaCollar': ['Lleva collar', 'Kunka watanata charin'],
+
   'af.marksKw': ['Señas particulares en kichwa (opcional)', 'Sapan unanchakuna kichwapi (munashpa)'],
   'af.marksKwPlaceholder': [
     'Lo mismo, escrito por ti en kichwa.',

@@ -1,5 +1,6 @@
 import type { Animal } from '@/types';
 import { Lang, StoredField, TranslationKey, translate, translateStored } from './i18n/translations';
+import { claveRasgo, rasgosValidos } from './rasgos';
 
 interface ExportAnimalReportOptions {
   animal: Animal;
@@ -172,7 +173,15 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
   // su autor escribió en esa lengua. Si no la escribió, se usa la otra: más
   // vale un cartel con una línea en castellano que un cartel sin señas.
   const ownDescription = (lang === 'kw' ? animal.descripcionKw : animal.descripcion)?.trim();
+
+  // Los rasgos van primero y siempre en el idioma del cartel. La descripción
+  // libre puede faltar en esa lengua; los rasgos no, porque son lista cerrada.
+  const rasgos = rasgosValidos(animal.rasgos)
+    .map((rasgo) => translate(claveRasgo(rasgo), reportLang))
+    .join(', ');
+
   const recognition = [
+    rasgos ? `${rasgos}.` : '',
     ownDescription || animal.descripcion,
     animal.caracteristicas?.color ? `${L('pdf.colorPrefix')} ${V('color', animal.caracteristicas.color)}.` : '',
     animal.caracteristicas?.tamano ? `${L('pdf.sizePrefix')} ${V('size', animal.caracteristicas.tamano)}.` : '',

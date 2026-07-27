@@ -56,6 +56,10 @@ model Animal {
   fechaVisto       DateTime?
   isPublico        Boolean         @default(true)
   fotos            Json?
+  /// Rasgos de lista cerrada (carácter, pelaje, señas). Se guardan los
+  /// identificadores, no el rótulo, de modo que la ficha pueda mostrarlos en
+  /// cualquiera de las dos lenguas sin migrar nada.
+  rasgos           Json?
 
   caracteristicas CaracteristicasAnimal?
 

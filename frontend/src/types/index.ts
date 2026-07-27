@@ -25,6 +25,11 @@ export interface Animal {
    * mismo en la otra lengua.
    */
   descripcionKw?: string;
+  /**
+   * Identificadores de rasgos de lista cerrada. A diferencia de la
+   * descripcion, estos si se muestran en cualquiera de las dos lenguas.
+   */
+  rasgos?: string[];
   raza?: string;
   categoria: 'PERRO' | 'GATO' | 'CONEJO';
   zona?: string;

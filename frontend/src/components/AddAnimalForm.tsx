@@ -6,6 +6,7 @@ import { Animal } from '@/types';
 import MapLocationInput from './MapLocationInput';
 import { useLanguage } from '@/lib/i18n/LanguageProvider';
 import { TranslationKey } from '@/lib/i18n/translations';
+import { GRUPOS_RASGOS, claveRasgo, rasgosValidos } from '@/lib/rasgos';
 
 interface AddAnimalFormProps {
   onSuccess: (animal: Animal) => void;
@@ -224,6 +225,16 @@ export default function AddAnimalForm({
   const [uploading, setUploading] = useState(false);
   const [photoUrlDraft, setPhotoUrlDraft] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [rasgosSeleccionados, setRasgosSeleccionados] = useState<string[]>([]);
+
+  /** Marca o desmarca un rasgo de la lista cerrada. */
+  const toggleRasgo = (rasgo: string) => {
+    setRasgosSeleccionados((actuales) =>
+      actuales.includes(rasgo)
+        ? actuales.filter((item) => item !== rasgo)
+        : [...actuales, rasgo],
+    );
+  };
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -243,6 +254,7 @@ export default function AddAnimalForm({
   });
 
   useEffect(() => {
+    setRasgosSeleccionados(rasgosValidos(animal?.rasgos));
     setFormData({
       nombre: animal?.nombre ?? '',
       categoria: animal?.categoria ?? 'PERRO',
@@ -402,6 +414,7 @@ export default function AddAnimalForm({
       categoria: formData.categoria,
       descripcion: formData.descripcion.trim(),
       descripcionKw: formData.descripcionKw.trim(),
+      rasgos: rasgosSeleccionados,
       raza: formData.raza.trim(),
       zona: formData.zona,
       googlePlaceId: formData.googlePlaceId || undefined,
@@ -630,6 +643,46 @@ export default function AddAnimalForm({
                   resetKey={resetKey}
                   labelFor={(option) => tv('color', option)}
                 />
+              </div>
+
+              {/*
+                Lista cerrada de rasgos. Es lo que permite que un
+                kichwahablante sepa cómo es el animal y qué carácter tiene sin
+                depender de que el dueño escriba en kichwa: al guardar la clave
+                y no el rótulo, la ficha lo muestra en la lengua que se pida.
+              */}
+              <div>
+                <label className="input-label">{t('traits.title')}</label>
+                <p className="mb-3 text-xs text-gray-500">{t('traits.hint')}</p>
+                <div className="space-y-3">
+                  {GRUPOS_RASGOS.map((grupo) => (
+                    <div key={grupo.id}>
+                      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        {t(grupo.tituloKey)}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {grupo.rasgos.map((rasgo) => {
+                          const activo = rasgosSeleccionados.includes(rasgo);
+                          return (
+                            <button
+                              key={rasgo}
+                              type="button"
+                              aria-pressed={activo}
+                              onClick={() => toggleRasgo(rasgo)}
+                              className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                                activo
+                                  ? 'border-emerald-300 bg-emerald-500/15 text-emerald-100'
+                                  : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/30'
+                              }`}
+                            >
+                              {t(claveRasgo(rasgo))}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, ValidateNested, IsNumber } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsNumber, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class CaracteristicasDto {
@@ -76,6 +76,15 @@ export class CreateAnimalDto {
   @IsOptional()
   fotos?: string[];
 
+  /**
+   * Identificadores de rasgos de lista cerrada. Se guarda la clave y no el
+   * rotulo: el rotulo depende del idioma en que se mire la ficha.
+   */
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  rasgos?: string[];
+
   @IsOptional()
   @ValidateNested()
   @Type(() => CaracteristicasDto)
@@ -144,6 +153,15 @@ export class UpdateAnimalDto {
 
   @IsOptional()
   fotos?: string[];
+
+  /**
+   * Identificadores de rasgos de lista cerrada. Se guarda la clave y no el
+   * rotulo: el rotulo depende del idioma en que se mire la ficha.
+   */
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  rasgos?: string[];
 
   @IsOptional()
   @ValidateNested()

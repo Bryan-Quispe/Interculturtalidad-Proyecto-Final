@@ -165,6 +165,45 @@ y no se traducen en ninguna lengua.
 
 ---
 
+### Rasgos de la mascota (lista cerrada)
+
+La descripción que escribe el propietario es prosa libre y **no se traduce**
+(ver §5). Eso dejaba al usuario kichwahablante sin lo más importante: cómo es
+el animal y qué carácter tiene. Para resolverlo, esa información se recoge
+también como **lista cerrada de rasgos**, que sí se muestra en las dos lenguas
+igual que el tamaño y el color.
+
+| Castellano | Kichwa | Fuente |
+|---|---|---|
+| cariñoso | `kuyak` | `[comp.]` `kuyana` = querer, amar + agentivo `-k` `[pend.]` |
+| asustadizo | `manchak` | `[comp.]` `manchana` = temer + agentivo `-k` `[pend.]` |
+| tranquilo | `kasilla` | `[pend.]` |
+| juguetón | `pukllak` | `[comp.]` `pukllana` = jugar + agentivo `-k` `[pend.]` |
+| bueno con los niños | `wawakunawan alli` | `[comp.]` `wawa` + plural `-kuna` + comitativo `-wan` + `alli` = bueno |
+| no se lleva con otros animales | `shuk wiwakunawan mana alli` | `[comp.]` con raíces ya documentadas arriba |
+| manchado, dos colores | `muru` | [GADCH] |
+| pelo largo | `suni millma` | `[comp.]` `suni` + `millma`, ambas documentadas |
+| pelo corto | `kuru millma` | `[comp.]` ya usado en *Británico de pelo corto* |
+| pelo rizado | `kaspa millma` | `[comp.]` ya usado en *Poodle* |
+| sin pelo | `millma illak` | `[comp.]` ya usado en *Esfinge* |
+| cojea | `hankan` | [GADCH] `hankana` = cojear |
+| orejas caídas | `warkurishka rinri` | `[comp.]` ya usado en *Belier* |
+| cola larga | `suni chupa` | `[comp.]` `suni` documentado + `chupa` `[pend.]` |
+| cola corta | `kuru chupa` | `[comp.]` `kuru` documentado + `chupa` `[pend.]` |
+| le falta un ojo | `shuk ñawi illak` | `[comp.]` `shuk` e `illak` documentados + `ñawi` `[pend.]` |
+| lleva collar | `kunka watanata charin` | `[comp.]` `kunka` + `watana` + `charina` = tener |
+
+> **Etiqueta `[pend.]`.** Marca seis piezas de vocabulario —`kuyana`,
+> `manchana`, `kasilla`, `pukllana`, `chupa`, `ñawi`— que son de uso corriente
+> en kichwa ecuatoriano pero que **no se han contrastado con las fuentes
+> impresas** citadas en §2. Se declaran así en lugar de atribuirles una fuente
+> que no se ha verificado. Son las primeras que deben revisarse en la
+> validación con hablantes nativos descrita en la limitación del proyecto.
+>
+> Las derivaciones marcadas `[comp.]` aplican los mismos sufijos que ya usa el
+> glosario: agentivo `-k` (como en `mutsurik`, `kamak`), participio `-shka`
+> (como en `chinkashka`), plural `-kuna`, comitativo `-wan`.
+
 ## 4. Cómo funciona en el código
 
 | Archivo | Rol |
