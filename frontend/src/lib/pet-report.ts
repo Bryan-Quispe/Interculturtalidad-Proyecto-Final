@@ -202,7 +202,10 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
     // quien lee el cartel. Se cae a la zona si no se registro ninguna.
     zone: animal.direccion?.trim() || animal.zona?.trim() || '',
     lastSeenDate: animal.fechaVisto ? animal.fechaVisto.slice(0, 10) : '',
-    lastSeenReference: animal.ultimaVezVisto?.trim() || '',
+    lastSeenReference:
+      (lang === 'kw' ? animal.ultimaVezVistoKw?.trim() : animal.ultimaVezVisto?.trim())
+      || animal.ultimaVezVisto?.trim()
+      || '',
     recognition: recognition || L('pdf.noExtraDesc'),
     selectedPhotos: photos,
     mainVisual: photos[0] || (animal.modelo ? 'model' : null),

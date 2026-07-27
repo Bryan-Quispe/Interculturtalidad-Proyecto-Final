@@ -62,6 +62,8 @@ model Animal {
   /// pierde. El primero sigue en telefonoContacto por compatibilidad.
   telefonos        Json?
   ultimaVezVisto   String?
+  /// La misma referencia del avistamiento escrita por su autor en kichwa.
+  ultimaVezVistoKw String?
   fechaVisto       DateTime?
   isPublico        Boolean         @default(true)
   fotos            Json?

@@ -260,6 +260,7 @@ export default function AddAnimalForm({
     longitud: '',
     telefonoContacto: '',
     ultimaVezVisto: '',
+    ultimaVezVistoKw: '',
     fechaVisto: '',
     tamano: '',
     color: '',
@@ -285,6 +286,7 @@ export default function AddAnimalForm({
       longitud: animal?.longitud !== undefined ? String(animal.longitud) : '',
       telefonoContacto: animal?.telefonoContacto ?? '',
       ultimaVezVisto: animal?.ultimaVezVisto ?? '',
+      ultimaVezVistoKw: animal?.ultimaVezVistoKw ?? '',
       fechaVisto: animal?.fechaVisto ? animal.fechaVisto.slice(0, 10) : '',
       tamano: animal?.caracteristicas?.tamano ?? '',
       color: animal?.caracteristicas?.color ?? '',
@@ -442,6 +444,7 @@ export default function AddAnimalForm({
       longitud: formData.longitud ? Number(formData.longitud) : undefined,
       telefonoContacto: formData.telefonoContacto.trim(),
       ultimaVezVisto: formData.ultimaVezVisto.trim(),
+      ultimaVezVistoKw: formData.ultimaVezVistoKw.trim(),
       fechaVisto: formData.fechaVisto,
       fotos: photos,
       caracteristicas: {
@@ -822,6 +825,19 @@ export default function AddAnimalForm({
                     placeholder={t('af.placeReferencePlaceholder')}
                     className="input-base"
                   />
+                  {/*
+                    El texto libre no se traduce solo. Sin este campo la ficha
+                    en kichwa mostraba siempre la referencia en castellano.
+                  */}
+                  <input
+                    type="text"
+                    name="ultimaVezVistoKw"
+                    value={formData.ultimaVezVistoKw}
+                    onChange={handleChange}
+                    placeholder={t('af.placeReferenceKwPlaceholder')}
+                    className="input-base mt-2"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">{t('af.placeReferenceKwHint')}</p>
                 </div>
               </div>
 

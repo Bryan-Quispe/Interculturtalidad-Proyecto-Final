@@ -45,6 +45,8 @@ export interface Animal {
   /** Numeros adicionales; el primero sigue en telefonoContacto. */
   telefonos?: string[];
   ultimaVezVisto?: string;
+  /** La misma referencia del avistamiento, escrita en kichwa. */
+  ultimaVezVistoKw?: string;
   fechaVisto?: string;
   fotos?: string[];
   caracteristicas?: {

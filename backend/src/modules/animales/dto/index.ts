@@ -76,6 +76,11 @@ export class CreateAnimalDto {
   @IsString()
   ultimaVezVisto?: string;
 
+  /** La misma referencia del avistamiento, en kichwa. */
+  @IsOptional()
+  @IsString()
+  ultimaVezVistoKw?: string;
+
   @IsOptional()
   @IsString()
   fechaVisto?: string;
@@ -164,6 +169,11 @@ export class UpdateAnimalDto {
   @IsOptional()
   @IsString()
   ultimaVezVisto?: string;
+
+  /** La misma referencia del avistamiento, en kichwa. */
+  @IsOptional()
+  @IsString()
+  ultimaVezVistoKw?: string;
 
   @IsOptional()
   @IsString()

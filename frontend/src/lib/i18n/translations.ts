@@ -288,6 +288,9 @@ export const dict = {
   'dash.contact': ['Contacto:', 'Rimanakuy:'],
   'dash.zone': ['Zona aproximada:', 'Kiti:'],
   'dash.address': ['Calles:', 'Ñankuna:'],
+  // Aviso cuando se muestra el texto en la otra lengua porque su autor no
+  // escribio esta. No es un fallo de traduccion: es un campo sin rellenar.
+  'dash.otherLanguage': ['en castellano', 'kastilla shimipi'],
   'dash.date': ['Fecha:', 'Puncha:'],
   'dash.lastSeen': ['Último avistamiento:', 'Puchukay rikushka:'],
   'dash.notRegisteredM': ['No registrado', 'Mana killkashka'],
@@ -791,6 +794,14 @@ export const dict = {
     'Kay killkaka mana paylla tikrachinchu: killkakpika, kichwa pankapi rikurinka.',
   ],
   'af.whereLost': ['¿En qué zona se perdió? *', '¿Ima kitipi chinkarka? *'],
+  'af.placeReferenceKwPlaceholder': [
+    'La misma referencia, escrita por ti en kichwa',
+    'Chaykillpitak, kikin kichwapi killkashka',
+  ],
+  'af.placeReferenceKwHint': [
+    'Opcional. Sin esto, la ficha en kichwa mostrará esta referencia en castellano.',
+    'Munashpalla. Kay illakpika, kichwa pankapi kastilla shimipi rikurinka.',
+  ],
   'af.morePhones': ['Otros números de contacto', 'Shuk rimanakuy yupaykuna'],
   'af.addPhone': ['Añadir otro número', 'Shuk yupayta yapana'],
   'af.removePhone': ['Quitar este número', 'Kay yupayta anchuchina'],

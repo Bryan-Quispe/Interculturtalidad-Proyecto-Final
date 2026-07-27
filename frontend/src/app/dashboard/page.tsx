@@ -23,20 +23,29 @@ const MODEL_CATEGORIES: Animal['categoria'][] = ['PERRO', 'GATO', 'CONEJO'];
 
 export default function DashboardPage() {
   const { isAuthenticated, user } = useAuthStore();
-  const { t, tv, pick } = useLanguage();
+  const { t, tv, pick, lang } = useLanguage();
 
   /**
-   * Descripcion en el idioma activo. El texto libre no se traduce solo, asi
-   * que se muestra la version que su autor escribio en esa lengua; si no la
-   * escribio, se cae a la que si existe antes que dejar el hueco vacio.
+   * Texto libre en el idioma activo. No se traduce solo, así que se muestra la
+   * versión que su autor escribió en esa lengua.
+   *
+   * Cuando esa versión no existe se muestra la otra, pero marcada: dejar el
+   * hueco vacío pierde información que puede servir para reconocer al animal,
+   * y mezclar las lenguas sin avisar hace parecer que la traducción falló
+   * cuando lo que ocurre es que nadie la escribió todavía.
    */
-  const descripcionDe = (animal: { descripcion?: string; descripcionKw?: string }) => {
-    const es = animal.descripcion?.trim() ?? '';
-    const kw = animal.descripcionKw?.trim() ?? '';
-    if (!kw) return es;
-    if (!es) return kw;
-    return pick(es, kw);
+  const textoBilingue = (es?: string, kw?: string) => {
+    const enEs = es?.trim() ?? '';
+    const enKw = kw?.trim() ?? '';
+    if (!enEs && !enKw) return null;
+    if (enEs && enKw) return { texto: pick(enEs, enKw), faltaTraduccion: false };
+    const unico = enKw || enEs;
+    const escritoEnElIdiomaActivo = (lang === 'kw' && enKw) || (lang !== 'kw' && enEs);
+    return { texto: unico, faltaTraduccion: !escritoEnElIdiomaActivo };
   };
+
+  const descripcionDe = (animal: { descripcion?: string; descripcionKw?: string }) =>
+    textoBilingue(animal.descripcion, animal.descripcionKw);
   const [animales, setAnimales] = useState<Animal[]>([]);
   const [modelos, setModelos] = useState<Modelo3D[]>([]);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
@@ -545,7 +554,7 @@ export default function DashboardPage() {
                       <p><span className="text-gray-500">{t('dash.address')}</span> <span className="text-gray-300">{selectedAnimal.direccion}</span></p>
                     )}
                     <p><span className="text-gray-500">{t('dash.date')}</span> <span className="text-gray-300">{selectedAnimal.fechaVisto ? new Date(selectedAnimal.fechaVisto).toLocaleDateString('es-EC') : t('dash.notRegisteredF')}</span></p>
-                    <p><span className="text-gray-500">{t('dash.lastSeen')}</span> <span className="text-gray-300">{selectedAnimal.ultimaVezVisto || t('dash.noReference')}</span></p>
+                    <p><span className="text-gray-500">{t('dash.lastSeen')}</span> <span className="text-gray-300">{textoBilingue(selectedAnimal.ultimaVezVisto, selectedAnimal.ultimaVezVistoKw)?.texto || t('dash.noReference')}</span></p>
                   </div>
                 </div>
 
@@ -564,7 +573,14 @@ export default function DashboardPage() {
                 {selectedAnimal.descripcion && (
                   <div>
                     <h3 className="font-bold text-gray-300 mb-2 text-sm uppercase tracking-wider">{t('dash.description')}</h3>
-                    <p className="text-gray-400 leading-relaxed">{descripcionDe(selectedAnimal)}</p>
+                    <p className="text-gray-400 leading-relaxed">
+                      {descripcionDe(selectedAnimal)?.texto}
+                      {descripcionDe(selectedAnimal)?.faltaTraduccion && (
+                        <span className="ml-2 whitespace-nowrap rounded border border-amber-400/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-amber-300/90">
+                          {t('dash.otherLanguage')}
+                        </span>
+                      )}
+                    </p>
                   </div>
                 )}
 
@@ -695,7 +711,7 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     )}
-                    {animal.descripcion && <p className="text-gray-400 mb-4 text-sm line-clamp-2">{descripcionDe(animal)}</p>}
+                    {descripcionDe(animal) && <p className="text-gray-400 mb-4 text-sm line-clamp-2">{descripcionDe(animal)?.texto}</p>}
 
                     {animal.caracteristicas && (
                       <div className="mb-4 space-y-1.5 text-xs text-gray-500">
