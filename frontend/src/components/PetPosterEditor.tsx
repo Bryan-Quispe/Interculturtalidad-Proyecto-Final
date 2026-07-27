@@ -10,9 +10,7 @@ import {
   exportAnimalReport,
   ExportAnimalReportResult,
   MODEL_VISUAL,
-  PHOTO_SIZES,
   POSTER_TEMPLATES,
-  galleryPhotos,
 } from '@/lib/pet-report';
 import PosterPreview from './PosterPreview';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -97,7 +95,6 @@ export default function PetPosterEditor({ animal, modelSnapshot, onClose, onExpo
     () => estimateReportPages(draft, Boolean(modelSnapshot && animal.modelo)),
     [draft, modelSnapshot, animal.modelo],
   );
-  const extraPhotos = useMemo(() => galleryPhotos(draft).length, [draft]);
 
   /** Deja el cartel en una sola hoja quitando los añadidos opcionales. */
   const reduceToOnePage = () => {
@@ -355,30 +352,6 @@ export default function PetPosterEditor({ animal, modelSnapshot, onClose, onExpo
                   </button>
                 ))}
               </div>
-
-              {extraPhotos > 0 && (
-                <div>
-                  <label className="input-label">{t('pe.extraSize', { n: extraPhotos })}</label>
-                  <div className="grid grid-cols-3 gap-2 rounded-xl bg-slate-950/40 p-1">
-                    {PHOTO_SIZES.map((size) => (
-                      <button
-                        key={size.id}
-                        type="button"
-                        onClick={() => update('photoSize', size.id)}
-                        className={`rounded-lg border p-3 text-sm transition ${
-                          draft.photoSize === size.id
-                            ? 'border-emerald-300 bg-emerald-500/15 text-emerald-100'
-                            : 'border-white/10 text-gray-400 hover:border-white/25'
-                        }`}
-                      >
-                        {t(`psize.${size.id}` as TranslationKey)}
-                        <br />
-                        <span className="text-xs font-normal">{t(`psize.${size.id}.det` as TranslationKey)}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-white/10 p-4">
                 <input type="checkbox" className="mt-1" checked={draft.includeDetailPage} onChange={(event) => update('includeDetailPage', event.target.checked)} />

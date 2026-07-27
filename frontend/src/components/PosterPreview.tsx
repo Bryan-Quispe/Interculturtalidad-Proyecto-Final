@@ -167,7 +167,11 @@ function Header({ headline, petName, tall }: { headline: string; petName: string
 function Photo({ src }: { src?: string }) {
   const t = usePosterT();
   return (
-    <div className="flex min-h-0 min-w-0 items-center justify-center overflow-hidden rounded border border-slate-200 bg-white p-1">
+    // `h-full` es imprescindible: dentro de un contenedor flex la altura sería
+    // automática, el `h-full` de la <img> resolvería contra `auto` y la foto se
+    // dibujaría a tamaño natural, desbordando sobre el texto siguiente. Como
+    // hijo de un grid el efecto es nulo, porque ya se estira solo.
+    <div className="flex h-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded border border-slate-200 bg-white p-1">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={t('poster.preview')} className="h-full w-full object-contain" />

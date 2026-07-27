@@ -579,7 +579,14 @@ export const dict = {
   'ed.toolBroadHint': ['Área amplia', 'Hatun pampa'],
   'ed.paintColor': ['Color de pintura', 'Tullpupak tullpu'],
   'ed.colorAria': ['Color', 'Tullpu'],
-  'ed.undo': ['Deshacer', 'Kutin anchuchina'],
+  // Cuentagotas. `hapina` = agarrar, tomar [GADCH]; `tullpu` = color.
+  'ed.pickColor': ['Copiar un color del modelo', 'Tullputa hapina'],
+  'ed.pickColorActive': ['Toca el animal para tomar su color', 'Wiwata llamkay tullputa hapinkapak'],
+  'ed.pickColorHint': [
+    'Pinta con el mismo color que ya tiene su pelaje.',
+    'Millmapa tullpuwanllatak tullpuy.',
+  ],
+  'ed.undo': ['Deshacer trazo', 'Kutin anchuchina'],
   'ed.clearPaint': ['Limpiar pintura', 'Tullputa pichana'],
   'ed.whereSave': ['¿Dónde guardas tu versión?', '¿Maypi kikinpak rurayta wakaychinki?'],
   'ed.visibility': ['Visibilidad', 'Rikurina'],

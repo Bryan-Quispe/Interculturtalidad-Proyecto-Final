@@ -29,9 +29,6 @@ function V(field: StoredField, value?: string | null): string {
 /** Estilo del cartel. Cada uno dibuja la portada de forma distinta. */
 export type PosterTemplate = 'clasico' | 'foto-grande' | 'mosaico';
 
-/** Tamaño de las fotos en las páginas de galería. */
-export type PhotoSize = 'compacta' | 'media' | 'grande';
-
 export const POSTER_TEMPLATES: Array<{
   id: PosterTemplate;
   nombre: string;
@@ -54,12 +51,6 @@ export const POSTER_TEMPLATES: Array<{
   },
 ];
 
-export const PHOTO_SIZES: Array<{ id: PhotoSize; nombre: string; detalle: string }> = [
-  { id: 'compacta', nombre: 'Compacta', detalle: '6 por página' },
-  { id: 'media', nombre: 'Media', detalle: '4 por página' },
-  { id: 'grande', nombre: 'Grande', detalle: '2 por página' },
-];
-
 /** Cuántas fotos usa la portada de cada plantilla. */
 export const COVER_PHOTO_COUNT: Record<PosterTemplate, number> = {
   clasico: 1,
@@ -67,13 +58,20 @@ export const COVER_PHOTO_COUNT: Record<PosterTemplate, number> = {
   mosaico: 3,
 };
 
-const GALLERY_LAYOUT: Record<
-  PhotoSize,
-  { cols: number; rows: number; cardW: number; cardH: number; gapX: number; gapY: number; imgH: number }
-> = {
-  compacta: { cols: 3, rows: 2, cardW: 58, cardH: 78, gapX: 4, gapY: 6, imgH: 64 },
-  media: { cols: 2, rows: 2, cardW: 86, cardH: 105, gapX: 6, gapY: 11, imgH: 91 },
-  grande: { cols: 1, rows: 2, cardW: 182, cardH: 105, gapX: 0, gapY: 11, imgH: 91 },
+/**
+ * Distribución de las fotografías que no entran en la portada: cuatro por
+ * página, en cuadrícula de 2x2. Era configurable entre tres tamaños, pero la
+ * opción no aportaba —el cartel se imprime, no se ajusta a una pantalla— y
+ * complicaba el editor, así que se fijó en el formato intermedio.
+ */
+const GALLERY_LAYOUT = {
+  cols: 2,
+  rows: 2,
+  cardW: 86,
+  cardH: 105,
+  gapX: 6,
+  gapY: 11,
+  imgH: 91,
 };
 
 export interface AnimalReportDraft {
@@ -89,7 +87,6 @@ export interface AnimalReportDraft {
   selectedPhotos: string[];
   mainVisual: string | 'model' | null;
   template: PosterTemplate;
-  photoSize: PhotoSize;
   includeDetailPage: boolean;
   includeModelPage: boolean;
 }
@@ -158,7 +155,7 @@ export function estimateReportPages(draft: AnimalReportDraft, hasModelSnapshot: 
   let pages = 1;
   if (draft.includeDetailPage) pages += 1;
 
-  const layout = GALLERY_LAYOUT[draft.photoSize];
+  const layout = GALLERY_LAYOUT;
   const restantes = galleryPhotos(draft).length;
   pages += Math.ceil(restantes / (layout.cols * layout.rows));
 
@@ -190,7 +187,6 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
     selectedPhotos: photos,
     mainVisual: photos[0] || (animal.modelo ? 'model' : null),
     template: 'clasico',
-    photoSize: 'media',
     // Por defecto, una sola hoja: es lo que se imprime y se pega en la calle.
     includeDetailPage: false,
     includeModelPage: false,
@@ -753,7 +749,7 @@ export async function exportAnimalReport({
   const gallery = galleryPhotos(draft)
     .map(resolve)
     .filter((item): item is PdfImage => Boolean(item));
-  const layout = GALLERY_LAYOUT[draft.photoSize];
+  const layout = GALLERY_LAYOUT;
   const perPage = layout.cols * layout.rows;
 
   for (let start = 0; start < gallery.length; start += perPage) {

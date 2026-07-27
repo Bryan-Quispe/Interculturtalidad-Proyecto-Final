@@ -32,6 +32,14 @@ const colorPalette = [
   '#22d3ee',
 ];
 
+/**
+ * Trazadas distintas que contiene la lista. Es lo que cuenta el botón de
+ * deshacer: las muestras sueltas no le dicen nada a quien pinta.
+ */
+function countGroups(strokes: PaintStroke[]): number {
+  return new Set(strokes.map((stroke) => stroke.group ?? 0)).size;
+}
+
 const toolSizes: Record<PaintTool, number> = {
   pencil: 0.006,
   brush: 0.014,
@@ -54,6 +62,12 @@ export default function EditModelForm({
   const [paintCount, setPaintCount] = useState(0);
   const [displayStrokes, setDisplayStrokes] = useState<PaintStroke[]>([]);
   const strokesRef = useRef<PaintStroke[]>([]);
+  /**
+   * Número de la trazada en curso. Cada arrastre del pincel lo incrementa, y
+   * todas las muestras que produce lo comparten, de modo que deshacer quita la
+   * línea entera y no una de sus cientos de muestras.
+   */
+  const groupRef = useRef(0);
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -76,8 +90,14 @@ export default function EditModelForm({
     strokesRef.current = Array.isArray(modelo.pinturas)
       ? modelo.pinturas.filter((stroke) => Boolean(stroke.position && stroke.surfaceId))
       : [];
+    // Se continúa numerando por encima de lo ya guardado para no mezclar una
+    // trazada nueva con otra antigua que tuviera el mismo número.
+    groupRef.current = strokesRef.current.reduce(
+      (max, stroke) => Math.max(max, stroke.group ?? 0),
+      0,
+    );
     setDisplayStrokes(strokesRef.current);
-    setPaintCount(strokesRef.current.length);
+    setPaintCount(countGroups(strokesRef.current));
     setFormData({
       nombre:
         modoGuardado === 'derive' && animal
@@ -92,15 +112,24 @@ export default function EditModelForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelo, animal]);
 
-  const handlePaint = useCallback((stroke: PaintStroke) => {
-    strokesRef.current = [...strokesRef.current, stroke];
-    setPaintCount(strokesRef.current.length);
+  /** Empieza una trazada nueva: se dispara al apoyar el pincel. */
+  const handlePaintStart = useCallback(() => {
+    groupRef.current += 1;
   }, []);
 
+  const handlePaint = useCallback((stroke: PaintStroke) => {
+    strokesRef.current = [...strokesRef.current, { ...stroke, group: groupRef.current }];
+    setPaintCount(countGroups(strokesRef.current));
+  }, []);
+
+  /** Quita la última trazada completa, no la última muestra. */
   const handleUndo = () => {
-    strokesRef.current = strokesRef.current.slice(0, -1);
+    const strokes = strokesRef.current;
+    if (strokes.length === 0) return;
+    const lastGroup = strokes[strokes.length - 1].group;
+    strokesRef.current = strokes.filter((stroke) => stroke.group !== lastGroup);
     setDisplayStrokes(strokesRef.current);
-    setPaintCount(strokesRef.current.length);
+    setPaintCount(countGroups(strokesRef.current));
     setInteractionMode('paint');
   };
 
@@ -112,6 +141,12 @@ export default function EditModelForm({
     setDisplayStrokes([]);
     setPaintCount(0);
   };
+
+  /** El cuentagotas toma un color y devuelve el control al pincel. */
+  const handlePickColor = useCallback((hex: string) => {
+    setPaintColor(hex);
+    setInteractionMode('paint');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +216,8 @@ export default function EditModelForm({
               brushSize={toolSizes[paintTool]}
               strokes={displayStrokes}
               onPaint={handlePaint}
+              onPaintStart={handlePaintStart}
+              onPickColor={handlePickColor}
             />
           </div>
 
@@ -295,6 +332,26 @@ export default function EditModelForm({
                   className="input-base flex-1"
                 />
               </div>
+
+              {/*
+                Cuentagotas: toma un color del propio animal para que lo pintado
+                se integre con su pelaje en vez de destacar como una mancha.
+              */}
+              <button
+                type="button"
+                onClick={() => setInteractionMode(interactionMode === 'pick' ? 'paint' : 'pick')}
+                aria-pressed={interactionMode === 'pick'}
+                className={`mt-3 w-full rounded-xl border py-3 text-sm font-semibold transition ${
+                  interactionMode === 'pick'
+                    ? 'border-cyan-300 bg-cyan-500/15 text-cyan-100'
+                    : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/30'
+                }`}
+              >
+                {interactionMode === 'pick' ? t('ed.pickColorActive') : t('ed.pickColor')}
+                <span className="mt-1 block text-[11px] font-normal text-gray-400">
+                  {t('ed.pickColorHint')}
+                </span>
+              </button>
             </div>
 
             <div className="flex gap-2">

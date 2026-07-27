@@ -10,8 +10,10 @@ const EMPTY_STROKES: PaintStroke[] = [];
 /**
  * 'view' y 'rotate' se comportan igual (arrastrar rota, la rueda hace zoom);
  * 'view' además permite el giro automático. 'paint' desactiva el arrastre.
+ * 'pick' es el cuentagotas: un clic toma el color del punto del modelo y no
+ * modifica nada.
  */
-export type ViewerInteractionMode = 'view' | 'rotate' | 'paint';
+export type ViewerInteractionMode = 'view' | 'rotate' | 'paint' | 'pick';
 
 /**
  * El pincel trabaja en espacio 3D (no en UV).
@@ -33,6 +35,13 @@ interface Canvas3DViewerProps {
   brushSize?: number;
   strokes?: PaintStroke[];
   onPaint?: (stroke: PaintStroke) => void;
+  /**
+   * Se dispara al apoyar el puntero para empezar a pintar. Permite al padre
+   * agrupar en un solo paso de deshacer todo lo que produzca ese arrastre.
+   */
+  onPaintStart?: () => void;
+  /** Color en hexadecimal tomado con el cuentagotas, en modo 'pick'. */
+  onPickColor?: (hex: string) => void;
 }
 
 export interface Canvas3DViewerHandle {
@@ -74,6 +83,8 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
   brushSize = 0.014,
   strokes,
   onPaint,
+  onPaintStart,
+  onPickColor,
 }, ref) {
   // La columna `pinturas` llega como null cuando el modelo nunca se ha pintado,
   // y un valor por defecto de parámetro solo cubre `undefined`. Sin esta
@@ -87,7 +98,18 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
   const colorRef = useRef(brushColor);
   const sizeRef = useRef(brushSize);
   const onPaintRef = useRef(onPaint);
+  const onPaintStartRef = useRef(onPaintStart);
+  const onPickColorRef = useRef(onPickColor);
   const autoRotateRef = useRef(autoRotate);
+  /**
+   * Trazos vigentes, leídos por referencia. Si el efecto que monta la escena
+   * dependiera de ellos, deshacer o limpiar reconstruiría todo: se recargaría
+   * el .glb y la cámara volvería a su posición inicial. Con la referencia, el
+   * efecto de repintado toca solo el atributo de color.
+   */
+  const strokesRef = useRef<PaintStroke[]>(EMPTY_STROKES);
+  /** La instala el efecto de la escena; repinta sin reconstruir nada. */
+  const repaintRef = useRef<(() => void) | null>(null);
   const resolvedMode: ViewerInteractionMode = interactionMode ?? (paintMode ? 'paint' : 'view');
 
   useEffect(() => {
@@ -95,10 +117,21 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     colorRef.current = brushColor;
     sizeRef.current = brushSize;
     onPaintRef.current = onPaint;
+    onPaintStartRef.current = onPaintStart;
+    onPickColorRef.current = onPickColor;
     autoRotateRef.current = autoRotate;
     const canvas = rendererRef.current?.domElement;
     if (canvas) canvas.style.cursor = cursorForMode(resolvedMode);
-  }, [resolvedMode, brushColor, brushSize, onPaint, autoRotate]);
+  }, [resolvedMode, brushColor, brushSize, onPaint, onPaintStart, onPickColor, autoRotate]);
+
+  /**
+   * Repinta cuando cambian los trazos (deshacer, limpiar, cargar otra versión)
+   * sin reconstruir la escena, de modo que el encuadre no se mueva.
+   */
+  useEffect(() => {
+    strokesRef.current = safeStrokes;
+    repaintRef.current?.();
+  }, [safeStrokes]);
 
   useImperativeHandle(ref, () => ({
     captureImage: () => {
@@ -342,7 +375,23 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       return true;
     };
 
-    const replayPaint = () => safeStrokes.forEach(applyStroke);
+    const replayPaint = () => strokesRef.current.forEach(applyStroke);
+
+    /** Deja todas las superficies sin pintura, conservando la textura original. */
+    const resetPaint = () => {
+      paintTargets.forEach((item) => {
+        (item.paint.array as Uint8Array).fill(0);
+        item.paint.needsUpdate = true;
+      });
+    };
+
+    // Deshacer y limpiar entran por aquí: se borra la capa de pintura y se
+    // vuelven a aplicar los trazos que quedan. La cámara ni se toca.
+    repaintRef.current = () => {
+      if (paintTargets.size === 0) return;
+      resetPaint();
+      replayPaint();
+    };
 
     const strokeAt = (event: PointerEvent): PaintStroke | null => {
       if (!loadedObject) return null;
@@ -424,13 +473,56 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       lastPaintStroke = stroke;
     };
 
+    /**
+     * Cuentagotas. Lee el píxel bajo el cursor del propio lienzo, así que
+     * devuelve exactamente el color que la persona ve, ya con textura,
+     * iluminación y la pintura aplicada encima. Solo actúa sobre el modelo:
+     * sobre el fondo o la rejilla no hace nada.
+     */
+    const pickColorAt = (event: PointerEvent) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(pointer, camera);
+      if (!raycaster.intersectObjects(modelMeshes, false).length) return;
+
+      // El lienzo se dibuja con `preserveDrawingBuffer`, pero hay que renderizar
+      // antes de leer para no tomar el color de un fotograma ya descartado.
+      renderer.render(scene, camera);
+      const sampler = document.createElement('canvas');
+      sampler.width = 1;
+      sampler.height = 1;
+      const context = sampler.getContext('2d');
+      if (!context) return;
+      const scaleX = renderer.domElement.width / rect.width;
+      const scaleY = renderer.domElement.height / rect.height;
+      context.drawImage(
+        renderer.domElement,
+        (event.clientX - rect.left) * scaleX,
+        (event.clientY - rect.top) * scaleY,
+        1, 1, 0, 0, 1, 1,
+      );
+      const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+      const hex = `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+      onPickColorRef.current?.(hex);
+    };
+
     const onPointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return;
       previous = { x: event.clientX, y: event.clientY };
+      if (modeRef.current === 'pick') {
+        pickColorAt(event);
+        return;
+      }
       renderer.domElement.setPointerCapture(event.pointerId);
       if (modeRef.current === 'paint') {
         painting = true;
         lastPaintStroke = null;
+        // Un arrastre entero es un solo paso de deshacer, por muchas muestras
+        // que genere: el aviso va antes del primer trazo.
+        onPaintStartRef.current?.();
         paintAt(event);
       } else {
         dragging = true;
@@ -588,6 +680,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
 
     return () => {
       disposed = true;
+      repaintRef.current = null;
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
@@ -604,7 +697,10 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       disposableGeometries.forEach((geometry) => geometry.dispose());
       disposableMaterials.forEach((material) => material.dispose());
     };
-  }, [modelo, safeStrokes]);
+    // Deliberadamente sin `safeStrokes`: cambiarlos no debe reconstruir la
+    // escena ni volver a descargar el modelo. De eso se encarga repaintRef.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelo]);
 
   const modeLabel = resolvedMode === 'paint' ? t('viewer.paintHint') : t('viewer.rotateHint');
 
@@ -623,7 +719,9 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
 });
 
 function cursorForMode(mode: ViewerInteractionMode) {
-  return mode === 'paint' ? 'crosshair' : 'grab';
+  if (mode === 'paint') return 'crosshair';
+  if (mode === 'pick') return 'copy';
+  return 'grab';
 }
 
 Canvas3DViewer.displayName = 'Canvas3DViewer';

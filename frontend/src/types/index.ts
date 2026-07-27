@@ -65,6 +65,14 @@ export interface PaintStroke {
   surfaceId?: string;
   color: string;
   size: number;
+  /**
+   * Trazada a la que pertenece: todo lo pintado entre apoyar y levantar el
+   * dedo comparte número. Un arrastre genera cientos de muestras, así que sin
+   * esto deshacer borraría una mota invisible en lugar de la línea trazada.
+   * Las pinturas guardadas antes de existir este campo no lo tienen y cuentan
+   * como una sola trazada.
+   */
+  group?: number;
 }
 
 export interface Modelo3D {
