@@ -56,7 +56,45 @@ Se emplea MoSCoW: `Must` es imprescindible para el objetivo del producto; `Shoul
 - Existe una vista previa A4 antes de descargar.
 - No se exportan coordenadas exactas.
 
-## 3. Backlog futuro
+## 3. Épica transversal EP-INT — capa intercultural kichwa–castellano
+
+Estas historias se incorporaron al backlog después de la planificación inicial.
+Se ejecutaron de forma transversal y no dentro de un único sprint: la
+arquitectura de internacionalización debe existir antes de poder traducir
+pantallas, y cada pantalla se tradujo conforme se construía.
+
+| ID | Historia de usuario resumida | Prioridad | Puntos | Sprint | Estado |
+| --- | --- | --- | ---: | ---: | --- |
+| HU-26 | Como equipo quiero una arquitectura de traducción tipada, para que una clave inexistente falle en compilación. | Must | 5 | 2 | Completada |
+| HU-27 | Como usuario kichwahablante quiero conmutar el idioma desde antes de iniciar sesión. | Must | 3 | 2 | Completada |
+| HU-28 | Como usuario quiero que los datos ya guardados (color, tamaño, raza) se muestren en mi idioma. | Must | 5 | 3 | Completada |
+| HU-29 | Como usuario quiero un modo bilingüe simultáneo `kichwa · castellano`. | Should | 3 | 4 | Completada |
+| HU-30 | Como usuario quiero que el cartel PDF se genere en el idioma elegido. | Must | 3 | 4 | Completada |
+| HU-31 | Como equipo quiero documentar cada término con su fuente lexicográfica. | Must | 2 | 4 | Completada |
+
+### Criterios de aceptación destacados
+
+**HU-27 — Conmutación de idioma**
+
+- El selector aparece en la portada, el inicio de sesión y el registro.
+- El cambio se aplica sin recargar la página.
+- La preferencia persiste entre sesiones y **sobrevive al cierre de sesión**.
+- El atributo `lang` del documento cambia a `es` o `qu` según corresponda.
+
+**HU-28 — Traducción de datos almacenados**
+
+- Los valores de lista cerrada guardados en castellano se muestran traducidos.
+- No se modifica ningún dato en la base de datos.
+- El texto libre escrito por la persona **nunca** se traduce automáticamente.
+
+**HU-31 — Respaldo lexicográfico**
+
+- Cada término del glosario declara su fuente.
+- No se incorpora ninguna raíz léxica inventada.
+- Los compuestos se marcan como `[comp.]` con su composición explícita.
+- Se aplica la norma ortográfica ALKI.
+
+## 4. Backlog futuro
 
 | ID | Mejora | Prioridad sugerida |
 | --- | --- | --- |
