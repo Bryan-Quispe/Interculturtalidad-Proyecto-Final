@@ -1,0 +1,1050 @@
+<title>Wasi Wiwakuna 3D — Informe de entrega final</title>
+
+<style>
+  :root {
+    --paper:     #ffffff;
+    --paper-2:   #f4f7f5;
+    --line:      #d3ded8;
+    --line-soft: #e7eeea;
+    --text:      #16232a;
+    --text-soft: #566d76;
+    --accent:    #0a6f52;
+    --accent-2:  #0d4f5e;
+    --ochre:     #96631f;
+    --coral:     #a8342a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #0b1a20;
+      --paper-2:   #12262e;
+      --line:      #23414b;
+      --line-soft: #1a333c;
+      --text:      #e4ede9;
+      --text-soft: #96b0b8;
+      --accent:    #45c79a;
+      --accent-2:  #6ec5d6;
+      --ochre:     --ochre;
+      --ochre:     #d6a75f;
+      --coral:     #ef8074;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b1a20; --paper-2: #12262e; --line: #23414b; --line-soft: #1a333c;
+    --text: #e4ede9; --text-soft: #96b0b8; --accent: #45c79a; --accent-2: #6ec5d6;
+    --ochre: #d6a75f; --coral: #ef8074;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --paper-2: #f4f7f5; --line: #d3ded8; --line-soft: #e7eeea;
+    --text: #16232a; --text-soft: #566d76; --accent: #0a6f52; --accent-2: #0d4f5e;
+    --ochre: #96631f; --coral: #a8342a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    max-width: 210mm;
+    padding: 0 clamp(1.1rem, 5vw, 2.4rem) 5rem;
+    background: var(--paper);
+    color: var(--text);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    /* Ninguna palabra larga debe sobresalir del bloque de texto. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, Roboto, Arial, sans-serif;
+    font-weight: 650;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+    hyphens: none;
+  }
+
+  h1 { font-size: 2.05rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.32rem;
+    margin: 3.2rem 0 .9rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  h3 { font-size: 1.04rem; margin: 1.9rem 0 .5rem; }
+  h4 {
+    font-size: .82rem;
+    margin: 1.4rem 0 .4rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-soft);
+  }
+
+  p { margin: 0 0 .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: .84em;
+    /* Rutas y nombres largos parten en vez de desbordar la celda. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  code {
+    background: var(--line-soft);
+    padding: .08em .32em;
+    border-radius: 2px;
+  }
+
+  .kw {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: .87em;
+    color: var(--accent-2);
+  }
+
+  /* ── Portada ───────────────────────────────────────────────── */
+  .cover {
+    padding: 4.5rem 0 3rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .cover .institution {
+    font-family: "Segoe UI", sans-serif;
+    font-size: .74rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    line-height: 1.9;
+    margin-bottom: 2.2rem;
+  }
+  .cover .subtitle {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-soft);
+    margin: .7rem 0 0;
+  }
+  .cover dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: .38rem 1.3rem;
+    margin: 2.6rem 0 0;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .87rem;
+  }
+  .cover dt { color: var(--text-soft); }
+  .cover dd { margin: 0; font-weight: 600; }
+  .rellenar {
+    display: inline-block;
+    width: min(18rem, 100%);
+    max-width: 100%;
+    border-bottom: 1px solid var(--text-soft);
+    vertical-align: baseline;
+    height: 1.1em;
+  }
+  .rellenar.corta { width: min(8rem, 100%); }
+
+  /* ── Índice ────────────────────────────────────────────────── */
+  .toc { background: var(--paper-2); border: 1px solid var(--line); padding: 1.3rem 1.6rem; }
+  .toc h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.05rem; }
+  .toc ol { margin: .6rem 0 0; padding-left: 1.3rem; font-family: "Segoe UI", sans-serif; font-size: .9rem; }
+  .toc li { margin: .22rem 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Tablas ────────────────────────────────────────────────── */
+  .tabla-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding-bottom: .45rem;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: .42rem .6rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  thead th {
+    background: var(--paper-2);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-soft);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+  td.cod { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── Piezas ────────────────────────────────────────────────── */
+  ul, ol { margin: 0 0 .95rem; padding-left: 1.35rem; }
+  li { margin: .22rem 0; }
+
+  .nota {
+    border-left: 3px solid var(--ochre);
+    background: color-mix(in srgb, var(--ochre) 8%, transparent);
+    padding: .75rem 1rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .nota strong { color: var(--ochre); }
+
+  .ficha {
+    border: 1px solid var(--line);
+    margin: 1.2rem 0;
+  }
+  .ficha > div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ficha > div:last-child { border-bottom: 0; }
+  .ficha dt, .ficha .k {
+    background: var(--paper-2);
+    padding: .42rem .7rem;
+    font-family: "Segoe UI", sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .ficha .v { padding: .42rem .7rem; font-size: .9rem; }
+  .ficha .v ol { margin: 0; padding-left: 1.1rem; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.6rem 0; }
+
+  .pie {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: "Segoe UI", sans-serif;
+    font-size: .78rem;
+    color: var(--text-soft);
+  }
+
+  /* ── Impresión ─────────────────────────────────────────────── */
+  @page { size: A4 portrait; margin: 18mm 16mm; }
+
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper: #fff; --paper-2: #f2f5f3; --line: #b9c7c0; --line-soft: #dde6e1;
+      --text: #101c22; --text-soft: #4c626b; --accent: #075c44; --accent-2: #0b4553;
+      --ochre: #7d5218; --coral: #8f2b22;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { max-width: none; padding: 0; font-size: 10.5pt; }
+    .cover { padding-top: 0; page-break-after: always; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: auto; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    table, .ficha, .nota { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .tabla-wrap { overflow: visible; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<header class="cover">
+  <p class="institution">
+    Universidad de las Fuerzas Armadas ESPE<br>
+    Departamento de Ciencias de la Computación<br>
+    Desarrollo de Software Aplicado a la Interculturalidad · Tercer parcial
+  </p>
+  <h1>Wasi Wiwakuna 3D</h1>
+  <p class="subtitle">Plataforma bilingüe kichwa–castellano para la búsqueda de mascotas perdidas</p>
+  <dl>
+    <dt>Responsable técnico</dt><dd>Bryan Quispe</dd>
+    <dt>Integrantes</dt><dd><span class="rellenar"></span></dd>
+    <dt>NRC</dt><dd><span class="rellenar corta"></span></dd>
+    <dt>Carrera</dt><dd><span class="rellenar"></span></dd>
+    <dt>Período del proyecto</dt><dd>24 de mayo – 25 de julio de 2026 (9 semanas)</dd>
+    <dt>Marco de trabajo</dt><dd>Scrum, cuatro sprints</dd>
+    <dt>Estado</dt><dd>Sistema desplegado y operativo</dd>
+    <dt>Fecha del informe</dt><dd>25 de julio de 2026</dd>
+  </dl>
+</header>
+
+<nav class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#s1">Introducción y contexto</a></li>
+    <li><a href="#s2">Especificación de requisitos</a></li>
+    <li><a href="#s3">Casos de uso</a></li>
+    <li><a href="#s4">Marco de trabajo Scrum</a></li>
+    <li><a href="#s5">Cronograma y desarrollo de los sprints</a></li>
+    <li><a href="#s6">Product Backlog</a></li>
+    <li><a href="#s7">Arquitectura y modelo de datos</a></li>
+    <li><a href="#s8">Calidad, verificación y validación</a></li>
+    <li><a href="#s9">Matriz de trazabilidad</a></li>
+    <li><a href="#s10">Gestión de riesgos</a></li>
+    <li><a href="#s11">Conclusiones y trabajo futuro</a></li>
+    <li><a href="#s12">Anexos</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s1">1. Introducción y contexto</h2>
+
+<h3>1.1 Problemática</h3>
+<p>Cuando una mascota se pierde, la búsqueda ocurre en canales informales: grupos de mensajería del barrio, publicaciones sueltas en redes sociales y carteles impresos a mano. Ese circuito falla por razones concretas y repetidas, no por falta de voluntad de quienes participan.</p>
+<ol>
+  <li><strong>La información llega incompleta.</strong> Un mensaje reenviado pierde la fotografía, o llega la fotografía sin el teléfono. Nada obliga a incluir lo indispensable.</li>
+  <li><strong>Una fotografía no siempre basta para identificar al animal.</strong> Las fotografías domésticas se toman de noche, movidas o con el animal echado, y muchos animales mestizos se parecen entre sí en esas condiciones.</li>
+  <li><strong>Publicar la dirección exacta expone al propietario.</strong> El impulso de dar todos los datos convierte un cartel de búsqueda en información aprovechable por terceros.</li>
+  <li><strong>La información se dispersa.</strong> Un mensaje de hace tres semanas es irrecuperable en la práctica: quien encuentra un animal no tiene dónde consultar.</li>
+  <li><strong>Todo el circuito opera en castellano.</strong> Esta es la carencia que da sentido intercultural al proyecto.</li>
+</ol>
+
+<h3>1.2 Justificación intercultural</h3>
+<p>El artículo 2 de la Constitución del Ecuador de 2008 reconoce el kichwa como lengua oficial de relación intercultural, y es la lengua indígena con mayor número de hablantes del país. Pese a ello, la oferta de software cotidiano en kichwa es prácticamente inexistente: una familia kichwahablante que pierde un animal debe operar en una lengua que no es la propia para resolver un asunto doméstico elemental.</p>
+<p>El dominio elegido no es accesorio. El animal de crianza —<span class="kw">wiwa</span>— forma parte de la economía familiar andina: cuida el ganado, controla plagas y contribuye al sustento. Perderlo constituye una pérdida material, no solo afectiva.</p>
+
+<h3>1.3 Objetivo general</h3>
+<p>Facilitar la difusión organizada y visual de mascotas perdidas mediante una ficha digital que combine información verificable, fotografías reales y una referencia tridimensional personalizable, accesible tanto en castellano como en kichwa y respetuosa con la privacidad del propietario.</p>
+
+<h3>1.4 Objetivos específicos</h3>
+<ol>
+  <li>Gestionar usuarios, roles y sesiones seguras.</li>
+  <li>Asociar cada mascota con un propietario responsable.</li>
+  <li>Registrar características, fotografías, contacto y último avistamiento.</li>
+  <li>Filtrar el catálogo de modelos tridimensionales según la especie.</li>
+  <li>Permitir rotación, acercamiento y pintura sobre la textura del modelo.</li>
+  <li>Generar un cartel en PDF configurable que no revele coordenadas exactas.</li>
+  <li>Ofrecer la interfaz completa en kichwa y castellano, conmutable en caliente.</li>
+  <li>Proporcionar administración y consulta pública controlada.</li>
+</ol>
+
+<h3>1.5 Alcance</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 1. Delimitación del alcance</caption>
+    <thead><tr><th style="width:50%">Incluido</th><th>Excluido</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Registro, inicio de sesión y autorización por roles.</td>
+        <td>Reconocimiento automático de mascotas mediante inteligencia artificial.</td>
+      </tr>
+      <tr>
+        <td>Gestión completa de mascotas y sus características.</td>
+        <td>Rastreo por GPS en tiempo real.</td>
+      </tr>
+      <tr>
+        <td>Catálogo tridimensional filtrado y personalizable.</td>
+        <td>Aplicación móvil nativa.</td>
+      </tr>
+      <tr>
+        <td>Generación y exportación del cartel de búsqueda.</td>
+        <td>Mensajería interna entre usuarios.</td>
+      </tr>
+      <tr>
+        <td>Interfaz bilingüe kichwa–castellano.</td>
+        <td>Verificación gubernamental de identidad.</td>
+      </tr>
+      <tr>
+        <td>Consulta pública sin necesidad de cuenta.</td>
+        <td>Impresión física o reparto de carteles.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s2">2. Especificación de requisitos</h2>
+
+<h3>2.1 Requisitos funcionales</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 2. Requisitos funcionales del sistema</caption>
+    <thead>
+      <tr><th style="width:4.5rem">Código</th><th>Requisito</th><th style="width:4.5rem">Prioridad</th><th style="width:5.5rem">Estado</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cod">RF-01</td><td>Registrar usuarios con nombre, correo y contraseña.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-02</td><td>Autenticar usuarios y emitir una sesión mediante JWT.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-03</td><td>Diferenciar permisos de usuario y administrador.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-04</td><td>Crear, consultar, editar y eliminar mascotas.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-05</td><td>Asociar cada mascota con su propietario autenticado.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-06</td><td>Permitir las categorías perro, gato y conejo mediante selección controlada.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-07</td><td>Registrar raza, descripción, tamaño, color y otras características.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-08</td><td>Cargar y mostrar varias fotografías de la mascota.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-09</td><td>Registrar teléfono y fecha del último avistamiento.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-10</td><td>Seleccionar la zona o el barrio sobre un mapa interactivo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-11</td><td>Rechazar ubicaciones que no pertenezcan al Ecuador.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-12</td><td>Consultar mascotas públicas por zona o categoría.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-13</td><td>Mostrar al administrador las mascotas de todos los usuarios.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-14</td><td>Filtrar los registros administrativos por propietario.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-15</td><td>Cargar y catalogar modelos tridimensionales por especie.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-16</td><td>Ofrecer únicamente los modelos compatibles con la categoría elegida.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-17</td><td>Visualizar modelos en formato GLB, GLTF u OBJ.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-18</td><td>Separar los modos de rotación, acercamiento y pintura.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-19</td><td>Pintar sobre la superficie del modelo conservando su textura original.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-20</td><td>Ofrecer lápiz, pincel, brocha, paleta de color, deshacer y limpiar.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-21</td><td>Guardar los trazos y reconstruir la personalización al reabrir.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-22</td><td>Elegir la visibilidad pública o privada del modelo editado.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-23</td><td>Previsualizar y editar el contenido del cartel antes de exportarlo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-24</td><td>Seleccionar, ordenar y escoger la imagen principal del PDF.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-25</td><td>Exportar el cartel con el nombre de la mascota, la fecha y la hora en el archivo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-26</td><td>Conmutar la interfaz entre castellano, kichwa y modo bilingüe simultáneo.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-27</td><td>Traducir en pantalla los valores de lista cerrada ya almacenados.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-28</td><td>Registrar la descripción y la referencia del avistamiento en ambas lenguas.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-29</td><td>Recoger el carácter y las señas mediante una lista cerrada traducible.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-30</td><td>Generar el cartel en PDF en el idioma seleccionado.</td><td>Must</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-31</td><td>Tomar un color del propio modelo mediante cuentagotas con lupa de píxeles.</td><td>Could</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-32</td><td>Registrar la referencia a pie de calle del avistamiento, corregible a mano.</td><td>Should</td><td>Completado</td></tr>
+      <tr><td class="cod">RF-33</td><td>Admitir varios números de contacto por ficha.</td><td>Should</td><td>Completado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.2 Requisitos no funcionales</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 3. Requisitos no funcionales</caption>
+    <thead><tr><th style="width:5rem">Código</th><th style="width:9rem">Atributo</th><th>Criterio de aceptación</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">RNF-01</td><td>Seguridad</td><td>Las rutas privadas se protegen con JWT y autorización por rol o por propiedad del recurso.</td></tr>
+      <tr><td class="cod">RNF-02</td><td>Privacidad</td><td>Las vistas públicas y el PDF exportado no muestran latitud ni longitud.</td></tr>
+      <tr><td class="cod">RNF-03</td><td>Integridad</td><td>Los objetos de transferencia y los formularios validan campos obligatorios y categorías.</td></tr>
+      <tr><td class="cod">RNF-04</td><td>Usabilidad</td><td>Los flujos principales presentan etiquetas, estados y retroalimentación explícita.</td></tr>
+      <tr><td class="cod">RNF-05</td><td>Adaptabilidad</td><td>La interfaz evita desbordamientos en pantallas de escritorio y de teléfono.</td></tr>
+      <tr><td class="cod">RNF-06</td><td>Rendimiento</td><td>Las texturas y las imágenes se limitan o se reducen antes de procesarse.</td></tr>
+      <tr><td class="cod">RNF-07</td><td>Compatibilidad</td><td>Navegador moderno con WebGL y JavaScript habilitados.</td></tr>
+      <tr><td class="cod">RNF-08</td><td>Mantenibilidad</td><td>Interfaz, servicios, persistencia y documentación permanecen separados.</td></tr>
+      <tr><td class="cod">RNF-09</td><td>Trazabilidad</td><td>Cada requisito se relaciona con una historia, un sprint y un componente.</td></tr>
+      <tr><td class="cod">RNF-10</td><td>Exportabilidad</td><td>El PDF respeta el formato A4, con imágenes completas y texto sin desbordamiento.</td></tr>
+      <tr><td class="cod">RNF-11</td><td>Accesibilidad</td><td>Etiquetas ARIA en controles sin texto y atributo <code>lang</code> ajustado a la lengua mostrada.</td></tr>
+      <tr><td class="cod">RNF-12</td><td>Pertinencia lingüística</td><td>La traducción aplica la norma ortográfica ALKI y declara la fuente de cada término.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.3 Reglas de negocio</h3>
+<ol>
+  <li>Una mascota pertenece exactamente a un usuario.</li>
+  <li>Un usuario gestiona sus propios registros; el administrador supervisa todos.</li>
+  <li>La categoría de la mascota determina los modelos tridimensionales disponibles.</li>
+  <li>La ubicación publicada es aproximada y debe pertenecer al Ecuador.</li>
+  <li>El teléfono es obligatorio para descargar un cartel de búsqueda.</li>
+  <li>La personalización se guarda sin destruir el archivo base compartido.</li>
+  <li>Un modelo personalizado puede permanecer privado o compartirse con la comunidad.</li>
+  <li>La vista tridimensional es una referencia; las fotografías siguen siendo la evidencia principal.</li>
+  <li>El PDF admite hasta ocho fotografías seleccionadas.</li>
+  <li>El texto libre escrito por una persona nunca se traduce de forma automática.</li>
+</ol>
+
+<h3>2.4 Supuestos y dependencias</h3>
+<ul>
+  <li>La base de datos PostgreSQL y la interfaz de programación deben encontrarse disponibles.</li>
+  <li>La búsqueda y la geocodificación inversa dependen de Nominatim, el servicio público de OpenStreetMap, que no requiere clave de acceso.</li>
+  <li>Los modelos deben tener un formato compatible y, para una pintura precisa, geometría con suficiente densidad de malla.</li>
+  <li>El alojamiento de fotografías depende de las credenciales de Cloudinary configuradas en el servidor.</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s3">3. Casos de uso</h2>
+
+<h3>3.1 Actores</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 4. Actores del sistema</caption>
+    <thead><tr><th style="width:9rem">Actor</th><th>Descripción</th><th style="width:7rem">Autenticación</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Visitante</strong></td><td>Persona que consulta el catálogo público de mascotas perdidas. Puede haber encontrado un animal.</td><td>No requerida</td></tr>
+      <tr><td><strong>Usuario</strong><br><span class="kw">mutsurik</span></td><td>Propietario que registra y administra sus mascotas y modelos personalizados.</td><td>Requerida</td></tr>
+      <tr><td><strong>Administrador</strong><br><span class="kw">kamak</span></td><td>Supervisa los registros de todos los usuarios y el catálogo compartido.</td><td>Requerida, rol <code>ADMIN</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.2 Listado de casos de uso</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 5. Casos de uso identificados</caption>
+    <thead><tr><th style="width:4.5rem">Código</th><th>Caso de uso</th><th style="width:8rem">Actor principal</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">CU-01</td><td>Crear una cuenta de usuario</td><td>Visitante</td></tr>
+      <tr><td class="cod">CU-02</td><td>Iniciar sesión y obtener una sesión válida</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-03</td><td>Cambiar el idioma de la interfaz</td><td>Visitante</td></tr>
+      <tr><td class="cod">CU-04</td><td>Registrar una mascota perdida</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-05</td><td>Editar o eliminar una mascota propia</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-06</td><td>Cargar fotografías de la mascota</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-07</td><td>Señalar la zona del último avistamiento</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-08</td><td>Seleccionar un modelo tridimensional compatible</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-09</td><td>Personalizar el modelo pintando sus señas</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-10</td><td>Tomar un color del modelo con el cuentagotas</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-11</td><td>Preparar y exportar el cartel de búsqueda</td><td>Usuario</td></tr>
+      <tr><td class="cod">CU-12</td><td>Consultar el catálogo público de mascotas</td><td>Visitante</td></tr>
+      <tr><td class="cod">CU-13</td><td>Supervisar los registros de todos los usuarios</td><td>Administrador</td></tr>
+      <tr><td class="cod">CU-14</td><td>Filtrar los registros por propietario</td><td>Administrador</td></tr>
+      <tr><td class="cod">CU-15</td><td>Subir un modelo tridimensional al catálogo</td><td>Usuario</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.3 Casos de uso detallados</h3>
+
+<h4>CU-04 · Registrar una mascota perdida</h4>
+<div class="ficha">
+  <div><span class="k">Actor</span><span class="v">Usuario autenticado</span></div>
+  <div><span class="k">Precondición</span><span class="v">El usuario dispone de una sesión válida.</span></div>
+  <div><span class="k">Postcondición</span><span class="v">La mascota queda registrada y asociada a su propietario.</span></div>
+  <div><span class="k">Flujo principal</span><span class="v"><ol>
+    <li>El usuario abre el formulario de registro.</li>
+    <li>Introduce el nombre y selecciona la categoría.</li>
+    <li>Elige la raza, el tamaño y el color de las listas disponibles.</li>
+    <li>Marca los rasgos de carácter y las señas que correspondan.</li>
+    <li>Redacta la descripción libre y, si lo desea, su versión en kichwa.</li>
+    <li>Señala la zona sobre el mapa y corrige el nombre del sector.</li>
+    <li>Introduce el teléfono de contacto y los números adicionales.</li>
+    <li>Carga hasta tres fotografías.</li>
+    <li>Confirma el registro.</li>
+  </ol></span></div>
+  <div><span class="k">Flujos alternos</span><span class="v"><ol>
+    <li><strong>3a.</strong> La raza no figura en la lista: el usuario elige «Otra» y la escribe.</li>
+    <li><strong>6a.</strong> El punto marcado queda fuera del Ecuador: el sistema lo rechaza e informa del motivo.</li>
+    <li><strong>7a.</strong> El teléfono no cumple el formato: el sistema lo indica junto al campo.</li>
+  </ol></span></div>
+  <div><span class="k">Requisitos</span><span class="v">RF-04, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-11, RF-28, RF-29, RF-32, RF-33</span></div>
+</div>
+
+<h4>CU-09 · Personalizar el modelo pintando sus señas</h4>
+<div class="ficha">
+  <div><span class="k">Actor</span><span class="v">Usuario autenticado</span></div>
+  <div><span class="k">Precondición</span><span class="v">La mascota tiene asignado un modelo tridimensional.</span></div>
+  <div><span class="k">Postcondición</span><span class="v">Se guarda una copia personalizada sin alterar el modelo original del catálogo.</span></div>
+  <div><span class="k">Flujo principal</span><span class="v"><ol>
+    <li>El usuario abre el editor tridimensional desde la ficha.</li>
+    <li>Rota el modelo y ajusta el acercamiento hasta encontrar la zona.</li>
+    <li>Activa el modo de pintura y elige el grosor y el color.</li>
+    <li>Traza las señas particulares sobre la superficie.</li>
+    <li>Deshace las trazadas que no le convenzan.</li>
+    <li>Decide si el modelo queda privado o se comparte.</li>
+    <li>Guarda los cambios.</li>
+  </ol></span></div>
+  <div><span class="k">Flujos alternos</span><span class="v"><ol>
+    <li><strong>3a.</strong> El color desentona con el pelaje: el usuario activa el cuentagotas y toma un color del propio modelo (CU-10).</li>
+    <li><strong>5a.</strong> El usuario descarta todo el trabajo con «Limpiar pintura», previa confirmación.</li>
+    <li><strong>7a.</strong> El modelo pertenece al catálogo compartido: el sistema crea una copia propia en lugar de modificarlo.</li>
+  </ol></span></div>
+  <div><span class="k">Requisitos</span><span class="v">RF-17, RF-18, RF-19, RF-20, RF-21, RF-22, RF-31</span></div>
+</div>
+
+<h4>CU-11 · Preparar y exportar el cartel de búsqueda</h4>
+<div class="ficha">
+  <div><span class="k">Actor</span><span class="v">Usuario autenticado</span></div>
+  <div><span class="k">Precondición</span><span class="v">La mascota tiene teléfono de contacto y al menos una fotografía.</span></div>
+  <div><span class="k">Postcondición</span><span class="v">Se descarga un archivo PDF con el nombre de la mascota, la fecha y la hora.</span></div>
+  <div><span class="k">Flujo principal</span><span class="v"><ol>
+    <li>El usuario abre el editor del cartel desde la ficha.</li>
+    <li>Escoge el idioma con el que se rotulará el documento.</li>
+    <li>Revisa y ajusta los datos que aparecerán.</li>
+    <li>Selecciona las fotografías, su orden y la portada.</li>
+    <li>Elige una de las tres plantillas de diseño.</li>
+    <li>Comprueba la vista previa, que se actualiza al instante.</li>
+    <li>Descarga el PDF.</li>
+  </ol></span></div>
+  <div><span class="k">Flujos alternos</span><span class="v"><ol>
+    <li><strong>3a.</strong> Falta el teléfono o la zona: el sistema bloquea la descarga e indica el campo pendiente.</li>
+    <li><strong>4a.</strong> El usuario incluye la captura del modelo tridimensional como una imagen más.</li>
+  </ol></span></div>
+  <div><span class="k">Requisitos</span><span class="v">RF-23, RF-24, RF-25, RF-30, RNF-02, RNF-10</span></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s4">4. Marco de trabajo Scrum</h2>
+
+<h3>4.1 Adaptación de los roles</h3>
+<p>Al tratarse de un proyecto académico con un responsable técnico principal, se documenta una adaptación de los roles. No se afirman reuniones ni participantes que no hayan tenido lugar.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 6. Responsabilidades de Scrum y su aplicación</caption>
+    <thead><tr><th style="width:9rem">Responsabilidad</th><th>Aplicación en el proyecto</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Product Owner</strong></td><td>Mantiene la visión, prioriza el Product Backlog y valida el valor entregado. Asumido por el responsable del proyecto con retroalimentación del docente.</td></tr>
+      <tr><td><strong>Scrum Master</strong></td><td>Facilita el proceso, identifica impedimentos y protege la meta del sprint. Se materializa en el seguimiento escrito y la retrospectiva de cierre.</td></tr>
+      <tr><td><strong>Equipo de desarrollo</strong></td><td>Diseña, implementa, prueba y documenta el incremento. Responsable técnico: Bryan Quispe.</td></tr>
+      <tr><td><strong>Interesados</strong></td><td>Docente de la asignatura, evaluadores y usuarios de prueba.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>4.2 Eventos</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 7. Eventos, propósito y evidencia</caption>
+    <thead><tr><th style="width:9rem">Evento</th><th>Propósito</th><th style="width:9rem">Evidencia</th></tr></thead>
+    <tbody>
+      <tr><td>Sprint</td><td>Contenedor temporal de dos o tres semanas que produce un incremento demostrable.</td><td>Incremento y acta</td></tr>
+      <tr><td>Sprint Planning</td><td>Definir la meta del sprint y seleccionar las historias que la sostienen.</td><td>Meta y Sprint Backlog</td></tr>
+      <tr><td>Daily Scrum</td><td>Revisar el avance diario, ajustar el plan y registrar impedimentos.</td><td>Bitácora resumida</td></tr>
+      <tr><td>Sprint Review</td><td>Inspeccionar el incremento y recoger observaciones.</td><td>Funciones demostradas</td></tr>
+      <tr><td>Sprint Retrospective</td><td>Mejorar proceso, calidad y forma de trabajo.</td><td>Acciones acordadas</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>4.3 Definición de preparado</h3>
+<p>Una historia puede incorporarse a un sprint cuando cumple todas estas condiciones:</p>
+<ol>
+  <li>Expresa actor, necesidad y beneficio.</li>
+  <li>Tiene criterios de aceptación comprobables.</li>
+  <li>Sus dependencias están identificadas.</li>
+  <li>Tiene prioridad y estimación asignadas.</li>
+  <li>Es suficientemente pequeña para completarse dentro del sprint.</li>
+  <li>No depende de una decisión crítica aún sin resolver.</li>
+</ol>
+
+<h3>4.4 Definición de terminado</h3>
+<p>Una historia se considera terminada cuando cumple todas estas condiciones:</p>
+<ol>
+  <li>La implementación está integrada en la rama principal.</li>
+  <li>El proyecto compila sin errores de tipos.</li>
+  <li>Los permisos y las validaciones correspondientes funcionan.</li>
+  <li>El flujo principal ha sido probado manualmente.</li>
+  <li>La interfaz no presenta desbordamientos en escritorio ni en teléfono.</li>
+  <li>No se exponen secretos ni la ubicación exacta del propietario.</li>
+  <li>La documentación afectada ha sido actualizada.</li>
+  <li>El incremento puede demostrarse desde la interfaz.</li>
+</ol>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s5">5. Cronograma y desarrollo de los sprints</h2>
+
+<p>El proyecto se desarrolló entre el <strong>24 de mayo</strong> y el <strong>25 de julio de 2026</strong>: nueve semanas repartidas en cuatro sprints.</p>
+
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 8. Cronograma general</caption>
+    <thead><tr><th style="width:4.5rem">Sprint</th><th style="width:9rem">Fechas</th><th>Meta del sprint</th><th class="num" style="width:4.5rem">Puntos</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">Sprint 1</td><td>24 de mayo – 6 de junio</td><td>Disponer de una base técnica segura y persistente.</td><td class="num">24</td></tr>
+      <tr><td class="cod">Sprint 2</td><td>7 – 20 de junio</td><td>Gestionar mascotas asociadas a su propietario.</td><td class="num">24</td></tr>
+      <tr><td class="cod">Sprint 3</td><td>21 de junio – 11 de julio</td><td>Apoyar la búsqueda con fotografías, mapa y visualización.</td><td class="num">33</td></tr>
+      <tr><td class="cod">Sprint 4</td><td>12 – 25 de julio</td><td>Mejorar la identificación visual y cerrar el producto.</td><td class="num">37</td></tr>
+      <tr><td class="cod">EP-INT</td><td>Transversal, sprints 2 a 4</td><td>Capa intercultural kichwa–castellano.</td><td class="num">21</td></tr>
+      <tr><td colspan="3"><strong>Total del proyecto</strong></td><td class="num"><strong>139</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nota">
+  <strong>Sobre la épica transversal.</strong> La capa intercultural no se ejecutó dentro de un único sprint. La arquitectura de internacionalización debe existir antes de poder traducir pantallas, y cada pantalla se tradujo conforme se construía, de modo que la épica atraviesa los sprints 2 a 4.
+</div>
+
+<h3>5.1 Sprint 1 · Base técnica y acceso seguro</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">24 de mayo – 6 de junio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Disponer de una base técnica segura y persistente sobre la que construir el dominio.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-01 a HU-06 · 24 puntos comprometidos, 24 aceptados</span></div>
+  <div><span class="k">Entregado</span><span class="v">Registro e inicio de sesión, contraseñas cifradas con bcrypt, sesión mediante JWT, roles de usuario y administrador, esquema relacional en Prisma e interfaz adaptable.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el ciclo completo de registro, inicio de sesión y acceso a una ruta protegida. Se confirmó el rechazo de peticiones sin token.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Definir el esquema de datos antes de escribir servicios evitó reescrituras posteriores. Como mejora se acordó fijar la definición de terminado por escrito antes del siguiente sprint.</span></div>
+</div>
+
+<h3>5.2 Sprint 2 · Gestión de mascotas</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">7 – 20 de junio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Permitir que cada propietario gestione sus mascotas sin acceder a las ajenas.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-07 a HU-12, HU-26, HU-27 · 24 puntos del dominio y 8 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Altas, consultas, ediciones y bajas de mascotas; categorías controladas; características de identificación; vista administrativa con filtro por propietario. Se incorporó la arquitectura de traducción tipada y el conmutador de idioma.</span></div>
+  <div><span class="k">Review</span><span class="v">Se comprobó que un usuario no recibe registros de otro y que el administrador visualiza el conjunto completo.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Se detectó que la separación de permisos debía resolverse en el servidor y no filtrando en la interfaz. Se corrigió dentro del propio sprint mediante rutas diferenciadas.</span></div>
+</div>
+
+<h3>5.3 Sprint 3 · Búsqueda, difusión y visualización</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">21 de junio – 11 de julio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Convertir el registro en una herramienta útil para buscar y difundir.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-13 a HU-18, HU-28 · 33 puntos del dominio y 5 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Carga de fotografías hacia Cloudinary, selección de la zona sobre el mapa, validación territorial, catálogo filtrado por especie, visor tridimensional y primera versión del cartel en PDF. Se añadió la traducción en pantalla de los valores ya almacenados.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el flujo completo desde el registro hasta la descarga del cartel. Se verificó que el PDF no incluye coordenadas.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">Concentrar cuatro integraciones externas en un mismo sprint elevó el riesgo. Se acordó distribuirlas en el futuro y, como medida inmediata, priorizar la que bloqueaba al resto.</span></div>
+</div>
+
+<h3>5.4 Sprint 4 · Identificación visual y cierre</h3>
+<div class="ficha">
+  <div><span class="k">Fechas</span><span class="v">12 – 25 de julio de 2026</span></div>
+  <div><span class="k">Meta</span><span class="v">Elevar la calidad de la identificación visual y dejar el producto listo para su defensa.</span></div>
+  <div><span class="k">Historias</span><span class="v">HU-19 a HU-25, HU-29 a HU-31 · 37 puntos del dominio y 8 de la épica intercultural</span></div>
+  <div><span class="k">Entregado</span><span class="v">Modos separados del visor, pintura sobre la superficie del modelo, cuentagotas con lupa de píxeles, copias personalizadas, editor completo del cartel, modo bilingüe simultáneo, cartel en el idioma elegido y glosario documentado. Se completó el despliegue en Render y Vercel.</span></div>
+  <div><span class="k">Review</span><span class="v">Se demostró el sistema sobre el entorno desplegado, no en local. Se confirmó la conmutación de idioma en todo el recorrido.</span></div>
+  <div><span class="k">Retrospectiva</span><span class="v">El despliegue reveló supuestos que en local pasaban inadvertidos. Se concluyó que un esqueleto desplegado desde el primer sprint habría evitado ese trabajo de última hora.</span></div>
+</div>
+
+<h3>5.5 Registro resumido de seguimiento diario</h3>
+<p>Se conserva un registro representativo del seguimiento, no la totalidad de las jornadas.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 9. Muestra del registro de seguimiento</caption>
+    <thead><tr><th style="width:6rem">Fecha</th><th>Avance</th><th style="width:11rem">Impedimento</th></tr></thead>
+    <tbody>
+      <tr><td>27 may</td><td>Esquema relacional y primera migración aplicada.</td><td>Ninguno</td></tr>
+      <tr><td>3 jun</td><td>Inicio de sesión emitiendo token; guardas pendientes.</td><td>Ninguno</td></tr>
+      <tr><td>11 jun</td><td>Altas y bajas de mascotas operativas.</td><td>Permisos resueltos en la interfaz; se trasladan al servidor</td></tr>
+      <tr><td>18 jun</td><td>Vista administrativa con filtro por propietario.</td><td>Ninguno</td></tr>
+      <tr><td>25 jun</td><td>Carga de fotografías hacia el servicio externo.</td><td>La credencial no puede viajar al navegador</td></tr>
+      <tr><td>1 jul</td><td>Visor tridimensional cargando modelos del catálogo.</td><td>Modelos sin densidad de malla suficiente</td></tr>
+      <tr><td>8 jul</td><td>Primera exportación del cartel en PDF.</td><td>Ninguno</td></tr>
+      <tr><td>15 jul</td><td>Pintura reimplementada sobre la superficie del modelo.</td><td>Los trazos quedaban desalineados al rotar</td></tr>
+      <tr><td>21 jul</td><td>Editor del cartel y modo bilingüe simultáneo.</td><td>Ninguno</td></tr>
+      <tr><td>24 jul</td><td>Despliegue en Render y Vercel; migraciones aplicadas.</td><td>Supuestos de sistema de archivos compartido</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>5.6 Evolución del producto</h3>
+<p>Las siguientes decisiones se adoptaron tras inspeccionar un incremento, y constituyen la evidencia de adaptación del proceso.</p>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 10. Adaptaciones registradas</caption>
+    <thead><tr><th style="width:3rem">N.º</th><th>Situación detectada</th><th>Decisión adoptada</th><th class="num" style="width:4rem">Sprint</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">A1</td><td>Los trazos quedaban desalineados de la superficie al rotar el modelo.</td><td>Reimplementar la pintura sobre la geometría del modelo en lugar del espacio de pantalla.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A2</td><td>Rotar y pintar de forma simultánea producía trazos accidentales.</td><td>Hacer que los modos de rotación, acercamiento y pintura sean mutuamente excluyentes.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A3</td><td>Pintar un modelo del catálogo lo degradaba para el resto de usuarios.</td><td>Crear una copia personalizada al editar, dejando intacto el original compartido.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A4</td><td>Publicar la dirección exacta exponía al propietario.</td><td>Separar la ubicación interna de la referencia pública y excluir las coordenadas del PDF.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A5</td><td>La credencial del servicio de imágenes no podía viajar al navegador.</td><td>Encaminar toda subida a través del servidor.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A6</td><td>Las mascotas registradas antes de la traducción se mostraban solo en castellano.</td><td>Traducir en pantalla los valores de lista cerrada, sin migrar la base de datos.</td><td class="num">3</td></tr>
+      <tr><td class="cod">A7</td><td>El nombre del barrio devuelto por el mapa no coincide con el de uso local.</td><td>Rellenar el sector automáticamente pero permitir su corrección manual.</td><td class="num">4</td></tr>
+      <tr><td class="cod">A8</td><td>Un único teléfono deja la ficha sin respuesta si esa persona no está disponible.</td><td>Admitir varios números de contacto por ficha.</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s6">6. Product Backlog</h2>
+
+<p>La priorización sigue el criterio MoSCoW. Los puntos representan complejidad relativa y no equivalen a horas de trabajo.</p>
+
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 11. Product Backlog completo</caption>
+    <thead>
+      <tr><th style="width:4.2rem">Código</th><th>Historia de usuario</th><th style="width:4.2rem">Prior.</th><th class="num" style="width:3.2rem">Pts.</th><th class="num" style="width:3.4rem">Sprint</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cod">HU-01</td><td>Como visitante quiero crear una cuenta para administrar mis mascotas.</td><td>Must</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-02</td><td>Como usuario quiero iniciar sesión de forma segura.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-03</td><td>Como sistema quiero proteger las rutas privadas mediante JWT.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-04</td><td>Como administrador quiero disponer de un rol diferenciado.</td><td>Must</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-05</td><td>Como equipo quiero persistencia relacional mediante Prisma.</td><td>Must</td><td class="num">5</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-06</td><td>Como usuario quiero una interfaz web adaptable.</td><td>Should</td><td class="num">3</td><td class="num">1</td></tr>
+      <tr><td class="cod">HU-07</td><td>Como usuario quiero registrar una mascota.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-08</td><td>Como usuario quiero elegir entre perro, gato o conejo.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-09</td><td>Como usuario quiero registrar las características de identificación.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-10</td><td>Como usuario quiero editar y eliminar mis mascotas.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-11</td><td>Como usuario quiero consultar únicamente mis registros.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-12</td><td>Como administrador quiero consultar y filtrar todas las mascotas.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-13</td><td>Como usuario quiero cargar varias fotografías reales.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-14</td><td>Como usuario quiero señalar el último lugar sobre un mapa.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-15</td><td>Como propietario quiero publicar solo una zona aproximada.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-16</td><td>Como usuario quiero ver modelos filtrados según la especie.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-17</td><td>Como usuario quiero visualizar y acomodar un modelo tridimensional.</td><td>Must</td><td class="num">8</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-18</td><td>Como usuario quiero exportar una ficha de búsqueda en PDF.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-19</td><td>Como usuario quiero modos separados para rotar, acercar y pintar.</td><td>Must</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-20</td><td>Como usuario quiero pintar rasgos conservando la textura original.</td><td>Must</td><td class="num">8</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-21</td><td>Como usuario quiero distintos tamaños de pincel, colores y deshacer.</td><td>Should</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-22</td><td>Como usuario quiero decidir si comparto mi modelo personalizado.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-23</td><td>Como usuario quiero editar y previsualizar el cartel.</td><td>Must</td><td class="num">8</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-24</td><td>Como usuario quiero elegir la portada, el orden y el formato de las fotos.</td><td>Must</td><td class="num">5</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-25</td><td>Como usuario quiero un nombre de archivo identificable y seguro.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-26</td><td>Como equipo quiero una arquitectura de traducción tipada, de modo que una clave inexistente falle al compilar.</td><td>Must</td><td class="num">5</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-27</td><td>Como usuario kichwahablante quiero cambiar de idioma antes de iniciar sesión.</td><td>Must</td><td class="num">3</td><td class="num">2</td></tr>
+      <tr><td class="cod">HU-28</td><td>Como usuario quiero que los datos ya guardados se muestren en mi idioma.</td><td>Must</td><td class="num">5</td><td class="num">3</td></tr>
+      <tr><td class="cod">HU-29</td><td>Como usuario quiero un modo bilingüe simultáneo.</td><td>Should</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-30</td><td>Como usuario quiero que el cartel se genere en el idioma elegido.</td><td>Must</td><td class="num">3</td><td class="num">4</td></tr>
+      <tr><td class="cod">HU-31</td><td>Como equipo quiero documentar cada término con su fuente lexicográfica.</td><td>Must</td><td class="num">2</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>6.1 Backlog futuro</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 12. Mejoras pendientes de priorizar</caption>
+    <thead><tr><th style="width:4.5rem">Código</th><th>Mejora</th><th style="width:5rem">Prioridad</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">BF-01</td><td>Estados de la búsqueda: perdida, encontrada y cerrada.</td><td>Must</td></tr>
+      <tr><td class="cod">BF-02</td><td>Pruebas automatizadas de extremo a extremo en integración continua.</td><td>Must</td></tr>
+      <tr><td class="cod">BF-03</td><td>Avisos a quienes sigan un sector cuando aparezca una mascota cercana.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-04</td><td>Validación del glosario kichwa con hablantes nativos.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-05</td><td>Moderación de los modelos publicados en el catálogo compartido.</td><td>Should</td></tr>
+      <tr><td class="cod">BF-06</td><td>Exportación del modelo personalizado como archivo GLB.</td><td>Could</td></tr>
+      <tr><td class="cod">BF-07</td><td>Incorporación de otras lenguas de relación intercultural.</td><td>Could</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s7">7. Arquitectura y modelo de datos</h2>
+
+<h3>7.1 Arquitectura general</h3>
+<p>Cliente y servidor permanecen separados y se comunican exclusivamente mediante peticiones HTTP con formato JSON y autenticación por token. Esa separación permite desplegar la interfaz en una red de distribución de contenidos y el servicio junto a su base de datos, que es el esquema de producción adoptado.</p>
+
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 13. Capas y responsabilidades</caption>
+    <thead><tr><th style="width:9rem">Capa</th><th style="width:12rem">Tecnología</th><th>Responsabilidad</th></tr></thead>
+    <tbody>
+      <tr><td>Presentación</td><td>Next.js 14, React 18, Tailwind CSS</td><td>Interfaz, enrutado y estado de sesión.</td></tr>
+      <tr><td>Internacionalización</td><td>Contexto propio y diccionario tipado</td><td>Conmutación entre castellano, kichwa y modo bilingüe.</td></tr>
+      <tr><td>Visualización</td><td>Three.js</td><td>Carga de modelos, rotación, acercamiento y pintura.</td></tr>
+      <tr><td>Documentos</td><td>jsPDF</td><td>Composición y exportación del cartel.</td></tr>
+      <tr><td>Servicios</td><td>NestJS 10, class-validator</td><td>Interfaz de programación bajo el prefijo <code>/api</code>.</td></tr>
+      <tr><td>Seguridad</td><td>Passport, JWT, bcrypt</td><td>Autenticación y autorización por rol o propiedad.</td></tr>
+      <tr><td>Persistencia</td><td>Prisma 5, PostgreSQL</td><td>Modelo de datos y migraciones versionadas.</td></tr>
+      <tr><td>Archivos</td><td>Sistema de archivos y Cloudinary</td><td>Modelos estáticos y fotografías de las mascotas.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>7.2 Modelo de datos</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 14. Entidades del modelo relacional</caption>
+    <thead><tr><th style="width:11rem">Entidad</th><th>Propósito</th></tr></thead>
+    <tbody>
+      <tr><td><code>User</code></td><td>Cuenta, credencial cifrada, rol y zona de referencia.</td></tr>
+      <tr><td><code>Animal</code></td><td>Ficha de la mascota, propietario, categoría, rasgos, contacto y estado de publicación.</td></tr>
+      <tr><td><code>CaracteristicasAnimal</code></td><td>Tamaño, color y hábitat.</td></tr>
+      <tr><td><code>Modelo3D</code></td><td>Modelo asociado a una especie, visibilidad, propietario y trazos de pintura.</td></tr>
+      <tr><td><code>ArchivoModelo</code></td><td>Ruta, nombre, tipo y tamaño del archivo tridimensional.</td></tr>
+      <tr><td><code>TransformacionesModelo</code></td><td>Escala, rotación y posición por eje.</td></tr>
+      <tr><td><code>Role</code></td><td>Enumeración con los valores <code>USER</code> y <code>ADMIN</code>.</td></tr>
+      <tr><td><code>CategoriaAnimal</code></td><td>Enumeración con los valores <code>PERRO</code>, <code>GATO</code> y <code>CONEJO</code>.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>7.3 Interfaz de programación</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 15. Principales puntos de acceso</caption>
+    <thead><tr><th style="width:4.5rem">Método</th><th style="width:14rem">Ruta</th><th>Función</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">POST</td><td class="cod">/api/auth/register</td><td>Crear una cuenta.</td></tr>
+      <tr><td class="cod">POST</td><td class="cod">/api/auth/login</td><td>Iniciar sesión y emitir el token.</td></tr>
+      <tr><td class="cod">GET</td><td class="cod">/api/animales/publicos</td><td>Catálogo público, sin sesión.</td></tr>
+      <tr><td class="cod">GET</td><td class="cod">/api/animales/mios</td><td>Mascotas del usuario autenticado.</td></tr>
+      <tr><td class="cod">GET</td><td class="cod">/api/animales</td><td>Todas las mascotas; reservado al rol administrador.</td></tr>
+      <tr><td class="cod">POST</td><td class="cod">/api/animales</td><td>Registrar una mascota.</td></tr>
+      <tr><td class="cod">PUT</td><td class="cod">/api/animales/:id</td><td>Editar, previa verificación de propiedad.</td></tr>
+      <tr><td class="cod">DELETE</td><td class="cod">/api/animales/:id</td><td>Eliminar, previa verificación de propiedad.</td></tr>
+      <tr><td class="cod">GET</td><td class="cod">/api/modelos3d/catalogo/:categoria</td><td>Modelos disponibles para una especie.</td></tr>
+      <tr><td class="cod">POST</td><td class="cod">/api/modelos3d/:id/derivar</td><td>Crear una copia personalizada del modelo.</td></tr>
+      <tr><td class="cod">POST</td><td class="cod">/api/uploads/imagen</td><td>Subir una fotografía al servicio externo.</td></tr>
+      <tr><td class="cod">GET</td><td class="cod">/api/health</td><td>Estado del servicio y de la base de datos.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nota">
+  <strong>Decisión de diseño.</strong> Las rutas <code>/api/animales/mios</code> y <code>/api/animales</code> son distintas de forma deliberada: el servidor decide qué puede ver cada rol. Filtrar en la interfaz habría implicado enviar al navegador información que el usuario no debe poseer.
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s8">8. Calidad, verificación y validación</h2>
+
+<h3>8.1 Estrategia</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 16. Niveles de prueba aplicados</caption>
+    <thead><tr><th style="width:8rem">Nivel</th><th>Propósito</th><th style="width:11rem">Técnica</th></tr></thead>
+    <tbody>
+      <tr><td>Estático</td><td>Detectar errores de tipos y de estructura.</td><td>Comprobación de tipos y revisión de código</td></tr>
+      <tr><td>Compilación</td><td>Confirmar que ambos proyectos generan sus artefactos.</td><td>Construcción de producción</td></tr>
+      <tr><td>Servicios</td><td>Verificar respuestas, permisos y persistencia.</td><td>Peticiones a los puntos de acceso</td></tr>
+      <tr><td>Integración</td><td>Confirmar el flujo entre interfaz, servicios y base de datos.</td><td>Recorridos completos</td></tr>
+      <tr><td>Interfaz</td><td>Detectar desbordamientos y estados confusos.</td><td>Revisión en escritorio y teléfono</td></tr>
+      <tr><td>Aceptación</td><td>Confirmar que el producto resuelve la necesidad.</td><td>Escenarios con usuario</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>8.2 Casos de prueba críticos</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 17. Casos de prueba y resultado</caption>
+    <thead><tr><th style="width:4.2rem">Código</th><th>Escenario</th><th>Resultado esperado</th><th style="width:5rem">Estado</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">CP-01</td><td>Registro con un correo nuevo.</td><td>Cuenta creada y contraseña almacenada cifrada.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-02</td><td>Inicio de sesión válido e inválido.</td><td>Token en el caso válido y rechazo controlado en el inválido.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-03</td><td>Un usuario consulta sus mascotas.</td><td>No recibe registros ajenos.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-04</td><td>El administrador consulta y filtra por propietario.</td><td>Visualiza todos los registros autorizados.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-05</td><td>Crear un gato y abrir el selector tridimensional.</td><td>Solo aparecen modelos de gato.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-06</td><td>Seleccionar un punto fuera del Ecuador.</td><td>Mensaje de zona no válida.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-07</td><td>Cambiar al modo de pintura.</td><td>El arrastre pinta y no rota ni acerca.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-08</td><td>Cerrar y reabrir un modelo pintado.</td><td>Los trazos reaparecen sobre la textura.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-09</td><td>Preparar el cartel sin teléfono.</td><td>Se bloquea la descarga y se indica el campo requerido.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-10</td><td>Elegir la portada y ordenar las fotografías.</td><td>La vista previa y el PDF respetan la configuración.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-11</td><td>Exportar el cartel.</td><td>Formato A4 legible, imágenes completas y nombre con fecha.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-12</td><td>Revisar la privacidad del PDF.</td><td>No contiene latitud ni longitud.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-13</td><td>Conmutar el idioma en pleno recorrido.</td><td>La interfaz cambia sin recargar y conserva el estado.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-14</td><td>Cerrar sesión con el idioma kichwa activo.</td><td>Se borra la sesión y se conserva la preferencia de idioma.</td><td>Superado</td></tr>
+      <tr><td class="cod">CP-15</td><td>Consultar una mascota registrada antes de la traducción.</td><td>Tamaño, color y raza se muestran en la lengua activa.</td><td>Superado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>8.3 Evidencia de compilación</h3>
+<p>Ambos proyectos compilan sin errores. La comprobación forma parte de la definición de terminado y no de una verificación final aislada.</p>
+<ul>
+  <li>Servicios: construcción de NestJS completada sin advertencias de tipos.</li>
+  <li>Interfaz: construcción de Next.js completada; cinco rutas generadas como contenido estático.</li>
+  <li>Persistencia: siete migraciones versionadas y aplicadas sobre el entorno de producción.</li>
+</ul>
+
+<h3>8.4 Usabilidad</h3>
+<p>Se diseñó un instrumento de evaluación basado en las heurísticas de Bastien y Scapin, complementado con los cuestionarios PSSUQ, para usabilidad percibida, y UEQ, para experiencia de usuario. El instrumento se encuentra preparado en la carpeta de la entrega.</p>
+<div class="nota">
+  <strong>Declaración sobre los datos de usabilidad.</strong> Los valores que acompañan al instrumento corresponden a participantes de ejemplo y no a un estudio ejecutado con usuarios reales. Se documentan como estructura del instrumento y no como hallazgos empíricos. Presentarlos de otro modo constituiría evidencia falsa.
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s9">9. Matriz de trazabilidad</h2>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 18. Relación entre requisitos, historias, sprints y componentes</caption>
+    <thead><tr><th style="width:7rem">Requisito</th><th style="width:8rem">Historia</th><th class="num" style="width:3.4rem">Sprint</th><th>Componente o evidencia</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">RF-01, RF-02</td><td class="cod">HU-01, HU-02</td><td class="num">1</td><td>Módulo de autenticación; pantallas de registro e inicio de sesión.</td></tr>
+      <tr><td class="cod">RF-03</td><td class="cod">HU-03, HU-04</td><td class="num">1</td><td>Guarda de sesión, guarda de roles y enumeración <code>Role</code>.</td></tr>
+      <tr><td class="cod">RF-04, RF-05</td><td class="cod">HU-07, HU-10, HU-11</td><td class="num">2</td><td>Módulo de mascotas y relación con el propietario.</td></tr>
+      <tr><td class="cod">RF-06</td><td class="cod">HU-08</td><td class="num">2</td><td>Enumeración <code>CategoriaAnimal</code> y selector controlado.</td></tr>
+      <tr><td class="cod">RF-07</td><td class="cod">HU-09</td><td class="num">2</td><td>Entidad de características y formulario de alta.</td></tr>
+      <tr><td class="cod">RF-08, RF-09</td><td class="cod">HU-13</td><td class="num">3</td><td>Campos de fotografías, teléfono y fecha del avistamiento.</td></tr>
+      <tr><td class="cod">RF-10, RF-11</td><td class="cod">HU-14, HU-15</td><td class="num">3</td><td>Selector de ubicación con validación territorial.</td></tr>
+      <tr><td class="cod">RF-12</td><td class="cod">HU-15</td><td class="num">3</td><td>Punto de acceso al catálogo público.</td></tr>
+      <tr><td class="cod">RF-13, RF-14</td><td class="cod">HU-12</td><td class="num">2</td><td>Vista administrativa y filtro por propietario.</td></tr>
+      <tr><td class="cod">RF-15, RF-16</td><td class="cod">HU-16</td><td class="num">3</td><td>Servicio de modelos y catálogo por categoría.</td></tr>
+      <tr><td class="cod">RF-17</td><td class="cod">HU-17</td><td class="num">3</td><td>Visor tridimensional y cargadores de formato.</td></tr>
+      <tr><td class="cod">RF-18</td><td class="cod">HU-19</td><td class="num">4</td><td>Modos de interacción excluyentes del visor.</td></tr>
+      <tr><td class="cod">RF-19, RF-21</td><td class="cod">HU-20</td><td class="num">4</td><td>Capa de pintura sobre la geometría y campo de trazos.</td></tr>
+      <tr><td class="cod">RF-20, RF-31</td><td class="cod">HU-21</td><td class="num">4</td><td>Herramientas de pincel, paleta y cuentagotas con lupa.</td></tr>
+      <tr><td class="cod">RF-22</td><td class="cod">HU-22</td><td class="num">4</td><td>Indicador de visibilidad y confirmación de publicación.</td></tr>
+      <tr><td class="cod">RF-23, RF-24</td><td class="cod">HU-23, HU-24</td><td class="num">4</td><td>Editor del cartel con vista previa en tiempo real.</td></tr>
+      <tr><td class="cod">RF-25, RF-30</td><td class="cod">HU-25, HU-30</td><td class="num">4</td><td>Generador del documento y composición del nombre de archivo.</td></tr>
+      <tr><td class="cod">RF-26, RF-27</td><td class="cod">HU-26, HU-27, HU-28</td><td class="num">2–3</td><td>Proveedor de idioma, diccionario tipado y traducción de valores almacenados.</td></tr>
+      <tr><td class="cod">RF-28, RF-29</td><td class="cod">HU-29, HU-31</td><td class="num">4</td><td>Campos bilingües de texto libre y catálogo de rasgos.</td></tr>
+      <tr><td class="cod">RF-32, RF-33</td><td class="cod">HU-14, HU-13</td><td class="num">4</td><td>Referencia a pie de calle editable y contactos múltiples.</td></tr>
+    </tbody>
+  </table>
+</div>
+<p><strong>Cobertura.</strong> Los treinta y tres requisitos funcionales se relacionan con al menos una historia, y las treinta y una historias están asignadas a un sprint y marcadas como completadas. La cobertura documental indica que cada requisito posee una ruta de implementación identificable; no sustituye a la ejecución de casos de prueba.</p>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s10">10. Gestión de riesgos</h2>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 19. Riesgos identificados y su tratamiento</caption>
+    <thead><tr><th style="width:4rem">Código</th><th>Riesgo</th><th style="width:5rem">Impacto</th><th>Mitigación aplicada</th></tr></thead>
+    <tbody>
+      <tr><td class="cod">R-01</td><td>Exposición de la ubicación exacta del propietario.</td><td>Alto</td><td>Separación entre ubicación interna y referencia pública; exclusión de coordenadas del documento exportado.</td></tr>
+      <tr><td class="cod">R-02</td><td>Filtración de credenciales de servicios externos.</td><td>Alto</td><td>Las credenciales residen únicamente en el servidor; las subidas se encaminan a través de él.</td></tr>
+      <tr><td class="cod">R-03</td><td>Acceso de un usuario a registros ajenos.</td><td>Alto</td><td>Verificación de propiedad en el servidor y rutas diferenciadas por rol.</td></tr>
+      <tr><td class="cod">R-04</td><td>Modelos sin geometría adecuada para la pintura.</td><td>Medio</td><td>Figura de respaldo y validación de formato en la carga.</td></tr>
+      <tr><td class="cod">R-05</td><td>Traducción lingüísticamente incorrecta.</td><td>Medio</td><td>Adopción de la norma ALKI, cita de fuentes y declaración de los términos sin verificar.</td></tr>
+      <tr><td class="cod">R-06</td><td>Suspensión del servicio en el plan gratuito durante la demostración.</td><td>Medio</td><td>Activación previa del servicio, entorno local de respaldo y grabación de la demostración.</td></tr>
+      <tr><td class="cod">R-07</td><td>Pérdida de los archivos subidos por el usuario al redesplegar.</td><td>Medio</td><td>Las fotografías se alojan en un servicio externo; la limitación se declara para los modelos.</td></tr>
+      <tr><td class="cod">R-08</td><td>Divergencia entre el esquema y las migraciones versionadas.</td><td>Alto</td><td>Verificación automatizada del esquema frente a las migraciones antes de desplegar.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s11">11. Conclusiones y trabajo futuro</h2>
+
+<h3>11.1 Conclusiones</h3>
+<ol>
+  <li>El sistema responde a la problemática planteada: estructura la información de búsqueda, aporta una referencia visual tridimensional personalizable, protege la ubicación del propietario y produce un cartel difundible.</li>
+  <li>El componente intercultural está integrado en el núcleo del producto y no añadido sobre él. La preferencia de idioma sobrevive al cierre de sesión, los datos almacenados se traducen en pantalla y el documento exportado se rotula en la lengua elegida.</li>
+  <li>La traducción es defendible término a término: se adopta la norma ortográfica oficial, se cita la fuente de cada entrada y no se incorpora ninguna raíz léxica inventada.</li>
+  <li>Convertir las señas y el carácter en una lista cerrada permitió que la información determinante para reconocer al animal se muestre en cualquiera de las dos lenguas, sin recurrir a una traducción automática que no existe para el kichwa ecuatoriano.</li>
+  <li>El proceso muestra adaptación real: ocho decisiones de diseño se modificaron tras inspeccionar el incremento correspondiente.</li>
+</ol>
+
+<h3>11.2 Limitaciones declaradas</h3>
+<ol>
+  <li><strong>La traducción no ha sido validada por hablantes nativos.</strong> Se sustenta en fuentes lexicográficas oficiales y aplica correctamente la norma, pero eso no sustituye la revisión de un hablante. Seis piezas de vocabulario se marcan como pendientes de contrastar.</li>
+  <li><strong>El control de versiones se adoptó en la fase final.</strong> El historial del repositorio no refleja la cronología real del trabajo; el seguimiento consta en la documentación del proceso.</li>
+  <li><strong>La capa intercultural no figuraba en el backlog inicial.</strong> Se incorporó como épica transversal, aunque constituye el componente de mayor peso de la evaluación.</li>
+  <li><strong>No se realizó una auditoría formal de accesibilidad.</strong> Se aplicaron criterios básicos, sin certificación de conformidad.</li>
+  <li><strong>La cobertura de pruebas automatizadas es la deuda técnica principal.</strong> La verificación se realizó de forma manual, guiada por los criterios de aceptación.</li>
+</ol>
+
+<h3>11.3 Trabajo futuro</h3>
+<ol>
+  <li>Someter el glosario a revisión por un docente del Sistema de Educación Intercultural Bilingüe o por la Academia de la Lengua Kichwa.</li>
+  <li>Incorporar estados de la búsqueda para que una ficha pueda cerrarse cuando el animal aparece.</li>
+  <li>Notificar a quienes sigan un sector cuando se registre una mascota cercana.</li>
+  <li>Extender la plataforma a otras lenguas de relación intercultural, para lo que la arquitectura ya está preparada.</li>
+  <li>Optimizar el uso desde el teléfono, que es el dispositivo desde el que realmente se publica una búsqueda.</li>
+  <li>Construir una batería de pruebas automatizadas que se ejecute en cada integración.</li>
+</ol>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<h2 id="s12">12. Anexos</h2>
+
+<h3>12.1 Acceso al sistema</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 20. Credenciales de demostración</caption>
+    <thead><tr><th style="width:8rem">Perfil</th><th>Correo</th><th style="width:8rem">Contraseña</th></tr></thead>
+    <tbody>
+      <tr><td>Administrador</td><td class="mono">admin@mascotas3d.com</td><td class="mono">Admin1234</td></tr>
+      <tr><td>Usuario</td><td class="mono">rquisper406@gmail.com</td><td class="mono">Demo1234</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>12.2 Documentación complementaria</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 21. Documentos que acompañan a esta entrega</caption>
+    <thead><tr><th style="width:14rem">Documento</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">docs/TRADUCCION_KICHWA.md</td><td>Glosario completo con la fuente de cada término y la declaración de honestidad.</td></tr>
+      <tr><td class="mono">docs/ARQUITECTURA_MVC.md</td><td>Separación en capas y organización del código.</td></tr>
+      <tr><td class="mono">docs/DESPLIEGUE.md</td><td>Procedimiento de despliegue y limitaciones del alojamiento.</td></tr>
+      <tr><td class="mono">docs/Documentacion_Scrum_Mascotas3D/</td><td>Quince documentos del proceso, incluidos manuales de usuario y técnico.</td></tr>
+      <tr><td class="mono">Entrega Final/Documentacion/</td><td>Ocho documentos correspondientes a los criterios de la rúbrica.</td></tr>
+      <tr><td class="mono">Entrega Final/Presentacion/</td><td>Presentación de la defensa y guía de proyección.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>12.3 Estructura del repositorio</h3>
+<div class="tabla-wrap">
+  <table>
+    <caption>Tabla 22. Organización del código fuente</caption>
+    <thead><tr><th style="width:11rem">Ruta</th><th>Contenido</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">backend/src/modules/</td><td>Módulos de autenticación, usuarios, mascotas, modelos y subidas.</td></tr>
+      <tr><td class="mono">backend/prisma/</td><td>Esquema, migraciones versionadas y datos iniciales.</td></tr>
+      <tr><td class="mono">backend/Modelos/</td><td>Modelos tridimensionales del catálogo precargado.</td></tr>
+      <tr><td class="mono">frontend/src/app/</td><td>Rutas de la aplicación.</td></tr>
+      <tr><td class="mono">frontend/src/components/</td><td>Componentes de interfaz, visor y editores.</td></tr>
+      <tr><td class="mono">frontend/src/lib/i18n/</td><td>Diccionario bilingüe y proveedor de idioma.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="pie">
+  Wasi Wiwakuna 3D · Informe de entrega final · 25 de julio de 2026<br>
+  Universidad de las Fuerzas Armadas ESPE · Desarrollo de Software Aplicado a la Interculturalidad
+</p>
