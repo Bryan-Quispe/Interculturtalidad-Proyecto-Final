@@ -11,8 +11,10 @@ out/
 .env.local
 .env.*.local
 
-# Subidas en tiempo de ejecución (efímeras en el servidor)
-uploads/
+# Subidas en tiempo de ejecución (efímeras en el servidor).
+# Anclado a backend/uploads: el patrón sin ruta coincide con cualquier carpeta
+# llamada "uploads", y llegó a excluir el código de src/modules/uploads.
+backend/uploads/
 
 # Temporales y ruido del sistema
 tmp/

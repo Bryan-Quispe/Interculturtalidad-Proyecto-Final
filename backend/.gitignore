@@ -3,5 +3,9 @@ dist/
 .env
 .env.local
 *.log
-uploads/
+# Con barra inicial: solo backend/uploads, la carpeta de subidas en tiempo de
+# ejecución. Sin ella el patrón coincide con cualquier directorio llamado
+# "uploads" a cualquier profundidad, y excluyó el código de
+# src/modules/uploads del repositorio.
+/uploads/
 .DS_Store
