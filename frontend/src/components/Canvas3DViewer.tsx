@@ -72,9 +72,14 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
   paintMode = false,
   brushColor = '#f59e0b',
   brushSize = 0.014,
-  strokes = EMPTY_STROKES,
+  strokes,
   onPaint,
 }, ref) {
+  // La columna `pinturas` llega como null cuando el modelo nunca se ha pintado,
+  // y un valor por defecto de parámetro solo cubre `undefined`. Sin esta
+  // normalización, `strokes.forEach` lanzaba y el visor caía al cubo de
+  // respaldo con el modelo ya cargado, mostrando ambos a la vez.
+  const safeStrokes = Array.isArray(strokes) ? strokes : EMPTY_STROKES;
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -337,7 +342,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       return true;
     };
 
-    const replayPaint = () => strokes.forEach(applyStroke);
+    const replayPaint = () => safeStrokes.forEach(applyStroke);
 
     const strokeAt = (event: PointerEvent): PaintStroke | null => {
       if (!loadedObject) return null;
@@ -474,6 +479,9 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     renderer.domElement.addEventListener('contextmenu', onContextMenu);
 
     const addFallbackCube = () => {
+      // Solo sustituye al modelo, nunca se suma a él: si ya hay algo en escena
+      // el respaldo sobra y superponerlo es peor que no mostrarlo.
+      if (loadedObject) return;
       // Segmentado: el pincel trabaja por vertice y necesita densidad de malla.
       const geometry = new THREE.BoxGeometry(3, 3, 3, 60, 60, 60);
       const material = new THREE.MeshStandardMaterial({ color: modelo.color || '#10b981', roughness: 0.45 });
@@ -596,7 +604,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       disposableGeometries.forEach((geometry) => geometry.dispose());
       disposableMaterials.forEach((material) => material.dispose());
     };
-  }, [modelo, strokes]);
+  }, [modelo, safeStrokes]);
 
   const modeLabel = resolvedMode === 'paint' ? t('viewer.paintHint') : t('viewer.rotateHint');
 
