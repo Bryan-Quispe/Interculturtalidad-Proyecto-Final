@@ -211,6 +211,57 @@ async function main() {
     });
   }
 
+  // ── 3.6. Resto del catálogo 3D ──
+  // Los .glb de backend/Modelos solo aparecen en la aplicación si existe su
+  // registro: el catálogo se consulta contra la base de datos, no leyendo el
+  // directorio. Sin esto los archivos viajan en el despliegue pero nadie los ve.
+  // Un catálogo con varios modelos por especie es además lo que hace verificable
+  // el filtro por categoría.
+  const catalogo = [
+    { nombre: 'Perro negro', categoria: CategoriaAnimal.PERRO, raza: 'Mestizo / Criollo', color: '#1f2937', archivo: 'Perro/Perro Negro.glb', tamano: 19278560 },
+    { nombre: 'Perro golden', categoria: CategoriaAnimal.PERRO, raza: 'Golden Retriever', color: '#d4a054', archivo: 'Perro/Perro Golden.glb', tamano: 30886052 },
+    { nombre: 'Perro café claro', categoria: CategoriaAnimal.PERRO, raza: 'Mestizo / Criollo', color: '#a8763e', archivo: 'Perro/Perro Pubg.glb', tamano: 22612232 },
+    { nombre: 'Gato blanco', categoria: CategoriaAnimal.GATO, raza: 'Doméstico', color: '#f5f5f4', archivo: 'Gato/Gato Blanco.glb', tamano: 27203476 },
+    { nombre: 'Gata blanca y negra', categoria: CategoriaAnimal.GATO, raza: 'Doméstico', color: '#57534e', archivo: 'Gato/Gata Blanca y Negra.glb', tamano: 17566268 },
+    { nombre: 'Gato siamés', categoria: CategoriaAnimal.GATO, raza: 'Siamés', color: '#c8b6a6', archivo: 'Gato/Gati Siames.glb', tamano: 25281624 },
+    { nombre: 'Conejo blanco', categoria: CategoriaAnimal.CONEJO, raza: 'Enano holandés', color: '#fafaf9', archivo: 'Conejos/Conejo Blanco.glb', tamano: 18123968 },
+  ];
+
+  for (const item of catalogo) {
+    const existente = await prisma.modelo3D.findFirst({
+      where: { nombre: item.nombre, usuarioId: admin.id },
+    });
+    if (existente) continue;
+
+    await prisma.modelo3D.create({
+      data: {
+        nombre: item.nombre,
+        categoria: item.categoria,
+        raza: item.raza,
+        descripcion: `Modelo 3D de referencia: ${item.nombre.toLowerCase()}`,
+        color: item.color,
+        isPublico: true,
+        usuarioId: admin.id,
+        archivo: {
+          create: {
+            filename: item.archivo.split('/').pop(),
+            path: `/modelos/${item.archivo}`,
+            mimetype: 'model/gltf-binary',
+            tamano: item.tamano,
+          },
+        },
+        transformaciones: {
+          create: {
+            escalaX: 1, escalaY: 1, escalaZ: 1,
+            rotacionX: 0, rotacionY: 0, rotacionZ: 0,
+            posicionX: 0, posicionY: 0, posicionZ: 0,
+          },
+        },
+      },
+    });
+    console.log(`✓ Modelo de catálogo: ${item.nombre}`);
+  }
+
   // ── 4. Crear los 4 animales para el USER ──
   const animals = [
     {
