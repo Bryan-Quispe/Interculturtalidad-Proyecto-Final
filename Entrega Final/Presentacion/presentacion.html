@@ -371,16 +371,67 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* ── Impresión a PDF ───────────────────────────────────────── */
+  /* ── Impresión a PDF ───────────────────────────────────────────
+     Apaisado y una diapositiva por página, para proyectar. Se fuerza
+     la paleta clara: los navegadores descartan los fondos oscuros al
+     imprimir y el texto claro saldría ilegible sobre blanco.
+     ───────────────────────────────────────────────────────────── */
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
   @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --paper:     #ffffff;
+      --paper-2:   #f1f5f2;
+      --line:      #c9d6cf;
+      --text:      #0d1f28;
+      --text-soft: #46606c;
+      --emerald:   #0a6f50;
+      --teal:      #076b5c;
+      --ochre:     #9c6524;
+      --coral:     #b03327;
+      --shadow:    none;
+    }
+
+    html, body {
+      background: #fff;
+      font-size: 12.5px;
+    }
+
+    /* Sin esto el navegador vacía los fondos de las tarjetas y las
+       tablas, y la jerarquía visual desaparece. */
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
     .bar { display: none; }
+
     .slide {
       display: flex !important;
-      min-height: auto;
+      min-height: 190mm;
+      height: 190mm;
+      max-width: none;
+      width: 100%;
+      padding: 14mm 18mm;
+      margin: 0;
+      overflow: hidden;
+      break-after: page;
       page-break-after: always;
-      padding: 1.5cm;
       animation: none;
     }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+
+    /* Nada debe partirse entre dos páginas. */
+    .card, .respetos > div, table, .quote, ul.clean li, .portrait {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .scroll-x { overflow: visible; }
+    .portrait img { box-shadow: none; }
   }
 </style>
 
