@@ -539,7 +539,7 @@ export default function DashboardPage() {
                   <h3 className="font-bold text-emerald-400 mb-3 text-sm uppercase tracking-wider">{t('dash.searchData')}</h3>
                   <div className="space-y-3 text-sm">
                     <p><span className="text-gray-500">{t('dash.owner')}</span> <span className="text-gray-300">{selectedAnimal.usuario?.name || t('dash.notRegisteredM')}</span></p>
-                    <p><span className="text-gray-500">{t('dash.contact')}</span> <span className="text-gray-300">{selectedAnimal.telefonoContacto || t('dash.notRegisteredM')}</span></p>
+                    <p><span className="text-gray-500">{t('dash.contact')}</span> <span className="text-gray-300">{[selectedAnimal.telefonoContacto, ...(Array.isArray(selectedAnimal.telefonos) ? selectedAnimal.telefonos : [])].filter(Boolean).join(' · ') || t('dash.notRegisteredM')}</span></p>
                     <p><span className="text-gray-500">{t('dash.zone')}</span> <span className="text-gray-300">{selectedAnimal.zona || t('dash.notRegisteredF')}</span></p>
                     {selectedAnimal.direccion && (
                       <p><span className="text-gray-500">{t('dash.address')}</span> <span className="text-gray-300">{selectedAnimal.direccion}</span></p>

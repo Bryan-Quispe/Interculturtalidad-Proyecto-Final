@@ -192,7 +192,12 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
     petName: animal.nombre,
     breed: V('breed', animal.raza) || L('pdf.noBreed'),
     owner: animal.usuario?.name?.trim() || L('pdf.ownerRegistered'),
-    contact: animal.telefonoContacto?.trim() || '',
+    // Todos los numeros en una linea: quien encuentra al animal debe poder
+    // llamar a alguien aunque el primero no conteste.
+    contact: [animal.telefonoContacto, ...(Array.isArray(animal.telefonos) ? animal.telefonos : [])]
+      .map((numero) => numero?.trim())
+      .filter(Boolean)
+      .join(' / '),
     // Manda la referencia a pie de calle: el nombre del barrio no orienta a
     // quien lee el cartel. Se cae a la zona si no se registro ninguna.
     zone: animal.direccion?.trim() || animal.zona?.trim() || '',

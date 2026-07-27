@@ -57,6 +57,10 @@ model Animal {
   latitud          Float?
   longitud         Float?
   telefonoContacto String?
+  /// Numeros adicionales. Buscar una mascota es cosa de varias personas: si
+  /// solo responde un telefono y esa persona esta trabajando, el aviso se
+  /// pierde. El primero sigue en telefonoContacto por compatibilidad.
+  telefonos        Json?
   ultimaVezVisto   String?
   fechaVisto       DateTime?
   isPublico        Boolean         @default(true)

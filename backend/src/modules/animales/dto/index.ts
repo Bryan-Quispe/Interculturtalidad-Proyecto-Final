@@ -66,6 +66,12 @@ export class CreateAnimalDto {
   @IsString()
   telefonoContacto?: string;
 
+  /** Numeros adicionales de contacto. */
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  telefonos?: string[];
+
   @IsOptional()
   @IsString()
   ultimaVezVisto?: string;
@@ -148,6 +154,12 @@ export class UpdateAnimalDto {
   @IsOptional()
   @IsString()
   telefonoContacto?: string;
+
+  /** Numeros adicionales de contacto. */
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  telefonos?: string[];
 
   @IsOptional()
   @IsString()

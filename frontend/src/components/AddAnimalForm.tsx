@@ -108,6 +108,8 @@ const STEPS: { titleKey: TranslationKey; hintKey: TranslationKey }[] = [
 
 /** Tres fotos entran bien en el cartel sin saturarlo. */
 const MAX_FOTOS = 3;
+/** Tres numeros extra bastan: familia, vecino y directiva del barrio. */
+const MAX_TELEFONOS_EXTRA = 3;
 const MAX_BYTES_FOTO = 8 * 1024 * 1024;
 const TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/webp'];
 const ACCEPT_IMAGEN = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
@@ -226,6 +228,15 @@ export default function AddAnimalForm({
   const [photoUrlDraft, setPhotoUrlDraft] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [rasgosSeleccionados, setRasgosSeleccionados] = useState<string[]>([]);
+  const [telefonosExtra, setTelefonosExtra] = useState<string[]>([]);
+
+  const cambiarTelefono = (indice: number, valor: string) => {
+    setTelefonosExtra((actuales) => actuales.map((item, i) => (i === indice ? valor : item)));
+  };
+  const anadirTelefono = () => setTelefonosExtra((actuales) => [...actuales, '']);
+  const quitarTelefono = (indice: number) => {
+    setTelefonosExtra((actuales) => actuales.filter((_, i) => i !== indice));
+  };
 
   /** Marca o desmarca un rasgo de la lista cerrada. */
   const toggleRasgo = (rasgo: string) => {
@@ -256,6 +267,11 @@ export default function AddAnimalForm({
 
   useEffect(() => {
     setRasgosSeleccionados(rasgosValidos(animal?.rasgos));
+    setTelefonosExtra(
+      Array.isArray(animal?.telefonos)
+        ? animal.telefonos.filter((item): item is string => typeof item === 'string' && item.trim() !== '')
+        : [],
+    );
     setFormData({
       nombre: animal?.nombre ?? '',
       categoria: animal?.categoria ?? 'PERRO',
@@ -418,6 +434,7 @@ export default function AddAnimalForm({
       descripcionKw: formData.descripcionKw.trim(),
       rasgos: rasgosSeleccionados,
       direccion: formData.direccion.trim(),
+      telefonos: telefonosExtra.map((item) => item.trim()).filter(Boolean),
       raza: formData.raza.trim(),
       zona: formData.zona,
       googlePlaceId: formData.googlePlaceId || undefined,
@@ -746,6 +763,27 @@ export default function AddAnimalForm({
               </div>
 
               {/*
+                El nombre del barrio que devuelve la geocodificación inversa es
+                el que OpenStreetMap tenga cartografiado más cerca, y en el sur
+                de Quito muchos sectores no lo están: marcando en la avenida El
+                Beaterio puede responder «San José de Guamaní». La vía sí es
+                fiable; el sector es conocimiento local, así que se deja
+                corregir a quien perdió al animal, que es quien lo sabe.
+              */}
+              <div>
+                <label className="input-label">{t('af.sector')}</label>
+                <input
+                  type="text"
+                  name="zona"
+                  value={formData.zona}
+                  onChange={handleChange}
+                  placeholder={t('af.sectorPlaceholder')}
+                  className="input-base"
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('af.sectorHint')}</p>
+              </div>
+
+              {/*
                 La zona nombra el barrio; esto da la calle. Se rellena solo al
                 marcar el punto en el mapa y queda editable, porque quien
                 estuvo allí puede precisar la intersección mejor que Nominatim.
@@ -808,6 +846,47 @@ export default function AddAnimalForm({
                   autoFocus={!isEdit}
                 />
                 <p className="mt-1 text-xs text-gray-500">{t('af.phoneHint')}</p>
+              </div>
+
+              {/*
+                Números adicionales. Buscar una mascota no lo hace una sola
+                persona: participan la familia y los vecinos. Con un único
+                número, si quien contesta está trabajando, el aviso de alguien
+                que vio al animal se pierde.
+              */}
+              <div>
+                <label className="input-label">{t('af.morePhones')}</label>
+                <div className="space-y-2">
+                  {telefonosExtra.map((telefono, indice) => (
+                    <div key={indice} className="flex gap-2">
+                      <input
+                        type="tel"
+                        value={telefono}
+                        onChange={(event) => cambiarTelefono(indice, event.target.value)}
+                        placeholder={t('af.phonePlaceholder')}
+                        className="input-base flex-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => quitarTelefono(indice)}
+                        className="rounded-xl border border-white/10 px-4 text-gray-400 transition hover:border-red-400/40 hover:text-red-300"
+                        aria-label={t('af.removePhone')}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {telefonosExtra.length < MAX_TELEFONOS_EXTRA && (
+                  <button
+                    type="button"
+                    onClick={anadirTelefono}
+                    className="mt-2 rounded-xl border border-dashed border-white/20 px-4 py-2 text-sm text-gray-300 transition hover:border-emerald-300/50 hover:text-emerald-200"
+                  >
+                    + {t('af.addPhone')}
+                  </button>
+                )}
+                <p className="mt-1 text-xs text-gray-500">{t('af.morePhonesHint')}</p>
               </div>
             </div>
           )}

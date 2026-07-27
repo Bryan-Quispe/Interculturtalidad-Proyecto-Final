@@ -28,6 +28,7 @@ export class AnimalesService {
       fechaVisto,
       fotos,
       rasgos,
+      telefonos,
       latitud,
       longitud,
       ...animalData
@@ -42,6 +43,7 @@ export class AnimalesService {
           ...(fechaVisto ? { fechaVisto: new Date(fechaVisto) } : {}),
           ...(fotos ? { fotos } : {}),
           ...(rasgos ? { rasgos } : {}),
+          ...(telefonos ? { telefonos } : {}),
           ...(latitud !== undefined ? { latitud } : {}),
           ...(longitud !== undefined ? { longitud } : {}),
           ...(modeloId ? { modeloId } : {}),
@@ -127,6 +129,7 @@ export class AnimalesService {
       fechaVisto,
       fotos,
       rasgos,
+      telefonos,
       latitud,
       longitud,
       ...animalData
@@ -149,6 +152,9 @@ export class AnimalesService {
       }
       if (rasgos !== undefined) {
         animalUpdateData.rasgos = rasgos;
+      }
+      if (telefonos !== undefined) {
+        animalUpdateData.telefonos = telefonos;
       }
       if (latitud !== undefined) {
         animalUpdateData.latitud = latitud;

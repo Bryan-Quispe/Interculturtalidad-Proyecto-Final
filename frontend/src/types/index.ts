@@ -42,6 +42,8 @@ export interface Animal {
   latitud?: number;
   longitud?: number;
   telefonoContacto?: string;
+  /** Numeros adicionales; el primero sigue en telefonoContacto. */
+  telefonos?: string[];
   ultimaVezVisto?: string;
   fechaVisto?: string;
   fotos?: string[];

@@ -791,6 +791,19 @@ export const dict = {
     'Kay killkaka mana paylla tikrachinchu: killkakpika, kichwa pankapi rikurinka.',
   ],
   'af.whereLost': ['¿En qué zona se perdió? *', '¿Ima kitipi chinkarka? *'],
+  'af.morePhones': ['Otros números de contacto', 'Shuk rimanakuy yupaykuna'],
+  'af.addPhone': ['Añadir otro número', 'Shuk yupayta yapana'],
+  'af.removePhone': ['Quitar este número', 'Kay yupayta anchuchina'],
+  'af.morePhonesHint': [
+    'Buscar una mascota no lo hace una sola persona. Añade el número de un familiar o vecino para que nadie se quede sin poder avisar.',
+    'Wiwata maskanaka mana shuk runalla ruran. Ayllupa, mana kashpaka wasi mashipa yupayta yapay, tukuykuna willay ushachun.',
+  ],
+  'af.sector': ['Nombre del sector', 'Kitipa shuti'],
+  'af.sectorPlaceholder': ['Ej: El Beaterio, Quito', 'Shina: El Beaterio, Quito'],
+  'af.sectorHint': [
+    'Se completa solo al marcar el punto, pero el mapa no conoce todos los barrios: corrígelo con el nombre que se usa en el sector.',
+    'Mapapi churakpi paylla huntarin, shinapash mapaka mana tukuy kitikunata riksinchu: kitipi imashina rimana shutiwan allichiy.',
+  ],
   'af.address': ['Calles de referencia', 'Ñankuna riksinkapak'],
   'af.addressPlaceholder': [
     'Ej: Av. Maldonado y Calle S57, frente al parque',
