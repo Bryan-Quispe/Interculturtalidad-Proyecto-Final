@@ -193,7 +193,9 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
     breed: V('breed', animal.raza) || L('pdf.noBreed'),
     owner: animal.usuario?.name?.trim() || L('pdf.ownerRegistered'),
     contact: animal.telefonoContacto?.trim() || '',
-    zone: animal.zona?.trim() || '',
+    // Manda la referencia a pie de calle: el nombre del barrio no orienta a
+    // quien lee el cartel. Se cae a la zona si no se registro ninguna.
+    zone: animal.direccion?.trim() || animal.zona?.trim() || '',
     lastSeenDate: animal.fechaVisto ? animal.fechaVisto.slice(0, 10) : '',
     lastSeenReference: animal.ultimaVezVisto?.trim() || '',
     recognition: recognition || L('pdf.noExtraDesc'),

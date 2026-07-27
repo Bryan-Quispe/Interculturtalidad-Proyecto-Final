@@ -48,6 +48,11 @@ model Animal {
   raza             String?
   categoria        CategoriaAnimal
   zona             String?
+  /// Referencia a pie de calle del avistamiento: via, numero si lo hay,
+  /// barrio y ciudad. El barrio solo no orienta a quien lee el cartel. Es el
+  /// lugar donde se vio al animal, no el domicilio del propietario, y las
+  /// coordenadas siguen sin exportarse.
+  direccion        String?
   googlePlaceId    String?
   latitud          Float?
   longitud         Float?

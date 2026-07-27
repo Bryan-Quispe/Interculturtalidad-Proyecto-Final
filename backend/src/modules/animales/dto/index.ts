@@ -43,6 +43,11 @@ export class CreateAnimalDto {
   @IsString()
   zona?: string;
 
+  /** Referencia a pie de calle del avistamiento. */
+  @IsOptional()
+  @IsString()
+  direccion?: string;
+
   @IsOptional()
   @IsString()
   googlePlaceId?: string;
@@ -120,6 +125,11 @@ export class UpdateAnimalDto {
   @IsOptional()
   @IsString()
   zona?: string;
+
+  /** Referencia a pie de calle del avistamiento. */
+  @IsOptional()
+  @IsString()
+  direccion?: string;
 
   @IsOptional()
   @IsString()

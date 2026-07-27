@@ -18,6 +18,14 @@ import { TranslationKey } from '@/lib/i18n/translations';
 
 export type LocationValue = {
   zone: string;
+  /**
+   * Referencia a pie de calle: vía, número si lo hay, barrio y ciudad. El
+   * barrio solo («28 de Noviembre, Quito») no orienta a quien lee el cartel,
+   * y este es el lugar del avistamiento, no el domicilio del propietario, así
+   * que darlo con detalle ayuda a buscar sin exponer a nadie. Las coordenadas
+   * siguen sin salir en el PDF.
+   */
+  address?: string;
   placeId?: string;
   lat?: number;
   lng?: number;
@@ -40,6 +48,7 @@ interface Suggestion {
   id: string;
   label: string;
   zone: string;
+  address?: string;
   lat: number;
   lng: number;
   countryCode: string;
@@ -73,6 +82,29 @@ function zoneWithContext(address: Record<string, string> | undefined, zone: stri
   const state = address.state || '';
   if (state && state !== zone) return `${zone}, ${state}`;
   return zone;
+}
+
+/**
+ * Referencia a pie de calle. `zoneFromAddress` empieza a propósito en el
+ * barrio y descarta la vía, que es justo el dato con el que alguien se
+ * orienta; aquí se recupera y se acompaña de barrio y ciudad.
+ */
+function streetAddress(address: Record<string, string> | undefined, fallback: string) {
+  if (!address) return fallback;
+  const via = address.road
+    || address.pedestrian
+    || address.footway
+    || address.path
+    || address.residential;
+  const numero = address.house_number ? ` ${address.house_number}` : '';
+  const barrio = address.neighbourhood || address.suburb || address.quarter || '';
+  const ciudad = address.city || address.town || address.municipality || address.county || '';
+
+  const partes: string[] = [];
+  if (via) partes.push(`${via}${numero}`);
+  if (barrio && barrio !== via) partes.push(barrio);
+  if (ciudad && ciudad !== barrio) partes.push(ciudad);
+  return partes.join(', ') || fallback;
 }
 
 function shortLabel(displayName: string) {
@@ -187,6 +219,7 @@ export default function MapLocationInputClient({ value, onChange, placeholder }:
 
       acceptLocation({
         zone: zoneWithContext(data?.address, base),
+        address: streetAddress(data?.address, data?.display_name || ''),
         placeId: data?.osm_id ? `osm:${data.osm_type}:${data.osm_id}` : undefined,
         lat,
         lng,
@@ -278,6 +311,7 @@ export default function MapLocationInputClient({ value, onChange, placeholder }:
                 id: `${item.osm_type}:${item.osm_id}`,
                 label: shortLabel(item.display_name || ''),
                 zone: zoneWithContext(item.address, base),
+                address: streetAddress(item.address, item.display_name || ''),
                 lat: Number(item.lat),
                 lng: Number(item.lon),
                 countryCode: (item.address?.country_code || 'ec').toUpperCase(),
@@ -305,6 +339,7 @@ export default function MapLocationInputClient({ value, onChange, placeholder }:
     moveMarker(item.lat, item.lng, 16);
     acceptLocation({
       zone: item.zone,
+      address: item.address,
       placeId: `osm:${item.id}`,
       lat: item.lat,
       lng: item.lng,

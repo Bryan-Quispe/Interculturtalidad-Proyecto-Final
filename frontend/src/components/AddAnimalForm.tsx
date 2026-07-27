@@ -243,6 +243,7 @@ export default function AddAnimalForm({
     descripcionKw: '',
     raza: '',
     zona: '',
+    direccion: '',
     googlePlaceId: '',
     latitud: '',
     longitud: '',
@@ -262,6 +263,7 @@ export default function AddAnimalForm({
       descripcionKw: animal?.descripcionKw ?? '',
       raza: animal?.raza ?? '',
       zona: animal?.zona ?? '',
+      direccion: animal?.direccion ?? '',
       googlePlaceId: animal?.googlePlaceId ?? '',
       latitud: animal?.latitud !== undefined ? String(animal.latitud) : '',
       longitud: animal?.longitud !== undefined ? String(animal.longitud) : '',
@@ -415,6 +417,7 @@ export default function AddAnimalForm({
       descripcion: formData.descripcion.trim(),
       descripcionKw: formData.descripcionKw.trim(),
       rasgos: rasgosSeleccionados,
+      direccion: formData.direccion.trim(),
       raza: formData.raza.trim(),
       zona: formData.zona,
       googlePlaceId: formData.googlePlaceId || undefined,
@@ -730,6 +733,9 @@ export default function AddAnimalForm({
                     setFormData((prev) => ({
                       ...prev,
                       zona: location.zone,
+                      // Se rellena sola al marcar el punto, pero queda
+                      // editable: nadie conoce el sitio como quien estuvo.
+                      direccion: location.address || prev.direccion,
                       googlePlaceId: location.placeId || '',
                       latitud: location.lat !== undefined ? String(location.lat) : '',
                       longitud: location.lng !== undefined ? String(location.lng) : '',
@@ -737,6 +743,24 @@ export default function AddAnimalForm({
                   }
                   placeholder={t('af.zonePlaceholder')}
                 />
+              </div>
+
+              {/*
+                La zona nombra el barrio; esto da la calle. Se rellena solo al
+                marcar el punto en el mapa y queda editable, porque quien
+                estuvo allí puede precisar la intersección mejor que Nominatim.
+              */}
+              <div>
+                <label className="input-label">{t('af.address')}</label>
+                <input
+                  type="text"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  placeholder={t('af.addressPlaceholder')}
+                  className="input-base"
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('af.addressHint')}</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">

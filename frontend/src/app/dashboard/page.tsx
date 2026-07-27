@@ -541,6 +541,9 @@ export default function DashboardPage() {
                     <p><span className="text-gray-500">{t('dash.owner')}</span> <span className="text-gray-300">{selectedAnimal.usuario?.name || t('dash.notRegisteredM')}</span></p>
                     <p><span className="text-gray-500">{t('dash.contact')}</span> <span className="text-gray-300">{selectedAnimal.telefonoContacto || t('dash.notRegisteredM')}</span></p>
                     <p><span className="text-gray-500">{t('dash.zone')}</span> <span className="text-gray-300">{selectedAnimal.zona || t('dash.notRegisteredF')}</span></p>
+                    {selectedAnimal.direccion && (
+                      <p><span className="text-gray-500">{t('dash.address')}</span> <span className="text-gray-300">{selectedAnimal.direccion}</span></p>
+                    )}
                     <p><span className="text-gray-500">{t('dash.date')}</span> <span className="text-gray-300">{selectedAnimal.fechaVisto ? new Date(selectedAnimal.fechaVisto).toLocaleDateString('es-EC') : t('dash.notRegisteredF')}</span></p>
                     <p><span className="text-gray-500">{t('dash.lastSeen')}</span> <span className="text-gray-300">{selectedAnimal.ultimaVezVisto || t('dash.noReference')}</span></p>
                   </div>

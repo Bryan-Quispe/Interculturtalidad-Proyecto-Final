@@ -33,6 +33,11 @@ export interface Animal {
   raza?: string;
   categoria: 'PERRO' | 'GATO' | 'CONEJO';
   zona?: string;
+  /**
+   * Referencia a pie de calle del avistamiento: vía, número si lo hay, barrio
+   * y ciudad. La zona nombra el barrio y no orienta a quien lee el cartel.
+   */
+  direccion?: string;
   googlePlaceId?: string;
   latitud?: number;
   longitud?: number;

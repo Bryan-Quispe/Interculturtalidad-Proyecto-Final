@@ -287,6 +287,7 @@ export const dict = {
   'dash.owner': ['Dueño:', 'Amu:'],
   'dash.contact': ['Contacto:', 'Rimanakuy:'],
   'dash.zone': ['Zona aproximada:', 'Kiti:'],
+  'dash.address': ['Calles:', 'Ñankuna:'],
   'dash.date': ['Fecha:', 'Puncha:'],
   'dash.lastSeen': ['Último avistamiento:', 'Puchukay rikushka:'],
   'dash.notRegisteredM': ['No registrado', 'Mana killkashka'],
@@ -790,6 +791,15 @@ export const dict = {
     'Kay killkaka mana paylla tikrachinchu: killkakpika, kichwa pankapi rikurinka.',
   ],
   'af.whereLost': ['¿En qué zona se perdió? *', '¿Ima kitipi chinkarka? *'],
+  'af.address': ['Calles de referencia', 'Ñankuna riksinkapak'],
+  'af.addressPlaceholder': [
+    'Ej: Av. Maldonado y Calle S57, frente al parque',
+    'Shina: Maldonado hatun ñan, S57 ñanwan, pukllana pampa ñawpakpi',
+  ],
+  'af.addressHint': [
+    'Se completa sola al marcar el punto en el mapa. Corrígela si conoces mejor el sitio: la esquina orienta más que el nombre del barrio.',
+    'Mapapi churakpi paylla huntarin. Alli riksishpaka allichiy: ñan kuchuka kitipa shutimanta yalli riksichin.',
+  ],
   'af.zonePlaceholder': [
     'Escribe tu barrio o sector y selecciónalo',
     'Kikinpak kitita killkashpa akllay',
