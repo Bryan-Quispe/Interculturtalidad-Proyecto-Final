@@ -25,6 +25,11 @@ export type ViewerInteractionMode = 'view' | 'rotate' | 'paint' | 'pick';
 const BRUSH_TO_LOCAL = 2.2; // convierte el tamaño del pincel a unidades del modelo
 const STROKE_OPACITY = 0.94;
 
+/** sRGB 0-1 a lineal. Las texturas se leen en sRGB; el material trabaja lineal. */
+function srgbToLinear(value: number): number {
+  return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+}
+
 interface Canvas3DViewerProps {
   modelo: Modelo3D;
   height?: string;
@@ -184,6 +189,12 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     const raycaster = new THREE.Raycaster();
     const modelMeshes: THREE.Mesh[] = [];
     const paintTargets = new Map<string, PaintTarget>();
+    /**
+     * Texturas ya volcadas a un lienzo 2D para poder leer sus píxeles. Se
+     * cachean porque volcar una textura de 2K en cada clic del cuentagotas
+     * congelaría la interfaz.
+     */
+    const textureSamplers = new Map<THREE.Texture, CanvasRenderingContext2D>();
     const disposableMaterials: THREE.Material[] = [];
     const disposableGeometries: THREE.BufferGeometry[] = [];
 
@@ -474,10 +485,81 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     };
 
     /**
-     * Cuentagotas. Lee el píxel bajo el cursor del propio lienzo, así que
-     * devuelve exactamente el color que la persona ve, ya con textura,
-     * iluminación y la pintura aplicada encima. Solo actúa sobre el modelo:
-     * sobre el fondo o la rejilla no hace nada.
+     * Muestrea un texel de la textura difusa respetando repetición, desfase y
+     * el volteo vertical que aplica el cargador. Devuelve sRGB 0-255.
+     */
+    const sampleTexture = (texture: THREE.Texture, u: number, v: number): [number, number, number] | null => {
+      const image = texture.image as CanvasImageSource & { width?: number; height?: number };
+      if (!image?.width || !image?.height) return null;
+
+      let context = textureSamplers.get(texture);
+      if (!context) {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const created = canvas.getContext('2d', { willReadFrequently: true });
+        if (!created) return null;
+        try {
+          created.drawImage(image, 0, 0);
+        } catch {
+          // Textura comprimida o de origen cruzado: no se puede leer.
+          return null;
+        }
+        context = created;
+        textureSamplers.set(texture, context);
+      }
+
+      const wrap = (value: number) => ((value % 1) + 1) % 1;
+      const su = wrap(u * texture.repeat.x + texture.offset.x);
+      const sv = wrap(v * texture.repeat.y + texture.offset.y);
+      const px = Math.min(image.width - 1, Math.floor(su * image.width));
+      const py = Math.min(image.height - 1, Math.floor((texture.flipY ? 1 - sv : sv) * image.height));
+      try {
+        const data = context.getImageData(px, py, 1, 1).data;
+        return [data[0], data[1], data[2]];
+      } catch {
+        return null;
+      }
+    };
+
+    /** Pintura ya aplicada en el vértice más cercano al punto tocado. */
+    const paintAtPoint = (item: PaintTarget, local: THREE.Vector3): [number, number, number, number] | null => {
+      const cell = (axis: number) => Math.min(item.gridRes - 1, Math.max(0, Math.floor(axis)));
+      const cx = cell((local.x - item.gridMin.x) / item.gridCell);
+      const cy = cell((local.y - item.gridMin.y) / item.gridCell);
+      const cz = cell((local.z - item.gridMin.z) / item.gridCell);
+      const array = item.paint.array as Uint8Array;
+
+      let best = -1;
+      let bestDistance = Infinity;
+      for (let ox = -1; ox <= 1; ox += 1) {
+        for (let oy = -1; oy <= 1; oy += 1) {
+          for (let oz = -1; oz <= 1; oz += 1) {
+            const nx = cx + ox; const ny = cy + oy; const nz = cz + oz;
+            if (nx < 0 || ny < 0 || nz < 0 || nx >= item.gridRes || ny >= item.gridRes || nz >= item.gridRes) continue;
+            const index = (nx * item.gridRes + ny) * item.gridRes + nz;
+            for (let slot = item.cellStart[index]; slot < item.cellStart[index + 1]; slot += 1) {
+              const vertex = item.cellItems[slot];
+              const dx = item.position.getX(vertex) - local.x;
+              const dy = item.position.getY(vertex) - local.y;
+              const dz = item.position.getZ(vertex) - local.z;
+              const distance = dx * dx + dy * dy + dz * dz;
+              if (distance < bestDistance) { bestDistance = distance; best = vertex; }
+            }
+          }
+        }
+      }
+      if (best < 0) return null;
+      const offset = best * 4;
+      return [array[offset], array[offset + 1], array[offset + 2], array[offset + 3] / 255];
+    };
+
+    /**
+     * Cuentagotas. Toma el color propio de la superficie —textura por color
+     * base, con la pintura ya aplicada mezclada encima— y no el píxel que se
+     * ve en pantalla. Leer el píxel devolvía el resultado de la iluminación y
+     * el tono mapeado, así que una zona en sombra daba un color casi negro que
+     * no era el del pelaje. El albedo no depende de dónde caiga la luz.
      */
     const pickColorAt = (event: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
@@ -486,27 +568,40 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
         -((event.clientY - rect.top) / rect.height) * 2 + 1,
       );
       raycaster.setFromCamera(pointer, camera);
-      if (!raycaster.intersectObjects(modelMeshes, false).length) return;
+      const hit = raycaster.intersectObjects(modelMeshes, false)[0];
+      if (!hit || !(hit.object instanceof THREE.Mesh)) return;
 
-      // El lienzo se dibuja con `preserveDrawingBuffer`, pero hay que renderizar
-      // antes de leer para no tomar el color de un fotograma ya descartado.
-      renderer.render(scene, camera);
-      const sampler = document.createElement('canvas');
-      sampler.width = 1;
-      sampler.height = 1;
-      const context = sampler.getContext('2d');
-      if (!context) return;
-      const scaleX = renderer.domElement.width / rect.width;
-      const scaleY = renderer.domElement.height / rect.height;
-      context.drawImage(
-        renderer.domElement,
-        (event.clientX - rect.left) * scaleX,
-        (event.clientY - rect.top) * scaleY,
-        1, 1, 0, 0, 1, 1,
-      );
-      const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
-      const hex = `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
-      onPickColorRef.current?.(hex);
+      const materials = Array.isArray(hit.object.material) ? hit.object.material : [hit.object.material];
+      const material = (materials[hit.face?.materialIndex ?? 0] ?? materials[0]) as THREE.MeshStandardMaterial;
+      if (!material) return;
+
+      // El color base del material ya vive en espacio lineal.
+      const linear = new THREE.Color().copy(material.color ?? new THREE.Color(0xffffff));
+
+      if (material.map && hit.uv) {
+        const texel = sampleTexture(material.map, hit.uv.x, hit.uv.y);
+        if (texel) {
+          linear.r *= srgbToLinear(texel[0] / 255);
+          linear.g *= srgbToLinear(texel[1] / 255);
+          linear.b *= srgbToLinear(texel[2] / 255);
+        }
+      }
+
+      // Si el punto ya está pintado, manda la pintura: es lo que se ve encima.
+      // Se replica la mezcla del shader para devolver el mismo tono.
+      const surfaceId = hit.object.userData.paintSurfaceId as string | undefined;
+      const item = surfaceId ? paintTargets.get(surfaceId) : undefined;
+      if (item) {
+        const painted = paintAtPoint(item, hit.object.worldToLocal(hit.point.clone()));
+        if (painted && painted[3] > 0.01) {
+          const [pr, pg, pb, alpha] = painted;
+          linear.r += ((pr / 255) ** 2.2 - linear.r) * alpha;
+          linear.g += ((pg / 255) ** 2.2 - linear.g) * alpha;
+          linear.b += ((pb / 255) ** 2.2 - linear.b) * alpha;
+        }
+      }
+
+      onPickColorRef.current?.(`#${linear.getHexString()}`);
     };
 
     const onPointerDown = (event: PointerEvent) => {
@@ -694,6 +789,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       if (rendererRef.current === renderer) rendererRef.current = null;
       paintTargets.forEach((item) => item.geometry.deleteAttribute('aPaint'));
       paintTargets.clear();
+      textureSamplers.clear();
       disposableGeometries.forEach((geometry) => geometry.dispose());
       disposableMaterials.forEach((material) => material.dispose());
     };
