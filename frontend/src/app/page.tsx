@@ -1,5 +1,7 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,6 +12,12 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { clearSessionKeepingLanguage, useLanguage } from '@/lib/i18n/LanguageProvider';
 import { TranslationKey } from '@/lib/i18n/translations';
 import MapLocationInput from '@/components/MapLocationInput';
+/**
+ * La ficha arrastra Three.js, unos 150 kB que solo hacen falta si alguien
+ * pulsa una tarjeta. Cargarla bajo demanda evita que ese peso lo pague todo
+ * el que entra en la portada, que es la primera pantalla que ve cualquiera.
+ */
+const PublicPetModal = dynamic(() => import('@/components/PublicPetModal'), { ssr: false });
 
 /** El texto alternativo se arma con el idioma activo, no se escribe fijo. */
 const featureAnimals = [
@@ -38,6 +46,7 @@ export default function Home() {
   const [mostrarMapa, setMostrarMapa] = useState(false);
   const [publicAnimals, setPublicAnimals] = useState<any[]>([]);
   const [loadingAnimals, setLoadingAnimals] = useState(false);
+  const [animalAbierto, setAnimalAbierto] = useState<any | null>(null);
   const [buscandoUbicacion, setBuscandoUbicacion] = useState(false);
   const [errorUbicacion, setErrorUbicacion] = useState('');
 
@@ -310,40 +319,52 @@ export default function Home() {
             </span>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {publicAnimals.map((animal) => (
-              <div key={animal.id} className="rounded-2xl border border-white/10 bg-[#0f1629] p-4">
-                {/* La categoría llega como enum en mayúsculas y se traduce aquí. */}
-                <div className="text-sm text-emerald-400 mb-1">
-                  {t(`cat.${animal.categoria}` as TranslationKey)}
-                </div>
-                <div className="font-semibold text-white mb-2">{animal.nombre}</div>
-                <div className="text-sm text-gray-400 mb-3">{animal.zona || t('home.zoneUnknown')}</div>
-                <div className="text-xs text-gray-500">
-                  {t('home.owner')} {animal.usuario?.name || t('home.unavailable')}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="card animate-fade-in-up stagger-1">
-            <div className="text-4xl mb-4">🎨</div>
-            <h3 className="text-xl font-bold text-emerald-400 mb-3">{t('home.f1.title')}</h3>
-            <p className="text-gray-400 leading-relaxed">{t('home.f1.body')}</p>
-          </div>
-          <div className="card animate-fade-in-up stagger-2">
-            <div className="text-4xl mb-4">👥</div>
-            <h3 className="text-xl font-bold text-amber-400 mb-3">{t('home.f2.title')}</h3>
-            <p className="text-gray-400 leading-relaxed">{t('home.f2.body')}</p>
-          </div>
-          <div className="card animate-fade-in-up stagger-3">
-            <div className="text-4xl mb-4">🔒</div>
-            <h3 className="text-xl font-bold text-blue-400 mb-3">{t('home.f3.title')}</h3>
-            <p className="text-gray-400 leading-relaxed">{t('home.f3.body')}</p>
+            {publicAnimals.map((animal) => {
+              const foto = Array.isArray(animal.fotos) ? animal.fotos.find(Boolean) : null;
+              return (
+                <button
+                  key={animal.id}
+                  type="button"
+                  onClick={() => setAnimalAbierto(animal)}
+                  className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f1629] text-left transition hover:border-emerald-400/50 hover:bg-[#131c33]"
+                >
+                  {/*
+                    La fotografía es lo primero: quien cree haber visto al
+                    animal reconoce una cara antes que leer un nombre.
+                  */}
+                  <div className="aspect-[4/3] w-full overflow-hidden bg-black/40">
+                    {foto ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={foto}
+                        alt={animal.nombre}
+                        className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm text-gray-600">
+                        {t('pet.noPhoto')}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    {/* La categoría llega como enum en mayúsculas y se traduce aquí. */}
+                    <div className="mb-1 flex items-center justify-between gap-2 text-sm text-emerald-400">
+                      <span>{t(`cat.${animal.categoria}` as TranslationKey)}</span>
+                      {typeof animal.distanciaKm === 'number' && (
+                        <span className="text-xs text-gray-500">
+                          {t('home.distance', { km: String(animal.distanciaKm) })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mb-2 font-semibold text-white">{animal.nombre}</div>
+                    <div className="mb-3 text-sm text-gray-400">
+                      {animal.zona || t('home.zoneUnknown')}
+                    </div>
+                    <div className="text-xs text-emerald-400/80">{t('home.viewDetail')}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -358,6 +379,10 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {animalAbierto && (
+        <PublicPetModal animal={animalAbierto} onClose={() => setAnimalAbierto(null)} />
+      )}
     </main>
   );
 }
