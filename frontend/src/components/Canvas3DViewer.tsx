@@ -30,6 +30,29 @@ function srgbToLinear(value: number): number {
   return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
 }
 
+/**
+ * El shader convierte el color pintado con `pow(vPaint.rgb, 2.2)`, una gamma
+ * simple que NO es la curva sRGB. Estas dos funciones son exactamente esa
+ * conversión y su inversa.
+ *
+ * Importa para que la pintura no se note: si el color se codificara con la
+ * curva sRGB real, el shader lo devolvería a lineal con otra fórmula y el tono
+ * saldría desviado, más notorio cuanto más oscuro el pelaje. Codificando con
+ * la inversa exacta, pintar con el color tomado del propio modelo reproduce su
+ * albedo al bit y el trazo desaparece.
+ */
+function shaderDecode(byte: number): number {
+  return (byte / 255) ** 2.2;
+}
+
+function shaderEncode(linear: { r: number; g: number; b: number }): string {
+  const channel = (value: number) => {
+    const byte = Math.round(255 * Math.min(1, Math.max(0, value)) ** (1 / 2.2));
+    return byte.toString(16).padStart(2, '0');
+  };
+  return `#${channel(linear.r)}${channel(linear.g)}${channel(linear.b)}`;
+}
+
 interface Canvas3DViewerProps {
   modelo: Modelo3D;
   height?: string;
@@ -164,7 +187,43 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     renderer.toneMappingExposure = 1.2;
     renderer.domElement.style.touchAction = 'none';
     renderer.domElement.style.cursor = cursorForMode(modeRef.current);
+    container.style.position = 'relative';
     container.appendChild(renderer.domElement);
+
+    /**
+     * Lupa del cuentagotas. Amplía los píxeles alrededor del cursor para poder
+     * apuntar al exacto, y muestra debajo el color que se aplicará. Se
+     * construye a mano en lugar de con estado de React porque se refresca en
+     * cada movimiento del puntero y un re-render por evento sería un derroche.
+     */
+    const LOUPE_SRC = 15;   // píxeles de origen que abarca
+    const LOUPE_ZOOM = 9;   // cuánto se agranda cada uno
+    const LOUPE_SIDE = LOUPE_SRC * LOUPE_ZOOM;
+
+    const loupe = document.createElement('div');
+    loupe.style.cssText = `position:absolute;display:none;pointer-events:none;z-index:20;
+      border-radius:10px;overflow:hidden;background:#0b1220;
+      border:1px solid rgba(255,255,255,.25);box-shadow:0 10px 30px rgba(0,0,0,.55)`;
+
+    const loupeCanvas = document.createElement('canvas');
+    loupeCanvas.width = LOUPE_SIDE;
+    loupeCanvas.height = LOUPE_SIDE;
+    loupeCanvas.style.cssText = `display:block;width:${LOUPE_SIDE}px;height:${LOUPE_SIDE}px`;
+    const loupeCtx = loupeCanvas.getContext('2d');
+
+    const loupeBar = document.createElement('div');
+    loupeBar.style.cssText = `display:flex;align-items:center;gap:6px;padding:5px 7px;
+      background:#0b1220;border-top:1px solid rgba(255,255,255,.12)`;
+    const loupeSwatch = document.createElement('span');
+    loupeSwatch.style.cssText = `width:16px;height:16px;border-radius:4px;flex:none;
+      border:1px solid rgba(255,255,255,.35)`;
+    const loupeHex = document.createElement('span');
+    loupeHex.style.cssText = `font:600 11px ui-monospace,monospace;color:#e2e8f0;letter-spacing:.4px`;
+    loupeBar.append(loupeSwatch, loupeHex);
+    loupe.append(loupeCanvas, loupeBar);
+    container.appendChild(loupe);
+
+    const hideLoupe = () => { loupe.style.display = 'none'; };
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.65));
     scene.add(new THREE.HemisphereLight(0x87ceeb, 0x362d1e, 0.7));
@@ -183,6 +242,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     let phi = Math.PI / 4;
     let radius = 15;
     let lastPaintAt = 0;
+    let lastLoupeAt = 0;
     let lastPaintStroke: PaintStroke | null = null;
     const target = new THREE.Vector3(0, 2, 0);
     const pointer = new THREE.Vector2();
@@ -554,14 +614,8 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       return [array[offset], array[offset + 1], array[offset + 2], array[offset + 3] / 255];
     };
 
-    /**
-     * Cuentagotas. Toma el color propio de la superficie —textura por color
-     * base, con la pintura ya aplicada mezclada encima— y no el píxel que se
-     * ve en pantalla. Leer el píxel devolvía el resultado de la iluminación y
-     * el tono mapeado, así que una zona en sombra daba un color casi negro que
-     * no era el del pelaje. El albedo no depende de dónde caiga la luz.
-     */
-    const pickColorAt = (event: PointerEvent) => {
+    /** Punto del modelo bajo el cursor, o null si ahí no hay modelo. */
+    const hitAt = (event: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.set(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -569,13 +623,21 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       );
       raycaster.setFromCamera(pointer, camera);
       const hit = raycaster.intersectObjects(modelMeshes, false)[0];
-      if (!hit || !(hit.object instanceof THREE.Mesh)) return;
+      return hit && hit.object instanceof THREE.Mesh ? hit : null;
+    };
 
-      const materials = Array.isArray(hit.object.material) ? hit.object.material : [hit.object.material];
+    /**
+     * Color propio de la superficie en el punto tocado, en espacio lineal. No
+     * es el píxel de pantalla: ese sale del render con luces, sombras y tono
+     * mapeado, y en una zona oscura devolvía casi negro. El albedo no depende
+     * de dónde caiga la luz, que es lo que se espera de un cuentagotas.
+     */
+    const albedoAt = (hit: THREE.Intersection): THREE.Color | null => {
+      const mesh = hit.object as THREE.Mesh;
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const material = (materials[hit.face?.materialIndex ?? 0] ?? materials[0]) as THREE.MeshStandardMaterial;
-      if (!material) return;
+      if (!material) return null;
 
-      // El color base del material ya vive en espacio lineal.
       const linear = new THREE.Color().copy(material.color ?? new THREE.Color(0xffffff));
 
       if (material.map && hit.uv) {
@@ -587,21 +649,87 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
         }
       }
 
-      // Si el punto ya está pintado, manda la pintura: es lo que se ve encima.
-      // Se replica la mezcla del shader para devolver el mismo tono.
-      const surfaceId = hit.object.userData.paintSurfaceId as string | undefined;
+      // Si el punto ya está pintado manda la pintura, que es lo que se ve
+      // encima. Se replica la mezcla del shader para devolver ese mismo tono.
+      const surfaceId = mesh.userData.paintSurfaceId as string | undefined;
       const item = surfaceId ? paintTargets.get(surfaceId) : undefined;
       if (item) {
-        const painted = paintAtPoint(item, hit.object.worldToLocal(hit.point.clone()));
+        const painted = paintAtPoint(item, mesh.worldToLocal(hit.point.clone()));
         if (painted && painted[3] > 0.01) {
           const [pr, pg, pb, alpha] = painted;
-          linear.r += ((pr / 255) ** 2.2 - linear.r) * alpha;
-          linear.g += ((pg / 255) ** 2.2 - linear.g) * alpha;
-          linear.b += ((pb / 255) ** 2.2 - linear.b) * alpha;
+          linear.r += (shaderDecode(pr) - linear.r) * alpha;
+          linear.g += (shaderDecode(pg) - linear.g) * alpha;
+          linear.b += (shaderDecode(pb) - linear.b) * alpha;
         }
       }
+      return linear;
+    };
 
-      onPickColorRef.current?.(`#${linear.getHexString()}`);
+    /**
+     * Dibuja la lupa alrededor del cursor y anuncia el color que se tomaría.
+     * Devuelve ese color para que el clic no tenga que recalcularlo.
+     */
+    const updateLoupe = (event: PointerEvent): string | null => {
+      const hit = hitAt(event);
+      const linear = hit ? albedoAt(hit) : null;
+      if (!linear || !loupeCtx) { hideLoupe(); return null; }
+
+      const hex = shaderEncode(linear);
+      const rect = renderer.domElement.getBoundingClientRect();
+      const scaleX = renderer.domElement.width / rect.width;
+      const scaleY = renderer.domElement.height / rect.height;
+      const half = Math.floor(LOUPE_SRC / 2);
+
+      loupeCtx.imageSmoothingEnabled = false;
+      loupeCtx.clearRect(0, 0, LOUPE_SIDE, LOUPE_SIDE);
+      loupeCtx.drawImage(
+        renderer.domElement,
+        Math.round((event.clientX - rect.left) * scaleX) - half,
+        Math.round((event.clientY - rect.top) * scaleY) - half,
+        LOUPE_SRC, LOUPE_SRC,
+        0, 0, LOUPE_SIDE, LOUPE_SIDE,
+      );
+
+      // Rejilla tenue: hace visible dónde empieza y acaba cada píxel.
+      loupeCtx.strokeStyle = 'rgba(255,255,255,.10)';
+      loupeCtx.lineWidth = 1;
+      for (let i = 1; i < LOUPE_SRC; i += 1) {
+        const at = i * LOUPE_ZOOM + 0.5;
+        loupeCtx.beginPath();
+        loupeCtx.moveTo(at, 0); loupeCtx.lineTo(at, LOUPE_SIDE);
+        loupeCtx.moveTo(0, at); loupeCtx.lineTo(LOUPE_SIDE, at);
+        loupeCtx.stroke();
+      }
+
+      // Píxel exacto que se tomará. Doble marco para que resalte tanto sobre
+      // pelaje claro como oscuro.
+      const box = half * LOUPE_ZOOM;
+      loupeCtx.strokeStyle = '#000';
+      loupeCtx.lineWidth = 3;
+      loupeCtx.strokeRect(box - 1.5, box - 1.5, LOUPE_ZOOM + 3, LOUPE_ZOOM + 3);
+      loupeCtx.strokeStyle = '#fff';
+      loupeCtx.lineWidth = 1.5;
+      loupeCtx.strokeRect(box - 0.75, box - 0.75, LOUPE_ZOOM + 1.5, LOUPE_ZOOM + 1.5);
+
+      loupeSwatch.style.background = hex;
+      loupeHex.textContent = hex.toUpperCase();
+
+      // Se coloca junto al cursor y salta al otro lado si no cabe.
+      const width = LOUPE_SIDE + 2;
+      const height = LOUPE_SIDE + 30;
+      const localX = event.clientX - rect.left;
+      const localY = event.clientY - rect.top;
+      const left = localX + 20 + width > container.clientWidth ? localX - 20 - width : localX + 20;
+      const top = localY + 20 + height > container.clientHeight ? localY - 20 - height : localY + 20;
+      loupe.style.left = `${Math.max(4, left)}px`;
+      loupe.style.top = `${Math.max(4, top)}px`;
+      loupe.style.display = 'block';
+      return hex;
+    };
+
+    const pickColorAt = (event: PointerEvent) => {
+      const hex = updateLoupe(event);
+      if (hex) onPickColorRef.current?.(hex);
     };
 
     const onPointerDown = (event: PointerEvent) => {
@@ -628,6 +756,16 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     const onPointerMove = (event: PointerEvent) => {
       const deltaX = event.clientX - previous.x;
       const deltaY = event.clientY - previous.y;
+      if (modeRef.current === 'pick') {
+        // Mismo intervalo que el pincel: el trazado del raycast es lo caro.
+        const now = performance.now();
+        if (now - lastLoupeAt >= 24) {
+          lastLoupeAt = now;
+          updateLoupe(event);
+        }
+        previous = { x: event.clientX, y: event.clientY };
+        return;
+      }
       if (painting && modeRef.current === 'paint') {
         paintAt(event);
       } else if (dragging) {
@@ -664,6 +802,7 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     renderer.domElement.addEventListener('pointercancel', endAction);
     renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
     renderer.domElement.addEventListener('contextmenu', onContextMenu);
+    renderer.domElement.addEventListener('pointerleave', hideLoupe);
 
     const addFallbackCube = () => {
       // Solo sustituye al modelo, nunca se suma a él: si ya hay algo en escena
@@ -757,6 +896,9 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
     let animationId = 0;
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      // Al abandonar el cuentagotas la lupa debe irse con él, y el cambio de
+      // modo ocurre fuera de este efecto.
+      if (modeRef.current !== 'pick' && loupe.style.display !== 'none') hideLoupe();
       if (autoRotateRef.current && modeRef.current === 'view' && loadedObject && !dragging && !painting) {
         loadedObject.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.003);
       }
@@ -784,6 +926,8 @@ const Canvas3DViewer = forwardRef<Canvas3DViewerHandle, Canvas3DViewerProps>(fun
       renderer.domElement.removeEventListener('pointercancel', endAction);
       renderer.domElement.removeEventListener('wheel', onWheel);
       renderer.domElement.removeEventListener('contextmenu', onContextMenu);
+      renderer.domElement.removeEventListener('pointerleave', hideLoupe);
+      if (container.contains(loupe)) container.removeChild(loupe);
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       renderer.dispose();
       if (rendererRef.current === renderer) rendererRef.current = null;
