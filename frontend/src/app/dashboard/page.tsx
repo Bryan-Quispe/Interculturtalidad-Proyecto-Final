@@ -22,7 +22,20 @@ const MODEL_CATEGORIES: Animal['categoria'][] = ['PERRO', 'GATO', 'CONEJO'];
 
 export default function DashboardPage() {
   const { isAuthenticated, user } = useAuthStore();
-  const { t, tv } = useLanguage();
+  const { t, tv, pick } = useLanguage();
+
+  /**
+   * Descripcion en el idioma activo. El texto libre no se traduce solo, asi
+   * que se muestra la version que su autor escribio en esa lengua; si no la
+   * escribio, se cae a la que si existe antes que dejar el hueco vacio.
+   */
+  const descripcionDe = (animal: { descripcion?: string; descripcionKw?: string }) => {
+    const es = animal.descripcion?.trim() ?? '';
+    const kw = animal.descripcionKw?.trim() ?? '';
+    if (!kw) return es;
+    if (!es) return kw;
+    return pick(es, kw);
+  };
   const [animales, setAnimales] = useState<Animal[]>([]);
   const [modelos, setModelos] = useState<Modelo3D[]>([]);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
@@ -535,7 +548,7 @@ export default function DashboardPage() {
                 {selectedAnimal.descripcion && (
                   <div>
                     <h3 className="font-bold text-gray-300 mb-2 text-sm uppercase tracking-wider">{t('dash.description')}</h3>
-                    <p className="text-gray-400 leading-relaxed">{selectedAnimal.descripcion}</p>
+                    <p className="text-gray-400 leading-relaxed">{descripcionDe(selectedAnimal)}</p>
                   </div>
                 )}
 
@@ -657,7 +670,7 @@ export default function DashboardPage() {
                       <span className="text-2xl opacity-60 group-hover:opacity-100 transition">🐾</span>
                     </div>
 
-                    {animal.descripcion && <p className="text-gray-400 mb-4 text-sm line-clamp-2">{animal.descripcion}</p>}
+                    {animal.descripcion && <p className="text-gray-400 mb-4 text-sm line-clamp-2">{descripcionDe(animal)}</p>}
 
                     {animal.caracteristicas && (
                       <div className="mb-4 space-y-1.5 text-xs text-gray-500">

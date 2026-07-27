@@ -168,8 +168,12 @@ export function createAnimalReportDraft(animal: Animal, lang: Lang = 'es'): Anim
   const photos = Array.from(new Set(
     (Array.isArray(animal.fotos) ? animal.fotos : []).map((photo) => photo.trim()).filter(Boolean),
   )).slice(0, MAX_REPORT_PHOTOS);
+  // El cartel se rotula en su propio idioma, así que toma la descripción que
+  // su autor escribió en esa lengua. Si no la escribió, se usa la otra: más
+  // vale un cartel con una línea en castellano que un cartel sin señas.
+  const ownDescription = (lang === 'kw' ? animal.descripcionKw : animal.descripcion)?.trim();
   const recognition = [
-    animal.descripcion,
+    ownDescription || animal.descripcion,
     animal.caracteristicas?.color ? `${L('pdf.colorPrefix')} ${V('color', animal.caracteristicas.color)}.` : '',
     animal.caracteristicas?.tamano ? `${L('pdf.sizePrefix')} ${V('size', animal.caracteristicas.tamano)}.` : '',
   ].filter(Boolean).join(' ');

@@ -229,6 +229,7 @@ export default function AddAnimalForm({
     nombre: '',
     categoria: 'PERRO',
     descripcion: '',
+    descripcionKw: '',
     raza: '',
     zona: '',
     googlePlaceId: '',
@@ -246,6 +247,7 @@ export default function AddAnimalForm({
       nombre: animal?.nombre ?? '',
       categoria: animal?.categoria ?? 'PERRO',
       descripcion: animal?.descripcion ?? '',
+      descripcionKw: animal?.descripcionKw ?? '',
       raza: animal?.raza ?? '',
       zona: animal?.zona ?? '',
       googlePlaceId: animal?.googlePlaceId ?? '',
@@ -399,6 +401,7 @@ export default function AddAnimalForm({
       nombre: formData.nombre.trim(),
       categoria: formData.categoria,
       descripcion: formData.descripcion.trim(),
+      descripcionKw: formData.descripcionKw.trim(),
       raza: formData.raza.trim(),
       zona: formData.zona,
       googlePlaceId: formData.googlePlaceId || undefined,
@@ -640,6 +643,25 @@ export default function AddAnimalForm({
                   rows={4}
                 />
                 <p className="mt-1 text-xs text-gray-500">{t('af.marksHint')}</p>
+              </div>
+
+              {/*
+                La descripción en kichwa la escribe la propia persona. No se
+                traduce automáticamente: no existe un traductor
+                castellano-kichwa fiable, y sobreescribir lo que alguien
+                escribió sobre su mascota sería hablar por ella.
+              */}
+              <div>
+                <label className="input-label">{t('af.marksKw')}</label>
+                <textarea
+                  name="descripcionKw"
+                  value={formData.descripcionKw}
+                  onChange={handleChange}
+                  placeholder={t('af.marksKwPlaceholder')}
+                  className="input-base h-28 resize-none"
+                  rows={4}
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('af.marksKwHint')}</p>
               </div>
             </div>
           )}

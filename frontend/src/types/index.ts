@@ -19,6 +19,12 @@ export interface Animal {
   id: string;
   nombre: string;
   descripcion?: string;
+  /**
+   * La misma descripción escrita por su autor en kichwa. Va aparte porque el
+   * texto libre no se traduce solo: solo quien lo escribió puede decir lo
+   * mismo en la otra lengua.
+   */
+  descripcionKw?: string;
   raza?: string;
   categoria: 'PERRO' | 'GATO' | 'CONEJO';
   zona?: string;

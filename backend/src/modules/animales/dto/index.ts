@@ -26,6 +26,15 @@ export class CreateAnimalDto {
   @IsString()
   descripcion?: string;
 
+  /**
+   * Descripcion escrita por la persona en kichwa. Es opcional y separada
+   * porque el texto libre no se traduce automaticamente: solo su autor puede
+   * decir lo mismo en la otra lengua.
+   */
+  @IsOptional()
+  @IsString()
+  descripcionKw?: string;
+
   @IsOptional()
   @IsString()
   raza?: string;
@@ -85,6 +94,15 @@ export class UpdateAnimalDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
+
+  /**
+   * Descripcion escrita por la persona en kichwa. Es opcional y separada
+   * porque el texto libre no se traduce automaticamente: solo su autor puede
+   * decir lo mismo en la otra lengua.
+   */
+  @IsOptional()
+  @IsString()
+  descripcionKw?: string;
 
   @IsOptional()
   @IsString()

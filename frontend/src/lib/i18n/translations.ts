@@ -617,6 +617,11 @@ export const dict = {
   // Las razas con nombre propio (Labrador, Siamés, Mini Lop...) no se traducen
   // en ninguna lengua. Solo se traducen las descriptivas.
   'breed.Mestizo / Criollo': ['Mestizo / Criollo', 'Chakrushka / kaypi wiwa'],
+  // Variantes sueltas que quedaron guardadas antes de fijar la lista cerrada,
+  // o escritas a mano en "Otra". Sin ellas la ficha se quedaba en castellano.
+  'breed.Mestizo': ['Mestizo', 'Chakrushka'],
+  'breed.Criollo': ['Criollo', 'Kaypi wiwa'],
+  'breed.Doméstico': ['Doméstico', 'Wasi wiwa'],
   'breed.Cabeza de león': ['Cabeza de león', 'Puma uma'],
   'breed.Enano holandés': ['Enano holandés', 'Holanda uchilla'],
   'breed.Belier (orejas caídas)': ['Belier (orejas caídas)', 'Belier (warkurishka rinri)'],
@@ -741,6 +746,15 @@ export const dict = {
   'af.marksHint': [
     'Lo que la distingue de otras mascotas parecidas.',
     'Shuk rikchak wiwakunamanta imawan chikanyarin.',
+  ],
+  'af.marksKw': ['Señas particulares en kichwa (opcional)', 'Sapan unanchakuna kichwapi (munashpa)'],
+  'af.marksKwPlaceholder': [
+    'Lo mismo, escrito por ti en kichwa.',
+    'Chaykillpitak, kikin kichwapi killkashka.',
+  ],
+  'af.marksKwHint': [
+    'Este texto no se traduce solo: si lo escribes, el cartel y la ficha en kichwa lo usarán.',
+    'Kay killkaka mana paylla tikrachinchu: killkakpika, kichwa pankapi rikurinka.',
   ],
   'af.whereLost': ['¿En qué zona se perdió? *', '¿Ima kitipi chinkarka? *'],
   'af.zonePlaceholder': [

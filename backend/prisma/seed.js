@@ -221,8 +221,8 @@ async function main() {
     { nombre: 'Perro negro', categoria: CategoriaAnimal.PERRO, raza: 'Mestizo / Criollo', color: '#1f2937', archivo: 'Perro/Perro Negro.glb', tamano: 19278560 },
     { nombre: 'Perro golden', categoria: CategoriaAnimal.PERRO, raza: 'Golden Retriever', color: '#d4a054', archivo: 'Perro/Perro Golden.glb', tamano: 30886052 },
     { nombre: 'Perro café claro', categoria: CategoriaAnimal.PERRO, raza: 'Mestizo / Criollo', color: '#a8763e', archivo: 'Perro/Perro Pubg.glb', tamano: 22612232 },
-    { nombre: 'Gato blanco', categoria: CategoriaAnimal.GATO, raza: 'Doméstico', color: '#f5f5f4', archivo: 'Gato/Gato Blanco.glb', tamano: 27203476 },
-    { nombre: 'Gata blanca y negra', categoria: CategoriaAnimal.GATO, raza: 'Doméstico', color: '#57534e', archivo: 'Gato/Gata Blanca y Negra.glb', tamano: 17566268 },
+    { nombre: 'Gato blanco', categoria: CategoriaAnimal.GATO, raza: 'Mestizo / Criollo', color: '#f5f5f4', archivo: 'Gato/Gato Blanco.glb', tamano: 27203476 },
+    { nombre: 'Gata blanca y negra', categoria: CategoriaAnimal.GATO, raza: 'Mestizo / Criollo', color: '#57534e', archivo: 'Gato/Gata Blanca y Negra.glb', tamano: 17566268 },
     { nombre: 'Gato siamés', categoria: CategoriaAnimal.GATO, raza: 'Siamés', color: '#c8b6a6', archivo: 'Gato/Gati Siames.glb', tamano: 25281624 },
     { nombre: 'Conejo blanco', categoria: CategoriaAnimal.CONEJO, raza: 'Enano holandés', color: '#fafaf9', archivo: 'Conejos/Conejo Blanco.glb', tamano: 18123968 },
   ];
@@ -238,7 +238,6 @@ async function main() {
         nombre: item.nombre,
         categoria: item.categoria,
         raza: item.raza,
-        descripcion: `Modelo 3D de referencia: ${item.nombre.toLowerCase()}`,
         color: item.color,
         isPublico: true,
         usuarioId: admin.id,
