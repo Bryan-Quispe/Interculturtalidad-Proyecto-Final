@@ -45,7 +45,7 @@ creación; se rellenan a mano porque son secretos o dependen del paso 2:
 `DATABASE_URL` y `JWT_SECRET` no se tocan: la primera la conecta Render desde la
 base de datos creada, y la segunda la genera Render con `generateValue: true`.
 
-El build corre `npm ci && npx prisma migrate deploy && npm run build`. Se usa
+El build corre `npm ci --include=dev && npx prisma migrate deploy && npm run build`. Se usa
 `migrate deploy` y no `migrate dev` porque el primero solo aplica las
 migraciones ya versionadas en `backend/prisma/migrations`, sin generar ninguna
 nueva ni pedir confirmación.

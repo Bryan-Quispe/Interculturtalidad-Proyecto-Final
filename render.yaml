@@ -15,10 +15,15 @@ services:
     runtime: node
     plan: free
     rootDir: backend
+    # `--include=dev` es obligatorio: con NODE_ENV=production npm omite las
+    # devDependencies, y ahí viven @nestjs/cli (el comando `nest`) y TypeScript.
+    # Sin ellas el build falla con "sh: 1: nest: not found". En tiempo de
+    # ejecución no hacen falta, solo para compilar.
+    #
     # `prisma migrate deploy` aplica las migraciones ya versionadas en
     # prisma/migrations sin generar ninguna nueva: es el comando correcto para
     # producción (`migrate dev` es interactivo y puede borrar datos).
-    buildCommand: npm ci && npx prisma migrate deploy && npm run build
+    buildCommand: npm ci --include=dev && npx prisma migrate deploy && npm run build
     startCommand: npm run start:prod
     healthCheckPath: /api/health
     envVars:
