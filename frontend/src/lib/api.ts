@@ -106,7 +106,18 @@ class ApiClient {
     return res.data;
   }
 
-  async getPublicAnimals(params?: { categoria?: string; zona?: string }) {
+  /**
+   * Catálogo público. Con `lat` y `lng` el servidor filtra por distancia real
+   * en lugar de comparar el nombre del barrio, que nunca coincide entre dos
+   * personas del mismo sector.
+   */
+  async getPublicAnimals(params?: {
+    categoria?: string;
+    zona?: string;
+    lat?: number;
+    lng?: number;
+    radioKm?: number;
+  }) {
     const res = await this.client.get('/animales/publicos', { params });
     return res.data;
   }

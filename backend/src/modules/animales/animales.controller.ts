@@ -41,8 +41,25 @@ export class AnimalesController {
   async getPublicos(
     @Query('categoria') categoria?: string,
     @Query('zona') zona?: string,
+    @Query('lat') lat?: string,
+    @Query('lng') lng?: string,
+    @Query('radioKm') radioKm?: string,
   ) {
-    return this.animalesService.getPublicos({ categoria, zona });
+    // Llegan como texto en la URL; un valor no numerico se descarta en vez de
+    // propagarse como NaN y anular el filtro sin avisar.
+    const numero = (valor?: string) => {
+      const convertido = Number(valor);
+      return valor !== undefined && valor !== '' && Number.isFinite(convertido)
+        ? convertido
+        : undefined;
+    };
+    return this.animalesService.getPublicos({
+      categoria,
+      zona,
+      lat: numero(lat),
+      lng: numero(lng),
+      radioKm: numero(radioKm),
+    });
   }
 
   @Get(':id')

@@ -64,8 +64,8 @@ export const dict = {
     'Chinkashka wasi wiwakunata 3D yanapaywan maskana',
   ],
   'home.searchPlaceholder': [
-    'Busca tu barrio o zona para ver publicaciones cercanas',
-    'Kikinpak kitita maskay, kuchulla willaykunata rikunkapak',
+    'Toca aquí y marca tu zona en el mapa',
+    'Kaypi llamkay, mapapi kikinpak kitita churay',
   ],
   'home.useLocation': ['Usar mi ubicación', 'Ñuka kuskata rikuchina'],
   'home.title': [
@@ -801,6 +801,17 @@ export const dict = {
   'af.placeReferenceKwHint': [
     'Opcional. Sin esto, la ficha en kichwa mostrará esta referencia en castellano.',
     'Munashpalla. Kay illakpika, kichwa pankapi kastilla shimipi rikurinka.',
+  ],
+  'home.locating': ['Buscando tu zona…', 'Kikinpa kitita maskakun…'],
+  'home.clearZone': ['Quitar filtro', 'Akllashkata anchuchina'],
+  'home.currentLocation': ['Mi ubicación actual', 'Kunan kaypi kani'],
+  'home.noGeo': [
+    'Tu navegador no permite obtener la ubicación. Elige la zona en el mapa.',
+    'Kikinpa katinaka mana kuskata riksinchu. Mapapi kitita akllay.',
+  ],
+  'home.geoDenied': [
+    'No se pudo obtener tu ubicación. Elige la zona en el mapa.',
+    'Mana kuskata tarina ushankachu. Mapapi kitita akllay.',
   ],
   'af.morePhones': ['Otros números de contacto', 'Shuk rimanakuy yupaykuna'],
   'af.addPhone': ['Añadir otro número', 'Shuk yupayta yapana'],
