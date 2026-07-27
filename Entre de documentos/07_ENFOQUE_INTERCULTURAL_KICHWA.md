@@ -5,8 +5,7 @@
 La interculturalidad del proyecto no se presenta como una función secundaria. Es parte del objetivo del sistema: facilitar la búsqueda de mascotas perdidas en comunidades donde el castellano no siempre es la lengua principal o donde conviven hablantes de kichwa y castellano.
 
 ## 2. Necesidad intercultural
-
-Un cartel de búsqueda solo funciona si la comunidad puede leerlo y entenderlo. En zonas rurales y periurbanas de Ecuador, especialmente en la Sierra, una solución únicamente en castellano puede dejar fuera a personas kichwahablantes que podrían ayudar en la búsqueda.
+EL cartel de búsqueda solo funciona si la comunidad puede leerlo y entenderlo. En zonas rurales y periurbanas de Ecuador, especialmente en la Sierra, una solución únicamente en castellano puede dejar fuera a personas kichwahablantes que podrían ayudar en la búsqueda.
 
 ## 3. Cómo se integra al sistema
 
